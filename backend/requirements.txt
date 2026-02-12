@@ -1,1 +1,8 @@
 alembic==1.18.4
+fastapi[standard]==0.128.8
+pymysql==1.1.2
+sqlmodel==0.0.33
+
+# Dev Tools
+black==26.1.0
+isort==7.0.0
