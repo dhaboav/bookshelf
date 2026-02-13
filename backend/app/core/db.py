@@ -1,5 +1,26 @@
-from sqlmodel import create_engine
+from typing import Annotated, Generator
+
+from fastapi import Depends
+from sqlmodel import Session, create_engine
 
 from app.core.config import settings
 
 engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
+
+
+def get_db() -> Generator[Session, None, None]:
+    """Get a database session for dependency injection."""
+
+    with Session(engine) as session:
+        try:
+            yield session
+        finally:
+            session.close()
+
+
+def close_db() -> None:
+    """Close the database connection."""
+    engine.dispose()
+
+
+SessionDep = Annotated[Session, Depends(get_db)]
