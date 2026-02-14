@@ -1,8 +1,20 @@
+"""General Configuration FastAPI application.
+
+This module provides class for configuration in application.
+
+Features:
+    - Take information from .env.
+    - Setup project title.
+    - Configure mysql database url.
+"""
+
 from pydantic import MySQLDsn, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    """Settings class for application configuration."""
+
     model_config = SettingsConfigDict(
         env_file="../.env", env_ignore_empty=True, extra="ignore"
     )

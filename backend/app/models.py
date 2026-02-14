@@ -1,3 +1,14 @@
+"""Models and schemes for FastAPI application.
+
+This module provides reusable models and schemes for database and routes in application.
+
+Features:
+    - BookBase: The base model for book.
+    - BookUpdate: Schemes for updating book.
+    - Book: The model for database usage.
+    - Message: The scheme for API response.
+"""
+
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -7,10 +18,13 @@ from sqlmodel import Field, SQLModel
 
 
 def get_datetime_utc() -> datetime:
+    """Utility Function for UTC timezone"""
     return datetime.now(timezone.utc)
 
 
 class BookBase(SQLModel):
+    """Base model for book"""
+
     title: str
     ISBN: str = Field(unique=True, min_length=13, max_length=13)
     author: str
@@ -22,6 +36,8 @@ class BookBase(SQLModel):
 
 
 class BookUpdate(BookBase):
+    """Scheme for update book"""
+
     title: Optional[str] = None
     ISBN: Optional[str] = None
     author: Optional[str] = None
@@ -40,6 +56,8 @@ class BookUpdate(BookBase):
 
 
 class Book(BookBase, table=True):
+    """Model for database book table"""
+
     id: Optional[int] = Field(default=None, primary_key=True)
     created_at: Optional[datetime] = Field(
         default_factory=get_datetime_utc,
@@ -48,4 +66,6 @@ class Book(BookBase, table=True):
 
 
 class Message(SQLModel):
+    """Scheme model for API response"""
+
     detail: str

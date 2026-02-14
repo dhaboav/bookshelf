@@ -1,3 +1,12 @@
+"""Database Configuration FastAPI application.
+
+This module provides configuration for database connection in application.
+
+Features:
+    - Database session dependecny injection.
+    - close_db: Closing database connection.
+"""
+
 from typing import Annotated, Generator
 
 from fastapi import Depends
