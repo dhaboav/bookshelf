@@ -1,9 +1,11 @@
-const App: React.FC = () => {
+import Navbar from './Navbar';
+
+function App() {
     return (
-        <h1 className="max-w-md text-4xl leading-tight font-medium">
-            TESTER
-        </h1>
+        <>
+            <Navbar />
+        </>
     );
-};
+}
 
 export default App;
