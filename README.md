@@ -19,12 +19,26 @@ Follow these steps to set up the project locally:
     git clone https://github.com/Dhaboav/bookshelf.git
     ```
 
-2. **Install Python dependencies:**
+2. **Set .env:**
 
-    Install the required Python packages using `pip`:
+    Copy .env.example to .env file and fill the .env
 
     ```bash
-    pip install -r requirments.txt
+    copy .env.example .env
     ```
 
----
+3. **Build using Docker:**
+
+    Install the the project use docker compose command:
+
+    ```bash
+    docker compose build
+    ```
+
+4. **Run using Docker:**
+
+    Run project with docker compose command:
+
+    ```bash
+    docker compose up
+    ```
