@@ -19,6 +19,8 @@ class Settings(BaseSettings):
         env_file="../.env", env_ignore_empty=True, extra="ignore"
     )
 
+    FRONTEND_HOST: str = "http://localhost:5173"
+
     PROJECT_NAME: str
     MYSQL_USER: str
     MYSQL_PASSWORD: str = ""
