@@ -27,7 +27,7 @@ export default function AddBook() {
                     </Button>
                 </DialogTrigger>
                 <DialogContent>
-                    <DialogHeader className='mb-3'>
+                    <DialogHeader className="mb-3">
                         <DialogTitle>Add a Book</DialogTitle>
                     </DialogHeader>
                     <FieldGroup>

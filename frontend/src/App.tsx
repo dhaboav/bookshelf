@@ -1,10 +1,15 @@
-import Navbar from './Navbar';
+import Homepage from '@/pages/Homepage';
+import Page404 from '@/pages/Page404';
+import { BrowserRouter, Route, Routes } from 'react-router';
 
 function App() {
     return (
-        <>
-            <Navbar />
-        </>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Homepage />} />
+                <Route path="*" element={<Page404 />} />
+            </Routes>
+        </BrowserRouter>
     );
 }
 
