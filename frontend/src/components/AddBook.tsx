@@ -18,6 +18,10 @@ import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 
+interface AddBookProps {
+    onAddSuccess?: () => void;
+}
+
 const currentYear = new Date().getFullYear();
 
 const formSchema = z.object({
@@ -54,7 +58,7 @@ const formSchema = z.object({
         .optional(),
 });
 
-export default function AddBook() {
+export default function AddBook({ onAddSuccess }: AddBookProps) {
     const [isOpen, setIsOpen] = useState(false);
     const API_URL = import.meta.env.VITE_API_URL;
     const form = useForm<z.infer<typeof formSchema>>({
@@ -81,7 +85,11 @@ export default function AddBook() {
             });
 
             if (!response.ok) throw new Error('Failed to save book');
+
             toast.success('Successfully adding new book entry');
+            if (onAddSuccess) {
+                onAddSuccess();
+            }
             form.reset();
             setIsOpen(false);
         } catch (error) {
@@ -98,7 +106,7 @@ export default function AddBook() {
                     Add Book
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="h-158 overflow-y-auto">
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <DialogHeader className="mb-3">
                         <DialogTitle>Add a Book</DialogTitle>

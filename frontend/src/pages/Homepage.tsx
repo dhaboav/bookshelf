@@ -8,17 +8,17 @@ export default function Homepage() {
     const API_URL = import.meta.env.VITE_API_URL;
     const [books, setBooks] = useState<BookProps[]>([]);
 
-    useEffect(() => {
-        const fetchBooks = async () => {
-            try {
-                const response = await fetch(`${API_URL}/books/get`);
-                const data = await response.json();
-                setBooks(data);
-            } catch (error) {
-                console.error('Error fetching books:', error);
-            }
-        };
+    const fetchBooks = async () => {
+        try {
+            const response = await fetch(`${API_URL}/books/get`);
+            const data = await response.json();
+            setBooks(data);
+        } catch (error) {
+            console.error('Error fetching books:', error);
+        }
+    };
 
+    useEffect(() => {
         fetchBooks();
     }, [API_URL]);
 
@@ -33,13 +33,13 @@ export default function Homepage() {
                     />
                     <h1 className="text-lg font-semibold">React Library</h1>
                 </div>
-                <AddBook />
+                <AddBook onAddSuccess={fetchBooks} />
             </nav>
 
             <ul className="my-12 grid grid-cols-3 gap-3 px-48">
-                {books.map((book, index) => (
-                    <li key={index} className="list-none">
-                        <BookCard {...book} />
+                {books.map((book) => (
+                    <li key={book.id} className="list-none">
+                        <BookCard {...book} onDeleteSuccess={fetchBooks} />
                     </li>
                 ))}
             </ul>
