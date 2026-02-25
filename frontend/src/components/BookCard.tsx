@@ -20,10 +20,9 @@ export default interface BookProps {
     title: string;
     author: string;
     genre: string;
-    publisher?: string;
-    publish_year: number;
+    published_year: number;
     total_pages: number;
-    description: string;
+    description?: string;
 }
 
 export default interface BookProps {
@@ -99,7 +98,7 @@ export function BookCard(props: BookProps) {
 
                     <div className="flex flex-row items-center gap-x-1">
                         <Calendar className="w-4" />
-                        <span className="text-[10px] font-semibold">{props.publish_year}</span>
+                        <span className="text-[10px] font-semibold">{props.published_year}</span>
                     </div>
 
                     <div className="flex flex-row items-center gap-x-1">

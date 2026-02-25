@@ -33,20 +33,12 @@ const formSchema = z.object({
         .string()
         .min(4, 'Book author name must be at least 4 characters.')
         .max(32, 'Book author name must be at most 32 characters.'),
-    ISBN: z
-        .string()
-        .min(13, 'Book isbn must be at least 13 characters.')
-        .max(13, 'Book isbn must be at most 13 characters.'),
     genre: z
         .string()
         .min(4, 'Book genre must be at least 4 characters.')
         .max(32, 'Book genre must be at most 32 characters.'),
     total_pages: z.number(),
-    publisher: z
-        .string()
-        .min(4, 'Book publisher must be at least 4 characters.')
-        .max(32, 'Book publisher must be at most 32 characters.'),
-    publish_year: z
+    published_year: z
         .number()
         .int('Year must be an integer')
         .min(1800, 'Year must be 1800 or later')
@@ -55,7 +47,8 @@ const formSchema = z.object({
         .string()
         .min(20, 'Description must be at least 20 characters.')
         .max(100, 'Description must be at most 100 characters.')
-        .optional(),
+        .optional()
+        .or(z.literal('')),
 });
 
 export default function AddBook({ onAddSuccess }: AddBookProps) {
@@ -67,11 +60,9 @@ export default function AddBook({ onAddSuccess }: AddBookProps) {
         defaultValues: {
             title: '',
             author: '',
-            ISBN: '',
             genre: '',
             total_pages: 0,
-            publisher: '',
-            publish_year: 0,
+            published_year: 0,
             description: '',
         },
     });
@@ -158,28 +149,6 @@ export default function AddBook({ onAddSuccess }: AddBookProps) {
                             ></Controller>
 
                             <Controller
-                                name="ISBN"
-                                control={form.control}
-                                render={({ field, fieldState }) => (
-                                    <Field data-invalid={fieldState.invalid}>
-                                        <FieldLabel htmlFor={field.name}>
-                                            ISBN<span className="text-red-600">*</span>
-                                        </FieldLabel>
-                                        <Input
-                                            {...field}
-                                            id={field.name}
-                                            type="text"
-                                            placeholder="978xxxxx"
-                                            aria-invalid={fieldState.invalid}
-                                        />
-                                        {fieldState.invalid && (
-                                            <FieldError errors={[fieldState.error]} />
-                                        )}
-                                    </Field>
-                                )}
-                            ></Controller>
-
-                            <Controller
                                 name="genre"
                                 control={form.control}
                                 render={({ field, fieldState }) => (
@@ -225,29 +194,7 @@ export default function AddBook({ onAddSuccess }: AddBookProps) {
                             ></Controller>
 
                             <Controller
-                                name="publisher"
-                                control={form.control}
-                                render={({ field, fieldState }) => (
-                                    <Field data-invalid={fieldState.invalid}>
-                                        <FieldLabel htmlFor={field.name}>
-                                            Publisher<span className="text-red-600">*</span>
-                                        </FieldLabel>
-                                        <Input
-                                            {...field}
-                                            id={field.name}
-                                            type="text"
-                                            placeholder="Publisher name"
-                                            aria-invalid={fieldState.invalid}
-                                        />
-                                        {fieldState.invalid && (
-                                            <FieldError errors={[fieldState.error]} />
-                                        )}
-                                    </Field>
-                                )}
-                            ></Controller>
-
-                            <Controller
-                                name="publish_year"
+                                name="published_year"
                                 control={form.control}
                                 render={({ field, fieldState }) => (
                                     <Field data-invalid={fieldState.invalid}>
@@ -275,9 +222,7 @@ export default function AddBook({ onAddSuccess }: AddBookProps) {
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor={field.name}>
-                                        Description<span className="text-red-600">*</span>
-                                    </FieldLabel>
+                                    <FieldLabel htmlFor={field.name}>Description</FieldLabel>
                                     <Textarea
                                         {...field}
                                         id={field.name}
