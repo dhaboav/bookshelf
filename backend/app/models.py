@@ -27,7 +27,7 @@ class BookBase(SQLModel):
     title: str
     author: str
     genre: str
-    description: str
+    description: Optional[str] = None
     total_pages: int
     published_year: int
 

@@ -29,30 +29,6 @@ def get_book_by_id(session: SessionDep, book_id: int) -> Book:
     return db_book
 
 
-def is_isbn_exist(
-    session: SessionDep, isbn: str, exclude_id: Optional[int] = None
-) -> bool:
-    """
-    Utility function to check if ISBN already exist or not.
-
-    Args:
-        session (SessionDep): Database session dependency.
-        isbn (str): Isbn of the book that want to be check.
-        exclude_id Optional[int]: Book id that to be exclude, default is None.
-
-    Return:
-        bool: return True if isbn exist else False if not exist.
-    """
-    stmt = select(Book).where(Book.ISBN == isbn)
-    if exclude_id:
-        stmt = stmt.where(Book.id != exclude_id)
-
-    result = session.exec(stmt).first()
-    if result:
-        return True
-    return False
-
-
 @router.post("/add", response_model=Message, status_code=201)
 def create_new_book(session: SessionDep, book_data: BookBase) -> Message:
     """
@@ -68,8 +44,6 @@ def create_new_book(session: SessionDep, book_data: BookBase) -> Message:
     Raises:
         HTTPException: HTTP 400 Bad Request if isbn already exists.
     """
-    if is_isbn_exist(session, book_data.ISBN):
-        raise HTTPException(status_code=400, detail="ISBN already exists")
 
     db_obj = Book.model_validate(book_data)
     session.add(db_obj)
@@ -106,9 +80,6 @@ def edit_book(session: SessionDep, book_id: int, book_data_in: BookUpdate) -> Me
     Raises:
         HTTPException: HTTP 400 Bad Request if isbn already exists.
     """
-    if is_isbn_exist(session, book_data_in.ISBN, book_id):
-        raise HTTPException(status_code=400, detail="ISBN already exists")
-
     book = get_book_by_id(session, book_id)
     update_data = book_data_in.model_dump(exclude_unset=True)
     book.sqlmodel_update(update_data)
