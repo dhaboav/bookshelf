@@ -12,7 +12,6 @@ Features:
 from datetime import datetime, timezone
 from typing import Optional
 
-from pydantic import field_validator
 from sqlalchemy import DateTime
 from sqlmodel import Field, SQLModel
 
@@ -26,33 +25,22 @@ class BookBase(SQLModel):
     """Base model for book"""
 
     title: str
-    ISBN: str = Field(unique=True, min_length=13, max_length=13)
     author: str
     genre: str
     description: str
     total_pages: int
-    publisher: str
-    publish_year: int
+    published_year: int
 
 
 class BookUpdate(BookBase):
     """Scheme for update book"""
 
     title: Optional[str] = None
-    ISBN: Optional[str] = None
     author: Optional[str] = None
     genre: Optional[str] = None
     description: Optional[str] = None
     total_pages: Optional[int] = None
-    publisher: Optional[str] = None
-    publish_year: Optional[int] = None
-
-    @field_validator("ISBN", mode="after")
-    @classmethod
-    def validate_isbn(cls, value: str) -> str:
-        if value is not None and len(value) != 13:
-            raise ValueError("Invalid ISBN: Must be exactly 13 characters")
-        return value
+    published_year: Optional[int] = None
 
 
 class Book(BookBase, table=True):
