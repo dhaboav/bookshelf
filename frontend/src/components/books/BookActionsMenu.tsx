@@ -8,6 +8,7 @@ import {
 import { EllipsisVertical } from 'lucide-react';
 import { useState } from 'react';
 import DeleteBook from './DeleteBook';
+import EditBook from './EditBook';
 
 interface BookActionsMenuProps {
     book: BookPublic;
@@ -24,6 +25,7 @@ export const BookActionsMenu = ({ book }: BookActionsMenuProps) => {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+                <EditBook book={book} onSuccess={() => setOpen(false)} />
                 <DeleteBook id={book.id} onSuccess={() => setOpen(false)} />
             </DropdownMenuContent>
         </DropdownMenu>
