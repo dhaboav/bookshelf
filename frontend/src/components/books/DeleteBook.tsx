@@ -9,12 +9,12 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { Spinner } from '@/components/ui/spinner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Trash } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { Spinner } from '@/components/ui/spinner';
 
 interface DeleteBookProps {
     id: number;
@@ -31,11 +31,10 @@ const DeleteBook = ({ id, onSuccess }: DeleteBookProps) => {
         const response = await fetch(`${API_URL}/books/delete/${bookId}`, {
             method: 'DELETE',
         });
-        if (!response.ok) throw new Error('Gagal menghapus buku');
+        if (!response.ok) throw new Error('Failed to delete');
         return response.json();
     };
 
-    // 2. Setup Mutation
     const mutation = useMutation({
         mutationFn: deleteBookFn,
         onSuccess: () => {

@@ -1,7 +1,7 @@
 import reactLogo from '@/assets/react.svg';
 import type { BookPublic } from '@/client';
-import AddBook from '@/components/AddBook';
 import { BookCard } from '@/components/BookCard';
+import AddBook from '@/components/books/AddBook';
 import { useEffect, useState } from 'react';
 
 export default function Homepage() {

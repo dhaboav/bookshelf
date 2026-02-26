@@ -10,38 +10,35 @@ import {
 } from '@/components/ui/dialog';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 
-interface AddBookProps {
-    onAddSuccess?: () => void;
-}
-
 const currentYear = new Date().getFullYear();
-
 const formSchema = z.object({
     title: z
         .string()
-        .min(4, 'Book title must be at least 4 characters.')
-        .max(32, 'Book title must be at most 32 characters.'),
+        .min(4, 'Title must be at least 4 characters.')
+        .max(32, 'Title must be at most 32 characters.'),
     author: z
         .string()
-        .min(4, 'Book author name must be at least 4 characters.')
-        .max(32, 'Book author name must be at most 32 characters.'),
+        .min(4, 'Author must be at least 4 characters.')
+        .max(32, 'Author must be at most 32 characters.'),
     genre: z
         .string()
-        .min(4, 'Book genre must be at least 4 characters.')
-        .max(32, 'Book genre must be at most 32 characters.'),
+        .min(4, 'Genre must be at least 4 characters.')
+        .max(32, 'Genre must be at most 32 characters.'),
     total_pages: z.number(),
     published_year: z
         .number()
         .int('Year must be an integer')
-        .min(1800, 'Year must be 1800 or later')
+        .min(1900, 'Year must be 1800 or later')
         .max(currentYear, 'Year cannot be in the future'),
     description: z
         .string()
@@ -51,10 +48,13 @@ const formSchema = z.object({
         .or(z.literal('')),
 });
 
-export default function AddBook({ onAddSuccess }: AddBookProps) {
+type FormData = z.infer<typeof formSchema>;
+
+const AddBook = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const queryClient = useQueryClient();
     const API_URL = import.meta.env.VITE_API_URL;
-    const form = useForm<z.infer<typeof formSchema>>({
+    const form = useForm<FormData>({
         resolver: zodResolver(formSchema),
         mode: 'onSubmit',
         defaultValues: {
@@ -62,32 +62,37 @@ export default function AddBook({ onAddSuccess }: AddBookProps) {
             author: '',
             genre: '',
             total_pages: 0,
-            published_year: 0,
+            published_year: 2026,
             description: '',
         },
     });
 
-    async function onSubmit(data: z.infer<typeof formSchema>) {
-        try {
-            const response = await fetch(`${API_URL}/books/add`, {
-                method: 'POST',
-                body: JSON.stringify(data),
-                headers: { 'Content-Type': 'application/json' },
-            });
+    const addBookFn = async (data: FormData) => {
+        const response = await fetch(`${API_URL}/books/add`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: { 'Content-Type': 'application/json' },
+        });
+        if (!response.ok) throw new Error('Failed to save book');
+        return response.json();
+    };
 
-            if (!response.ok) throw new Error('Failed to save book');
-
+    const mutation = useMutation({
+        mutationFn: addBookFn,
+        onSuccess: () => {
             toast.success('Successfully adding new book entry');
-            if (onAddSuccess) {
-                onAddSuccess();
-            }
             form.reset();
             setIsOpen(false);
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'An unexpected error occurred';
-            toast.error(message);
-        }
-    }
+            queryClient.invalidateQueries({ queryKey: ['books'] });
+        },
+        onError: (error: Error) => {
+            toast.error(error.message || 'Failed to delete');
+        },
+    });
+
+    const onSubmit = (data: FormData) => {
+        mutation.mutate(data);
+    };
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -97,13 +102,13 @@ export default function AddBook({ onAddSuccess }: AddBookProps) {
                     Add Book
                 </Button>
             </DialogTrigger>
-            <DialogContent className="h-158 overflow-y-auto">
+            <DialogContent className="max-h-138 overflow-y-auto">
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <DialogHeader className="mb-3">
                         <DialogTitle>Add a Book</DialogTitle>
                     </DialogHeader>
                     <FieldGroup>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="flex flex-col gap-3 lg:grid lg:grid-cols-2">
                             <Controller
                                 name="title"
                                 control={form.control}
@@ -239,16 +244,28 @@ export default function AddBook({ onAddSuccess }: AddBookProps) {
                             )}
                         ></Controller>
                     </FieldGroup>
+
                     <DialogFooter className="mt-4 justify-start">
                         <DialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
+                            <Button variant="outline" disabled={mutation.isPending}>
+                                Cancel
+                            </Button>
                         </DialogClose>
-                        <Button type="submit" disabled={form.formState.isSubmitting}>
-                            Save
+                        <Button type="submit" disabled={mutation.isPending}>
+                            {mutation.isPending ? (
+                                <div className="flex flex-row items-center gap-x-1">
+                                    <Spinner data-icon="inline-start" />
+                                    <span>Save</span>
+                                </div>
+                            ) : (
+                                'Save'
+                            )}
                         </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
     );
-}
+};
+
+export default AddBook;
