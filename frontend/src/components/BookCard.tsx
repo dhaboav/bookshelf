@@ -1,56 +1,9 @@
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-    Calendar,
-    CircleUserRound,
-    EllipsisVertical,
-    ScrollText,
-    SquarePen,
-    Trash,
-} from 'lucide-react';
-import { toast } from 'sonner';
+import { Calendar, CircleUserRound, ScrollText } from 'lucide-react';
 
-export default interface BookProps {
-    id: number;
-    title: string;
-    author: string;
-    genre: string;
-    published_year: number;
-    total_pages: number;
-    description?: string;
-}
+import type { BookPublic } from '@/client';
+import { BookActionsMenu } from '@/components/books/BookActionsMenu';
 
-export default interface BookProps {
-    id: number;
-    onDeleteSuccess?: () => void;
-}
-
-export function BookCard(props: BookProps) {
-    const API_URL = import.meta.env.VITE_API_URL;
-
-    async function handleDelete(id: number) {
-        try {
-            const response = await fetch(`${API_URL}/books/delete/${id}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-            });
-
-            if (!response.ok) throw new Error('Failed to save book');
-            if (props.onDeleteSuccess) {
-                toast.success('Successfully deleted a book entry');
-                props.onDeleteSuccess();
-            }
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'An unexpected error occurred';
-            toast.error(message);
-        }
-    }
-
+export function BookCard({ ...props }: BookPublic) {
     return (
         <div className="flex h-36 w-full flex-row items-center overflow-hidden">
             <div className="h-full w-24 shrink-0">
@@ -66,26 +19,7 @@ export function BookCard(props: BookProps) {
                     <p className="text-primary line-clamp-1 text-xs font-semibold">
                         # {props.genre.toUpperCase()}
                     </p>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon-xs">
-                                <EllipsisVertical />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                                <SquarePen />
-                                Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                variant="destructive"
-                                onClick={() => handleDelete(props.id)}
-                            >
-                                <Trash />
-                                Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <BookActionsMenu book={props} />
                 </div>
 
                 <h3 className="truncate text-lg font-bold">{props.title}</h3>
