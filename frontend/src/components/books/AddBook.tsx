@@ -97,7 +97,7 @@ const AddBook = () => {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button>
+                <Button size="sm">
                     <Plus />
                     Add Book
                 </Button>

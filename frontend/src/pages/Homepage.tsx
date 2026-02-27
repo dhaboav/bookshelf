@@ -1,7 +1,5 @@
-import reactLogo from '@/assets/react.svg';
 import type { BookPublic } from '@/client';
 import { BookCard } from '@/components/BookCard';
-import AddBook from '@/components/books/AddBook';
 import { useEffect, useState } from 'react';
 
 export default function Homepage() {
@@ -23,19 +21,7 @@ export default function Homepage() {
 
     return (
         <>
-            <nav className="sticky top-0 flex h-15 w-full items-center justify-between border-b-2 bg-white px-48">
-                <div className="flex items-center gap-x-2">
-                    <img
-                        src={reactLogo}
-                        className="animation-duration-[10s] animate-spin"
-                        alt="Logo"
-                    />
-                    <h1 className="text-lg font-semibold">React Library</h1>
-                </div>
-                <AddBook />
-            </nav>
-
-            <ul className="my-12 grid grid-cols-3 gap-3 px-48">
+            <ul className="my-12 grid grid-cols-3 gap-3">
                 {books.map((book) => (
                     <li key={book.id} className="list-none">
                         <BookCard {...book} />
