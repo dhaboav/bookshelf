@@ -9,7 +9,7 @@ export default function Layout() {
     return (
         <>
             <Navbar />
-            <main className="lg:px-48">
+            <main className="px-3 lg:px-48">
                 <Outlet />
             </main>
         </>
