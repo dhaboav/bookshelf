@@ -1,6 +1,7 @@
 import type { BookPublic } from '@/client';
 import { BookCard } from '@/components/books/BookCard';
 import ErrorComponent from '@/components/layouts/Error';
+import PaginationWrapper from '@/components/layouts/PaginationWrapper';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -44,12 +45,12 @@ export default function Books() {
     }
 
     return (
-        <ul className="my-8 flex flex-col gap-4 lg:grid lg:grid-cols-3">
-            {books.map((book) => (
-                <li key={book.id} className="list-none">
-                    <BookCard {...book} />
-                </li>
-            ))}
-        </ul>
+        <div>
+            <PaginationWrapper
+                items={books}
+                itemsPerPage={12}
+                renderItem={(book) => <BookCard {...book} />}
+            />
+        </div>
     );
 }

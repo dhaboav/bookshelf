@@ -1,6 +1,3 @@
-import { Button } from '@/components/ui/button';
-import { Link } from '@tanstack/react-router';
-
 const ErrorComponent = () => {
     return (
         <div className="flex items-center justify-center">
@@ -11,9 +8,6 @@ const ErrorComponent = () => {
                     <p className="text-minor mb-4 text-lg font-light text-white">
                         Something went wrong. Please try again.
                     </p>
-                    <Link to={'/'}>
-                        <Button variant="secondary">Back to Home</Button>
-                    </Link>
                 </div>
             </div>
         </div>

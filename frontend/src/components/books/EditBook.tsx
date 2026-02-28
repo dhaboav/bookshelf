@@ -4,6 +4,7 @@ import {
     Dialog,
     DialogClose,
     DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -111,7 +112,9 @@ const EditBook = ({ book, onSuccess }: EditBookProps) => {
                     <DialogHeader className="mb-3">
                         <DialogTitle>Edit Book</DialogTitle>
                     </DialogHeader>
-
+                    <DialogDescription className="sr-only">
+                        Fill out the form below to edit book entry to your library.
+                    </DialogDescription>
                     <FieldGroup>
                         <div className="flex flex-col gap-3 lg:grid lg:grid-cols-2">
                             <Controller
