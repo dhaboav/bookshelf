@@ -26,5 +26,7 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL?Variable not set}
     ports:
-      - "5173:5173"
+      - "5173:80"
