@@ -23,6 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 
-# test
-cover.jpg
+# Project related file
 .tanstack
