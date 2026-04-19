@@ -69,7 +69,7 @@ const AddBook = () => {
   });
 
   const addBookFn = async (data: FormData) => {
-    const response = await fetch(`${API_URL}/books/add`, {
+    const response = await fetch(`${API_URL}/books/`, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: { 'Content-Type': 'application/json' },

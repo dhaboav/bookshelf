@@ -10,7 +10,7 @@ const booksQueryOptions = {
   queryKey: ['books'],
   queryFn: async (): Promise<BookPublic[]> => {
     const API_URL = import.meta.env.VITE_API_URL;
-    const response = await fetch(`${API_URL}/books/get`);
+    const response = await fetch(`${API_URL}/books/`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch books from the server');

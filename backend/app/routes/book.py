@@ -1,4 +1,11 @@
-from typing import Optional
+"""API for book.
+Features:
+    - get_book_by_id: Utility to get book data by id.
+    - [POST] create_new_book: API to create the book data.
+    - [GET] get_book: API to get all the book data.
+    - [PATCH] update_book: API to update the book data by id.
+    - [DEL] delete_book: API to delete the book data by id.
+"""
 
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
@@ -29,14 +36,14 @@ def get_book_by_id(session: SessionDep, book_id: int) -> Book:
     return db_book
 
 
-@router.post("/add", response_model=Message, status_code=201)
-def create_new_book(session: SessionDep, book_data: BookBase) -> Message:
+@router.post("/", response_model=Message, status_code=201)
+def create_new_book(session: SessionDep, request: BookBase) -> Message:
     """
     Endpoint to create a new book entry.
 
     Args:
         session (SessionDep): Database session dependency.
-        book_data (BookBase): Book scheme that contain data about book.
+        request (BookBase): Book scheme that contain data about book.
 
     Return:
         Message: detail for API Response.
@@ -45,14 +52,14 @@ def create_new_book(session: SessionDep, book_data: BookBase) -> Message:
         HTTPException: HTTP 400 Bad Request if isbn already exists.
     """
 
-    db_obj = Book.model_validate(book_data)
+    db_obj = Book.model_validate(request)
     session.add(db_obj)
     session.commit()
     session.refresh(db_obj)
     return Message(detail="Book added successfully")
 
 
-@router.get("/get")
+@router.get("/")
 def get_book(session: SessionDep):
     """
     Endpoint to get all book data.
@@ -64,15 +71,15 @@ def get_book(session: SessionDep):
     return session.exec(stmt).all()
 
 
-@router.patch("/edit/{book_id}", response_model=Message)
-def edit_book(session: SessionDep, book_id: int, book_data_in: BookUpdate) -> Message:
+@router.patch("/{book_id}", response_model=Message)
+def update_book(session: SessionDep, book_id: int, request: BookUpdate) -> Message:
     """
     Endpoint to update book data.
 
     Args:
         session (SessionDep): Database session dependency.
         book_id (int): ID of the book that to update.
-        book_data_in (BookUpdate): Book scheme to update book data.
+        request (BookUpdate): Book scheme to update book data.
 
     Return:
         Message: detail for API Response.
@@ -81,7 +88,7 @@ def edit_book(session: SessionDep, book_id: int, book_data_in: BookUpdate) -> Me
         HTTPException: HTTP 400 Bad Request if isbn already exists.
     """
     book = get_book_by_id(session, book_id)
-    update_data = book_data_in.model_dump(exclude_unset=True)
+    update_data = request.model_dump(exclude_unset=True)
     book.sqlmodel_update(update_data)
     session.add(book)
     session.commit()
@@ -90,7 +97,7 @@ def edit_book(session: SessionDep, book_id: int, book_data_in: BookUpdate) -> Me
     return Message(detail="Book updated successfully")
 
 
-@router.delete("/delete/{book_id}")
+@router.delete("/{book_id}")
 def delete_book(session: SessionDep, book_id: int) -> Message:
     """
     Endpoint to delete book data.

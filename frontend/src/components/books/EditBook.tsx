@@ -76,7 +76,7 @@ const EditBook = ({ book, onSuccess }: EditBookProps) => {
   });
 
   const editBookFn = async (data: formData) => {
-    const response = await fetch(`${API_URL}/books/edit/${book.id}`, {
+    const response = await fetch(`${API_URL}/books/${book.id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
       headers: { 'Content-Type': 'application/json' },

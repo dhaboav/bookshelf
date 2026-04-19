@@ -28,7 +28,7 @@ const DeleteBook = ({ id, onSuccess }: DeleteBookProps) => {
   const API_URL = import.meta.env.VITE_API_URL;
 
   const deleteBookFn = async (bookId: number) => {
-    const response = await fetch(`${API_URL}/books/delete/${bookId}`, {
+    const response = await fetch(`${API_URL}/books/${bookId}`, {
       method: 'DELETE',
     });
     if (!response.ok) throw new Error('Failed to delete');
