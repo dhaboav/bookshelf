@@ -51,6 +51,10 @@ class Book(BookBase, table=True):
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),
     )
+    updated_at: Optional[datetime] = Field(
+        default_factory=get_datetime_utc,
+        sa_column_kwargs={"onupdate": get_datetime_utc},
+    )
 
 
 class Message(SQLModel):
