@@ -1,8 +1,23 @@
 services:
+  db:
+    image: mysql:8.0.44
+    restart: always
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD?Variable not set}
+      - MYSQL_DATABASE=${MYSQL_DB?Variable not set}
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    ports:
+      - "3307:3306"
+
   backend:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
-    env_file:
-      - .env
     environment:
       - PROJECT_NAME=${PROJECT_NAME?Variable not set}
       - MYSQL_USER=${MYSQL_USER?Variable not set}
@@ -10,11 +25,10 @@ services:
       - MYSQL_HOST=${MYSQL_HOST?Variable not set}
       - MYSQL_PORT=${MYSQL_PORT?Variable not set}
       - MYSQL_DB=${MYSQL_DB?Variable not set}
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/healthCheck"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -30,3 +44,6 @@ services:
         - VITE_API_URL=${VITE_API_URL?Variable not set}
     ports:
       - "5173:80"
+
+volumes:
+  db-data:
