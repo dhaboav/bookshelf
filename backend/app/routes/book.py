@@ -7,11 +7,10 @@ Features:
     - [DEL] delete_book: API to delete the book data by id.
 """
 
-from fastapi import APIRouter, HTTPException
-from sqlmodel import select
-
 from app.core.db import SessionDep
 from app.models import Book, BookBase, BookUpdate, Message
+from fastapi import APIRouter, HTTPException
+from sqlmodel import select
 
 router = APIRouter(prefix="/books", tags=["Book"])
 

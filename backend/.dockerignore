@@ -43,3 +43,7 @@ htmlcov/
 
 # Project specific
 README.md
+
+# Alembic
+migration
+alembic.ini

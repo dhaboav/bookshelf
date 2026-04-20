@@ -11,7 +11,7 @@ services:
       - MYSQL_PORT=${MYSQL_PORT?Variable not set}
       - MYSQL_DB=${MYSQL_DB?Variable not set}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health-check"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthCheck"]
       interval: 10s
       timeout: 5s
       retries: 5

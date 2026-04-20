@@ -3,7 +3,7 @@
 # =========================
 FROM python:3.13-slim AS builder
 
-WORKDIR /app/
+WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
@@ -11,26 +11,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && pip install --upgrade pip \
     && rm -rf /var/lib/apt/lists/*
 
-COPY ./backend/requirements.txt ./backend/alembic.ini /app/backend/
+COPY ./backend/requirements-prod.txt ./
 
-RUN pip install --no-cache-dir -r /app/backend/requirements.txt
-
-COPY ./backend/app /app/backend/app
+RUN pip install --no-cache-dir -r /app/requirements-prod.txt
 
 # =========================
 # Runtime stage
 # =========================
 FROM python:3.13-slim AS runtime
 
-WORKDIR /app/backend/
+WORKDIR /app
 
 # Only copy installed packages & needed binaries
 COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 COPY --from=builder /usr/local/bin/uvicorn /usr/local/bin/uvicorn
 
 # Only copy application code
-COPY --from=builder /app/backend/app /app/backend/app
-COPY --from=builder /app/backend/requirements.txt /app/backend/alembic.ini /app/backend/
+COPY ./backend/app ./app
 
 # Clean up unnecessary Python files (optional)
 RUN find /usr/local/lib/python3.13/site-packages -name '*.pyc' -delete \

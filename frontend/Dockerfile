@@ -3,7 +3,7 @@
 # =========================
 FROM node:24-alpine AS build
 
-WORKDIR /app/frontend
+WORKDIR /app
 
 COPY ./frontend/package*.json ./
 
@@ -22,7 +22,9 @@ RUN npm run build
 # =========================
 FROM nginx:alpine-slim AS runtime
 
-COPY --from=build /app/frontend/dist/ /usr/share/nginx/html
+WORKDIR /app
+
+COPY --from=build /app/dist/ /usr/share/nginx/html
 
 COPY ./frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
