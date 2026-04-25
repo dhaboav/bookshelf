@@ -37,6 +37,7 @@ COPY ./backend/app ./app
 COPY ./backend/scripts ./scripts
 COPY ./backend/migration ./migration
 COPY ./backend/alembic.ini ./
+COPY ./backend/data.sql ./
 
 EXPOSE 8000
 
