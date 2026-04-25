@@ -16,8 +16,16 @@ services:
     ports:
       - "3307:3306"
 
-  backend:
+  prestart:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+    command: bash scripts/prestart.sh
     environment:
       - PROJECT_NAME=${PROJECT_NAME?Variable not set}
       - MYSQL_USER=${MYSQL_USER?Variable not set}
@@ -25,13 +33,23 @@ services:
       - MYSQL_HOST=${MYSQL_HOST?Variable not set}
       - MYSQL_PORT=${MYSQL_PORT?Variable not set}
       - MYSQL_DB=${MYSQL_DB?Variable not set}
+
+  backend:
+    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    restart: always
     depends_on:
       db:
         condition: service_healthy
         restart: true
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
+      prestart:
+        condition: service_completed_successfully
+    environment:
+      - PROJECT_NAME=${PROJECT_NAME?Variable not set}
+      - MYSQL_USER=${MYSQL_USER?Variable not set}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD?Variable not set}
+      - MYSQL_HOST=${MYSQL_HOST?Variable not set}
+      - MYSQL_PORT=${MYSQL_PORT?Variable not set}
+      - MYSQL_DB=${MYSQL_DB?Variable not set}
     ports:
       - "8000:8000"
 

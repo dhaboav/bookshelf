@@ -5,15 +5,22 @@ FROM python:3.13-slim AS builder
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# 1. Cache untuk APT (System Packages)
+# Kita menggunakan cache mount untuk folder cache apt agar tidak download index berkali-kali
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         curl \
-    && pip install --upgrade pip \
-    && rm -rf /var/lib/apt/lists/*
+    && pip install --upgrade pip
 
+# 2. Cache untuk PIP (Python Packages)
+# Pastikan COPY requirements dilakukan SEBELUM install agar layer caching bekerja
 COPY ./backend/requirements-prod.txt ./
 
-RUN pip install --no-cache-dir -r /app/requirements-prod.txt
+# Menggunakan cache mount khusus pip agar tidak download ulang .whl files
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r requirements-prod.txt
 
 # =========================
 # Runtime stage
@@ -22,18 +29,14 @@ FROM python:3.13-slim AS runtime
 
 WORKDIR /app
 
-# Only copy installed packages & needed binaries
+# Copy hasil instalasi dari builder
 COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
-COPY --from=builder /usr/local/bin/uvicorn /usr/local/bin/uvicorn
+COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Only copy application code
 COPY ./backend/app ./app
-
-# Clean up unnecessary Python files (optional)
-RUN find /usr/local/lib/python3.13/site-packages -name '*.pyc' -delete \
-    && find /usr/local/lib/python3.13/site-packages -name '*.pyo' -delete \
-    && find /usr/local/lib/python3.13/site-packages -name '__pycache__' -type d -exec rm -r {} + \
-    && rm -rf /root/.cache
+COPY ./backend/scripts ./scripts
+COPY ./backend/migration ./migration
+COPY ./backend/alembic.ini ./
 
 EXPOSE 8000
 
