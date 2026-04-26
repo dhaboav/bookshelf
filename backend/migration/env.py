@@ -1,9 +1,17 @@
+import os
+import sys
 from logging.config import fileConfig
+from pathlib import Path
 
 from alembic import context
-from app.core.config import settings
-from app.models import Book
 from sqlalchemy import engine_from_config, pool
+from sqlmodel import SQLModel
+
+root_dir = Path(__file__).resolve().parent.parent
+sys.path.append(str(root_dir))
+
+from app.core.config import settings
+from app.models import *
 
 
 def get_url() -> str:
@@ -25,7 +33,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Book.metadata
+target_metadata = SQLModel.metadata
 
 
 # other values from the config, defined by the needs of env.py,

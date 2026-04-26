@@ -1,9 +1,10 @@
 import logging
 import os
 
-from app.core.db import engine
 from sqlalchemy import text
 from sqlmodel import Session
+
+from app.core.db import engine
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
