@@ -9,6 +9,7 @@ from sqlmodel import Field, Relationship, SQLModel
 from app.utils import get_datetime_utc
 
 if TYPE_CHECKING:
+    from app.models.author import Author
     from app.models.genre import Genre
 
 
@@ -19,7 +20,7 @@ class Book(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str
-    author: str
+    author_id: Optional[int] = Field(default=None, foreign_key="author.id")
     genre_id: Optional[int] = Field(default=None, foreign_key="genre.id")
     description: Optional[str] = None
     total_pages: int
@@ -34,4 +35,5 @@ class Book(SQLModel, table=True):
     )
 
     # Relationships
+    author: Optional["Author"] = Relationship(back_populates="books")
     genre: Optional["Genre"] = Relationship(back_populates="books")

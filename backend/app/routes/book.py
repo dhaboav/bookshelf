@@ -16,7 +16,8 @@ from sqlmodel import select
 
 from app.core.db import SessionDep
 from app.models.book import Book
-from app.routes.genre import get_data_by_id, get_data_by_name
+from app.routes.author import get_data_by_id as get_author
+from app.routes.genre import get_data_by_id as get_genre
 from app.schemes.book import BookCreate, BookPublic, BookUpdate
 from app.schemes.message import Message
 
@@ -57,9 +58,13 @@ def create_book(session: SessionDep, request: BookCreate):
         HTTPException: HTTP 400 Bad Request if genre doesn't exists.
     """
 
-    genre = get_data_by_id(session, request.genre_id)
+    genre = get_genre(session, request.genre_id)
     if not genre:
         raise HTTPException(400, "The genre doesn't exists")
+
+    author_db = get_author(session, request.author_id)
+    if not author_db:
+        raise HTTPException(404, "The author not found")
 
     db_obj = Book.model_validate(request)
     session.add(db_obj)
@@ -95,10 +100,17 @@ def update_book(session: SessionDep, id: int, request: BookUpdate):
     """
     book = get_book_by_id(session, id)
     update_data = request.model_dump(exclude_unset=True)
-    if "genre" in update_data:
-        genre = update_data.pop("genre")
-        genre_db = get_data_by_name(session, genre)
-        book.genre_id = genre_db.id
+
+    if "genre_id" in update_data:
+        genre_db = get_genre(session, update_data["genre_id"])
+        if not genre_db:
+            raise HTTPException(404, "The genre not found")
+
+    elif "author_id" in update_data:
+        author_db = get_author(session, update_data["author_id"])
+        if not author_db:
+            raise HTTPException(404, "The author not found")
+
     book.sqlmodel_update(update_data)
 
     session.add(book)

@@ -2,6 +2,7 @@ from typing import Optional
 
 from sqlmodel import Field, SQLModel
 
+from app.schemes.author import AuthorPublic
 from app.schemes.genre import GenrePublic
 from app.utils import get_current_year_utc
 
@@ -9,7 +10,7 @@ from app.utils import get_current_year_utc
 class BookPublic(SQLModel):
     id: int
     title: str
-    author: str
+    author: Optional[AuthorPublic] = None
     genre: Optional[GenrePublic] = None
     description: Optional[str] = None
     total_pages: int
@@ -20,7 +21,7 @@ class BookCreate(SQLModel):
     """Scheme for create book"""
 
     title: str
-    author: str
+    author_id: int
     genre_id: int
     description: Optional[str] = None
     total_pages: int
@@ -31,7 +32,7 @@ class BookUpdate(SQLModel):
     """Scheme for update book"""
 
     title: Optional[str] = None
-    author: Optional[str] = None
+    author_id: Optional[int] = None
     genre_id: Optional[int] = None
     description: Optional[str] = None
     total_pages: Optional[int] = None
