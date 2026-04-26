@@ -1,3 +1,5 @@
+import { editBookMutation } from '@/api/book';
+import { genresQueryOptions } from '@/api/genre';
 import type { BookPublic } from '@/client';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,13 +25,11 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
-import { genresQueryOptions } from '@/routes/_layout';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { SquarePen } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import * as z from 'zod';
 
 interface EditBookProps {
@@ -52,7 +52,7 @@ const formSchema = z.object({
   published_year: z
     .number()
     .int('Year must be an integer')
-    .min(1900, 'Year must be 1800 or later')
+    .min(1950, 'Year must be 1800 or later')
     .max(currentYear, 'Year cannot be in the future'),
   description: z
     .string()
@@ -66,8 +66,7 @@ type formData = z.infer<typeof formSchema>;
 
 const EditBook = ({ book, onSuccess }: EditBookProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const queryClient = useQueryClient();
-  const API_URL = import.meta.env.VITE_API_URL;
+  const { data: genres } = useQuery(genresQueryOptions);
 
   const form = useForm<formData>({
     resolver: zodResolver(formSchema),
@@ -82,33 +81,9 @@ const EditBook = ({ book, onSuccess }: EditBookProps) => {
     },
   });
 
-  const { data: genres } = useQuery(genresQueryOptions);
-
-  const editBookFn = async (data: formData) => {
-    if (!book?.id) {
-      throw new Error('Book ID is missing');
-    }
-
-    const response = await fetch(`${API_URL}/books/${book.id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!response.ok) throw new Error('Failed to edited book');
-    return response.json();
-  };
-
-  const mutation = useMutation({
-    mutationFn: editBookFn,
-    onSuccess: () => {
-      toast.success('Successfully editing book entry');
-      setIsOpen(false);
-      onSuccess();
-      queryClient.invalidateQueries({ queryKey: ['books'] });
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to edited');
-    },
+  const mutation = editBookMutation(book.id, () => {
+    setIsOpen(false);
+    onSuccess();
   });
 
   const onSubmit = (data: formData) => {

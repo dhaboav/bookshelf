@@ -1,24 +1,11 @@
-import type { BookPublic, BookSearch } from '@/client';
+import { booksQueryOptions } from '@/api/book';
+import type { BookSearch } from '@/client';
 import { BookCard } from '@/components/books/BookCard';
 import ErrorComponent from '@/components/layouts/Error';
 import PaginationWrapper from '@/components/layouts/PaginationWrapper';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';
-
-const API_URL = import.meta.env.VITE_API_URL;
-const booksQueryOptions = {
-  queryKey: ['books'],
-  queryFn: async (): Promise<BookPublic[]> => {
-    const response = await fetch(`${API_URL}/books/`);
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch books from the server');
-    }
-
-    return response.json();
-  },
-};
 
 function loadingPage() {
   return (

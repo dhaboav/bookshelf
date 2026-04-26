@@ -1,3 +1,4 @@
+import { deleteBookMutation } from '@/api/book';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -10,11 +11,10 @@ import {
 } from '@/components/ui/dialog';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Spinner } from '@/components/ui/spinner';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import { Trash } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
 interface DeleteBookProps {
   id: number;
@@ -23,29 +23,11 @@ interface DeleteBookProps {
 
 const DeleteBook = ({ id, onSuccess }: DeleteBookProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const queryClient = useQueryClient();
   const { handleSubmit } = useForm();
-  const API_URL = import.meta.env.VITE_API_URL;
 
-  const deleteBookFn = async (bookId: number) => {
-    const response = await fetch(`${API_URL}/books/${bookId}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) throw new Error('Failed to delete');
-    return response.json();
-  };
-
-  const mutation = useMutation({
-    mutationFn: deleteBookFn,
-    onSuccess: () => {
-      toast.success('The book was deleted successfully');
-      setIsOpen(false);
-      onSuccess();
-      queryClient.invalidateQueries({ queryKey: ['books'] });
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to delete');
-    },
+  const mutation = deleteBookMutation(id, () => {
+    setIsOpen(false);
+    onSuccess();
   });
 
   const onSubmit = () => {

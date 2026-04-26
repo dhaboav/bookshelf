@@ -1,3 +1,5 @@
+import { createBookMutation } from '@/api/book';
+import { genresQueryOptions } from '@/api/genre';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -22,13 +24,11 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
-import { genresQueryOptions } from '@/routes/_layout';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import * as z from 'zod';
 
 const currentYear = new Date().getFullYear();
@@ -46,7 +46,7 @@ const formSchema = z.object({
   published_year: z
     .number()
     .int('Year must be an integer')
-    .min(1900, 'Year must be 1800 or later')
+    .min(1950, 'Year must be 1800 or later')
     .max(currentYear, 'Year cannot be in the future'),
   description: z
     .string()
@@ -60,8 +60,6 @@ type FormData = z.infer<typeof formSchema>;
 
 const AddBook = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const queryClient = useQueryClient();
-  const API_URL = import.meta.env.VITE_API_URL;
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: 'onSubmit',
@@ -77,27 +75,9 @@ const AddBook = () => {
 
   const { data: genres } = useQuery(genresQueryOptions);
 
-  const addBookFn = async (data: FormData) => {
-    const response = await fetch(`${API_URL}/books/`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!response.ok) throw new Error('Failed to save book');
-    return response.json();
-  };
-
-  const mutation = useMutation({
-    mutationFn: addBookFn,
-    onSuccess: () => {
-      toast.success('Successfully adding new book entry');
-      form.reset();
-      setIsOpen(false);
-      queryClient.invalidateQueries({ queryKey: ['books'] });
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to delete');
-    },
+  const mutation = createBookMutation(() => {
+    form.reset();
+    setIsOpen(false);
   });
 
   const onSubmit = (data: FormData) => {
