@@ -17,7 +17,7 @@ from sqlmodel import select
 from app.core.db import SessionDep
 from app.models.book import Book
 from app.routes.genre import get_data_by_id, get_data_by_name
-from app.schemes.book import BookCreate, BookUpdate
+from app.schemes.book import BookCreate, BookPublic, BookUpdate
 from app.schemes.message import Message
 
 router = APIRouter(prefix="/books", tags=["Book"])
@@ -57,22 +57,19 @@ def create_book(session: SessionDep, request: BookCreate):
         HTTPException: HTTP 400 Bad Request if genre doesn't exists.
     """
 
-    genre = get_data_by_name(session, request.genre)
+    genre = get_data_by_id(session, request.genre_id)
     if not genre:
         raise HTTPException(400, "The genre doesn't exists")
 
-    book_data = request.model_dump(exclude={"genre"})
-    db_obj = Book.model_validate(book_data)
-    db_obj.genre_id = genre.id
-
+    db_obj = Book.model_validate(request)
     session.add(db_obj)
     session.commit()
     session.refresh(db_obj)
     return Message(detail="The book was added successfully")
 
 
-@router.get("/")
-def get_all_book(session: SessionDep) -> List:
+@router.get("/", response_model=List[BookPublic])
+def get_all_book(session: SessionDep):
     """API to get all book data.
     Args:
         session (SessionDep): Database session dependency.
@@ -81,15 +78,7 @@ def get_all_book(session: SessionDep) -> List:
         List: Information about all books from database.
     """
     stmt = select(Book)
-    db_objs = session.exec(stmt).all()
-    books = []
-
-    for data in db_objs:
-        genre = get_data_by_id(session, data.genre_id)
-        books_dict = data.model_dump(exclude="genre_id")
-        books_dict["genre"] = genre.genre if genre else None
-        books.append(books_dict)
-
+    books = session.exec(stmt).all()
     return books
 
 

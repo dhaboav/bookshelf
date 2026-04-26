@@ -12,10 +12,20 @@ import {
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
+import { genresQueryOptions } from '@/routes/_layout';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { SquarePen } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -37,10 +47,7 @@ const formSchema = z.object({
     .string()
     .min(4, 'Author must be at least 4 characters.')
     .max(32, 'Author must be at most 32 characters.'),
-  genre: z
-    .string()
-    .min(4, 'Genre must be at least 4 characters.')
-    .max(32, 'Genre must be at most 32 characters.'),
+  genre_id: z.number(),
   total_pages: z.number(),
   published_year: z
     .number()
@@ -67,15 +74,21 @@ const EditBook = ({ book, onSuccess }: EditBookProps) => {
     mode: 'onSubmit',
     defaultValues: {
       title: book.title,
-      author: book.author,
-      genre: book.genre,
+      author: book.author ?? undefined,
+      genre_id: book.genre?.id,
       total_pages: book.total_pages,
       published_year: book.published_year,
       description: book.description ?? undefined,
     },
   });
 
+  const { data: genres } = useQuery(genresQueryOptions);
+
   const editBookFn = async (data: formData) => {
+    if (!book?.id) {
+      throw new Error('Book ID is missing');
+    }
+
     const response = await fetch(`${API_URL}/books/${book.id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
@@ -158,24 +171,40 @@ const EditBook = ({ book, onSuccess }: EditBookProps) => {
               ></Controller>
 
               <Controller
-                name="genre"
+                name="genre_id"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>
                       Genre<span className="text-red-600">*</span>
                     </FieldLabel>
-                    <Input
-                      {...field}
-                      id={field.name}
-                      type="text"
-                      placeholder="e.g. Fiction, Sci-Fi"
-                      aria-invalid={fieldState.invalid}
-                    />
+
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      // Convert the number ID to a string so the Select can "find" the matching Item
+                      value={field.value?.toString()}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select genre" />
+                      </SelectTrigger>
+
+                      <SelectContent position="popper">
+                        <SelectGroup>
+                          <SelectLabel>Genres</SelectLabel>
+                          {genres?.map((g: any) => (
+                            <SelectItem key={g.id} value={g.id.toString()}>
+                              {/* Ensure this matches your API key (genre_name or genre) */}
+                              {g.genre_name || g.genre}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
-              ></Controller>
+              />
 
               <Controller
                 name="total_pages"

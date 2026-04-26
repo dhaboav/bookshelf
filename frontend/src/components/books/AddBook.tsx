@@ -11,10 +11,20 @@ import {
 } from '@/components/ui/dialog';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
+import { genresQueryOptions } from '@/routes/_layout';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -31,10 +41,7 @@ const formSchema = z.object({
     .string()
     .min(4, 'Author must be at least 4 characters.')
     .max(32, 'Author must be at most 32 characters.'),
-  genre: z
-    .string()
-    .min(4, 'Genre must be at least 4 characters.')
-    .max(32, 'Genre must be at most 32 characters.'),
+  genre_id: z.number(),
   total_pages: z.number(),
   published_year: z
     .number()
@@ -61,12 +68,14 @@ const AddBook = () => {
     defaultValues: {
       title: '',
       author: '',
-      genre: '',
+      genre_id: undefined,
       total_pages: 0,
       published_year: 2026,
       description: '',
     },
   });
+
+  const { data: genres } = useQuery(genresQueryOptions);
 
   const addBookFn = async (data: FormData) => {
     const response = await fetch(`${API_URL}/books/`, {
@@ -153,21 +162,31 @@ const AddBook = () => {
               ></Controller>
 
               <Controller
-                name="genre"
+                name="genre_id"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>
                       Genre<span className="text-red-600">*</span>
                     </FieldLabel>
-                    <Input
-                      {...field}
-                      id={field.name}
-                      type="text"
-                      placeholder="e.g. Fiction, Sci-Fi"
-                      aria-invalid={fieldState.invalid}
-                    />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      value={field.value?.toString()}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select genre" />
+                      </SelectTrigger>
+                      <SelectContent position="popper">
+                        <SelectGroup>
+                          <SelectLabel>Genres</SelectLabel>
+                          {genres?.map((g: any) => (
+                            <SelectItem key={g.id} value={g.id.toString()}>
+                              {g.genre}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </Field>
                 )}
               ></Controller>

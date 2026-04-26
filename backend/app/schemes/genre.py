@@ -3,6 +3,11 @@ from typing import Optional
 from sqlmodel import SQLModel
 
 
+class GenrePublic(SQLModel):
+    id: int
+    genre: str
+
+
 class GenreCreate(SQLModel):
     """Scheme for create genre"""
 

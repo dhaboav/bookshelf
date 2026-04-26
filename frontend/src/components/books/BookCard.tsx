@@ -13,7 +13,7 @@ export function BookCard({ ...book }: BookPublic) {
       <div className="flex w-full flex-col justify-center overflow-hidden px-4 py-2">
         <div className="flex flex-row items-center justify-between">
           <p className="text-primary line-clamp-1 text-xs font-semibold">
-            # {book.genre.toUpperCase()}
+            # {book.genre?.genre?.toUpperCase() ?? 'N/A'}
           </p>
           <BookActionsMenu book={book} />
         </div>

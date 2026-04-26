@@ -6,10 +6,10 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
+const API_URL = import.meta.env.VITE_API_URL;
 const booksQueryOptions = {
   queryKey: ['books'],
   queryFn: async (): Promise<BookPublic[]> => {
-    const API_URL = import.meta.env.VITE_API_URL;
     const response = await fetch(`${API_URL}/books/`);
 
     if (!response.ok) {

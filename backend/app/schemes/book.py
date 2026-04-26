@@ -2,7 +2,18 @@ from typing import Optional
 
 from sqlmodel import Field, SQLModel
 
+from app.schemes.genre import GenrePublic
 from app.utils import get_current_year_utc
+
+
+class BookPublic(SQLModel):
+    id: int
+    title: str
+    author: str
+    genre: Optional[GenrePublic] = None
+    description: Optional[str] = None
+    total_pages: int
+    published_year: int = Field(ge=1950, le=get_current_year_utc())
 
 
 class BookCreate(SQLModel):
@@ -10,7 +21,7 @@ class BookCreate(SQLModel):
 
     title: str
     author: str
-    genre: str
+    genre_id: int
     description: Optional[str] = None
     total_pages: int
     published_year: int = Field(ge=1950, le=get_current_year_utc())
@@ -21,7 +32,7 @@ class BookUpdate(SQLModel):
 
     title: Optional[str] = None
     author: Optional[str] = None
-    genre: Optional[str] = None
+    genre_id: Optional[int] = None
     description: Optional[str] = None
     total_pages: Optional[int] = None
     published_year: Optional[int] = Field(
