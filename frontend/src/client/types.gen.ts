@@ -3,10 +3,15 @@ export type GenrePublic = {
   genre: string;
 };
 
+export type AuthorPublic = {
+  id: number;
+  author: string;
+};
+
 export type BookPublic = {
   id: number;
   title: string;
-  author?: string | null;
+  author?: AuthorPublic | null;
   genre?: GenrePublic | null;
   total_pages: number;
   published_year: number;

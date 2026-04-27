@@ -1,3 +1,4 @@
+import { authorsQueryOptions } from '@/api/author';
 import { editBookMutation } from '@/api/book';
 import { genresQueryOptions } from '@/api/genre';
 import type { BookPublic } from '@/client';
@@ -43,10 +44,7 @@ const formSchema = z.object({
     .string()
     .min(4, 'Title must be at least 4 characters.')
     .max(32, 'Title must be at most 32 characters.'),
-  author: z
-    .string()
-    .min(4, 'Author must be at least 4 characters.')
-    .max(32, 'Author must be at most 32 characters.'),
+  author_id: z.number(),
   genre_id: z.number(),
   total_pages: z.number(),
   published_year: z
@@ -67,13 +65,14 @@ type formData = z.infer<typeof formSchema>;
 const EditBook = ({ book, onSuccess }: EditBookProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: genres } = useQuery(genresQueryOptions);
+  const { data: authors } = useQuery(authorsQueryOptions);
 
   const form = useForm<formData>({
     resolver: zodResolver(formSchema),
     mode: 'onSubmit',
     defaultValues: {
       title: book.title,
-      author: book.author ?? undefined,
+      author_id: book.author?.id,
       genre_id: book.genre?.id,
       total_pages: book.total_pages,
       published_year: book.published_year,
@@ -126,24 +125,38 @@ const EditBook = ({ book, onSuccess }: EditBookProps) => {
               ></Controller>
 
               <Controller
-                name="author"
+                name="author_id"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>
                       Author<span className="text-red-600">*</span>
                     </FieldLabel>
-                    <Input
-                      {...field}
-                      id={field.name}
-                      type="text"
-                      placeholder="Author name"
-                      aria-invalid={fieldState.invalid}
-                    />
+
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      value={field.value?.toString()}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select author" />
+                      </SelectTrigger>
+
+                      <SelectContent position="popper">
+                        <SelectGroup>
+                          <SelectLabel>Genres</SelectLabel>
+                          {authors?.map((g: any) => (
+                            <SelectItem key={g.id} value={g.id.toString()}>
+                              {g.author}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
-              ></Controller>
+              />
 
               <Controller
                 name="genre_id"
@@ -156,7 +169,6 @@ const EditBook = ({ book, onSuccess }: EditBookProps) => {
 
                     <Select
                       onValueChange={(value) => field.onChange(Number(value))}
-                      // Convert the number ID to a string so the Select can "find" the matching Item
                       value={field.value?.toString()}
                     >
                       <SelectTrigger>
@@ -168,8 +180,7 @@ const EditBook = ({ book, onSuccess }: EditBookProps) => {
                           <SelectLabel>Genres</SelectLabel>
                           {genres?.map((g: any) => (
                             <SelectItem key={g.id} value={g.id.toString()}>
-                              {/* Ensure this matches your API key (genre_name or genre) */}
-                              {g.genre_name || g.genre}
+                              {g.genre}
                             </SelectItem>
                           ))}
                         </SelectGroup>

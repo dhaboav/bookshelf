@@ -25,7 +25,7 @@ export function BookCard({ ...book }: BookPublic) {
         <div className="mt-1.5 grid grid-cols-3 items-center">
           <div className="flex flex-row items-center gap-x-1">
             <CircleUserRound className="w-4" />
-            <span className="text-[10px] font-semibold">{book.author}</span>
+            <span className="text-[10px] font-semibold">{book.author?.author ?? 'N/A'}</span>
           </div>
 
           <div className="flex flex-row items-center gap-x-1">

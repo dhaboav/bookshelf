@@ -1,3 +1,4 @@
+import { authorsQueryOptions } from '@/api/author';
 import { createBookMutation } from '@/api/book';
 import { genresQueryOptions } from '@/api/genre';
 import { Button } from '@/components/ui/button';
@@ -37,10 +38,7 @@ const formSchema = z.object({
     .string()
     .min(4, 'Title must be at least 4 characters.')
     .max(32, 'Title must be at most 32 characters.'),
-  author: z
-    .string()
-    .min(4, 'Author must be at least 4 characters.')
-    .max(32, 'Author must be at most 32 characters.'),
+  author_id: z.number(),
   genre_id: z.number(),
   total_pages: z.number(),
   published_year: z
@@ -65,7 +63,7 @@ const AddBook = () => {
     mode: 'onSubmit',
     defaultValues: {
       title: '',
-      author: '',
+      author_id: undefined,
       genre_id: undefined,
       total_pages: 0,
       published_year: 2026,
@@ -74,6 +72,7 @@ const AddBook = () => {
   });
 
   const { data: genres } = useQuery(genresQueryOptions);
+  const { data: authors } = useQuery(authorsQueryOptions);
 
   const mutation = createBookMutation(() => {
     form.reset();
@@ -122,21 +121,31 @@ const AddBook = () => {
               ></Controller>
 
               <Controller
-                name="author"
+                name="author_id"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>
                       Author<span className="text-red-600">*</span>
                     </FieldLabel>
-                    <Input
-                      {...field}
-                      id={field.name}
-                      type="text"
-                      placeholder="Author name"
-                      aria-invalid={fieldState.invalid}
-                    />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      value={field.value?.toString()}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select author" />
+                      </SelectTrigger>
+                      <SelectContent position="popper">
+                        <SelectGroup>
+                          <SelectLabel>Authors</SelectLabel>
+                          {authors?.map((g: any) => (
+                            <SelectItem key={g.id} value={g.id.toString()}>
+                              {g.author}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </Field>
                 )}
               ></Controller>

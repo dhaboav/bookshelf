@@ -40,14 +40,16 @@ export default function Books() {
       const [authorPart, titlePart] = searchTerm.split(';').map((p) => p.trim());
 
       return books.filter((book) => {
-        const authorMatch = !authorPart || book.author?.includes(authorPart);
+        const authorMatch = !authorPart || book.author?.author?.includes(authorPart);
         const titleMatch = !titlePart || book.title?.includes(titlePart);
         return authorMatch && titleMatch;
       });
     }
 
     return books.filter((book) => {
-      return book.title?.includes(searchTerm) || (book.author?.includes(searchTerm) ?? false);
+      return (
+        book.title?.includes(searchTerm) || (book.author?.author?.includes(searchTerm) ?? false)
+      );
     });
   }, [books, q]);
 

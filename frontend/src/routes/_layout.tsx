@@ -1,3 +1,4 @@
+import { authorsQueryOptions } from '@/api/author';
 import { genresQueryOptions } from '@/api/genre';
 import Navbar from '@/components/layouts/Navbar';
 import { useQuery } from '@tanstack/react-query';
@@ -9,6 +10,7 @@ export const Route = createFileRoute('/_layout')({
 
 export default function Layout() {
   useQuery(genresQueryOptions);
+  useQuery(authorsQueryOptions);
 
   return (
     <>
