@@ -25,41 +25,17 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
+import { bookBaseSchema, type BookCreateInput } from '@/schemas/book.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import * as z from 'zod';
-
-const currentYear = new Date().getFullYear();
-const formSchema = z.object({
-  title: z
-    .string()
-    .min(4, 'Title must be at least 4 characters.')
-    .max(32, 'Title must be at most 32 characters.'),
-  author_id: z.number(),
-  genre_id: z.number(),
-  total_pages: z.number(),
-  published_year: z
-    .number()
-    .int('Year must be an integer')
-    .min(1950, 'Year must be 1800 or later')
-    .max(currentYear, 'Year cannot be in the future'),
-  description: z
-    .string()
-    .min(20, 'Description must be at least 20 characters.')
-    .max(100, 'Description must be at most 100 characters.')
-    .optional()
-    .or(z.literal('')),
-});
-
-type FormData = z.infer<typeof formSchema>;
 
 const AddBook = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<BookCreateInput>({
+    resolver: zodResolver(bookBaseSchema),
     mode: 'onSubmit',
     defaultValues: {
       title: '',
@@ -79,7 +55,7 @@ const AddBook = () => {
     setIsOpen(false);
   });
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: BookCreateInput) => {
     mutation.mutate(data);
   };
 

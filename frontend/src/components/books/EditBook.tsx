@@ -26,54 +26,30 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
+import { editBookSchema, type BookEditInput } from '@/schemas/book.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { SquarePen } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import * as z from 'zod';
 
 interface EditBookProps {
   book: BookPublic;
   onSuccess: () => void;
 }
 
-const currentYear = new Date().getFullYear();
-const formSchema = z.object({
-  title: z
-    .string()
-    .min(4, 'Title must be at least 4 characters.')
-    .max(32, 'Title must be at most 32 characters.'),
-  author_id: z.number(),
-  genre_id: z.number(),
-  total_pages: z.number(),
-  published_year: z
-    .number()
-    .int('Year must be an integer')
-    .min(1950, 'Year must be 1800 or later')
-    .max(currentYear, 'Year cannot be in the future'),
-  description: z
-    .string()
-    .min(20, 'Description must be at least 20 characters.')
-    .max(100, 'Description must be at most 100 characters.')
-    .optional()
-    .or(z.literal('')),
-});
-
-type formData = z.infer<typeof formSchema>;
-
 const EditBook = ({ book, onSuccess }: EditBookProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: genres } = useQuery(genresQueryOptions);
   const { data: authors } = useQuery(authorsQueryOptions);
 
-  const form = useForm<formData>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<BookEditInput>({
+    resolver: zodResolver(editBookSchema),
     mode: 'onSubmit',
     defaultValues: {
       title: book.title,
-      author_id: book.author?.id,
-      genre_id: book.genre?.id,
+      author_id: book.author?.id ?? undefined,
+      genre_id: book.genre?.id ?? undefined,
       total_pages: book.total_pages,
       published_year: book.published_year,
       description: book.description ?? undefined,
@@ -85,7 +61,7 @@ const EditBook = ({ book, onSuccess }: EditBookProps) => {
     onSuccess();
   });
 
-  const onSubmit = (data: formData) => {
+  const onSubmit = (data: BookEditInput) => {
     mutation.mutate(data);
   };
 

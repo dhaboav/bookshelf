@@ -1,4 +1,6 @@
 import type { BookPublic } from '@/client';
+import DeleteBook from '@/components/books/DeleteBook';
+import EditBook from '@/components/books/EditBook';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -7,8 +9,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { EllipsisVertical } from 'lucide-react';
 import { useState } from 'react';
-import DeleteBook from './DeleteBook';
-import EditBook from './EditBook';
 
 interface BookActionsMenuProps {
   book: BookPublic;
