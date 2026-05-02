@@ -1,3 +1,4 @@
+import ErrorComponent from '@/components/layouts/Error';
 import NotFound from '@/components/layouts/NotFound';
 import { createRootRoute, HeadContent, Outlet } from '@tanstack/react-router';
 
@@ -9,4 +10,5 @@ export const Route = createRootRoute({
     </>
   ),
   notFoundComponent: () => <NotFound />,
+  errorComponent: () => <ErrorComponent />,
 });

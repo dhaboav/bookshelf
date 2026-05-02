@@ -27,7 +27,7 @@ export const Route = createFileRoute('/_layout/')({
   errorComponent: ErrorComponent,
 });
 
-export default function Books() {
+function Books() {
   const { q } = Route.useSearch();
   const { data: books } = useSuspenseQuery(booksQueryOptions);
 

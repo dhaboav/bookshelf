@@ -27,7 +27,7 @@ const SearchBar = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       navigate({
-        to: '/',
+        to: '.',
         search: (prev: any) => ({
           ...prev,
           q: value || undefined,

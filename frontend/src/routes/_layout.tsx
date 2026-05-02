@@ -8,7 +8,7 @@ export const Route = createFileRoute('/_layout')({
   component: Layout,
 });
 
-export default function Layout() {
+function Layout() {
   useQuery(genresQueryOptions);
   useQuery(authorsQueryOptions);
 
