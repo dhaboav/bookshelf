@@ -14,10 +14,12 @@ APIs:
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
+from sqlalchemy import func
 from sqlmodel import select
 
 from app.core.db import SessionDep
 from app.models.author import Author
+from app.models.book import Book
 from app.schemes.author import AuthorCreate, AuthorUpdate
 from app.schemes.message import Message
 
@@ -73,12 +75,21 @@ def create_author(session: SessionDep, request: AuthorCreate):
 
 @router.get("/")
 def get_all_author(session: SessionDep):
-    """API to get all genre.
+    """API to get all author.
     Args:
         session (SessionDep): Database session dependency.
     """
-    stmt = select(Author)
-    return session.exec(stmt).all()
+    stmt = (
+        select(Author, func.count(Book.id).label("total_books"))
+        .outerjoin(Book, Book.author_id == Author.id)
+        .group_by(Author.id)
+    )
+
+    results = session.exec(stmt).all()
+    return [
+        {**author.model_dump(), "total_books": total_books}
+        for author, total_books in results
+    ]
 
 
 @router.get("/{id}")

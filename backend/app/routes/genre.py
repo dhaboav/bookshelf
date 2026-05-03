@@ -14,9 +14,11 @@ APIs:
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
+from sqlalchemy import func
 from sqlmodel import select
 
 from app.core.db import SessionDep
+from app.models.book import Book
 from app.models.genre import Genre
 from app.schemes.genre import GenreCreate, GenreUpdate
 from app.schemes.message import Message
@@ -77,8 +79,17 @@ def get_all_genre(session: SessionDep):
     Args:
         session (SessionDep): Database session dependency.
     """
-    stmt = select(Genre)
-    return session.exec(stmt).all()
+    stmt = (
+        select(Genre, func.count(Book.id).label("total_books"))
+        .outerjoin(Book, Book.genre_id == Genre.id)
+        .group_by(Genre.id)
+    )
+
+    results = session.exec(stmt).all()
+    return [
+        {**genre.model_dump(), "total_books": total_books}
+        for genre, total_books in results
+    ]
 
 
 @router.get("/{id}")
