@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
+import { Route as LayoutGenreRouteImport } from './routes/_layout/genre'
 import { Route as LayoutAuthorRouteImport } from './routes/_layout/author'
 
 const LayoutRoute = LayoutRouteImport.update({
@@ -22,6 +23,11 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutGenreRoute = LayoutGenreRouteImport.update({
+  id: '/genre',
+  path: '/genre',
+  getParentRoute: () => LayoutRoute,
+} as any)
 const LayoutAuthorRoute = LayoutAuthorRouteImport.update({
   id: '/author',
   path: '/author',
@@ -31,23 +37,31 @@ const LayoutAuthorRoute = LayoutAuthorRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof LayoutIndexRoute
   '/author': typeof LayoutAuthorRoute
+  '/genre': typeof LayoutGenreRoute
 }
 export interface FileRoutesByTo {
   '/author': typeof LayoutAuthorRoute
+  '/genre': typeof LayoutGenreRoute
   '/': typeof LayoutIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_layout': typeof LayoutRouteWithChildren
   '/_layout/author': typeof LayoutAuthorRoute
+  '/_layout/genre': typeof LayoutGenreRoute
   '/_layout/': typeof LayoutIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/author'
+  fullPaths: '/' | '/author' | '/genre'
   fileRoutesByTo: FileRoutesByTo
-  to: '/author' | '/'
-  id: '__root__' | '/_layout' | '/_layout/author' | '/_layout/'
+  to: '/author' | '/genre' | '/'
+  id:
+    | '__root__'
+    | '/_layout'
+    | '/_layout/author'
+    | '/_layout/genre'
+    | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -70,6 +84,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/genre': {
+      id: '/_layout/genre'
+      path: '/genre'
+      fullPath: '/genre'
+      preLoaderRoute: typeof LayoutGenreRouteImport
+      parentRoute: typeof LayoutRoute
+    }
     '/_layout/author': {
       id: '/_layout/author'
       path: '/author'
@@ -82,11 +103,13 @@ declare module '@tanstack/react-router' {
 
 interface LayoutRouteChildren {
   LayoutAuthorRoute: typeof LayoutAuthorRoute
+  LayoutGenreRoute: typeof LayoutGenreRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutAuthorRoute: LayoutAuthorRoute,
+  LayoutGenreRoute: LayoutGenreRoute,
   LayoutIndexRoute: LayoutIndexRoute,
 }
 

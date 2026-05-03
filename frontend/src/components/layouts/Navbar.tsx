@@ -1,6 +1,7 @@
 import reactLogo from '@/assets/react.svg';
 import AddAuthor from '@/components/authors/AddAuthor';
 import AddBook from '@/components/books/AddBook';
+import AddGenre from '@/components/genres/AddGenre';
 import SearchBar from '@/components/layouts/SearchBar';
 import { Link, useLocation } from '@tanstack/react-router';
 
@@ -19,6 +20,7 @@ const Navbar = () => {
         <SearchBar />
         {path === '/' && <AddBook />}
         {path === '/author' && <AddAuthor />}
+        {path === '/genre' && <AddGenre />}
       </div>
     </nav>
   );
