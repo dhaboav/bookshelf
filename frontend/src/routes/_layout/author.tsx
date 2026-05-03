@@ -47,15 +47,15 @@ function Authors() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {authors.map((author) => (
-          <TableRow key={author.id}>
-            <TableCell className="font-mono text-slate-500">{author.id}</TableCell>
-            <TableCell className="font-medium">{author.author}</TableCell>
-            <TableCell className="font-medium">30</TableCell>
+        {authors.map((data) => (
+          <TableRow key={data.id}>
+            <TableCell className="font-mono text-slate-500">{data.id}</TableCell>
+            <TableCell className="font-medium">{data.author}</TableCell>
+            <TableCell className="font-medium">{data.total_books}</TableCell>
             <TableCell>
               <div className="flex justify-end gap-2">
-                <EditAuthor author={author} />
-                <DeleteAuthor id={author.id} />
+                <EditAuthor author={data} />
+                <DeleteAuthor id={data.id} />
               </div>
             </TableCell>
           </TableRow>

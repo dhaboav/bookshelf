@@ -51,7 +51,7 @@ function Genres() {
           <TableRow key={data.id}>
             <TableCell className="font-mono text-slate-500">{data.id}</TableCell>
             <TableCell className="font-medium">{data.genre}</TableCell>
-            <TableCell className="font-medium">30</TableCell>
+            <TableCell className="font-medium">{data.total_books}</TableCell>
             <TableCell>
               <div className="flex justify-end gap-2">
                 <EditGenre genre={data} />
