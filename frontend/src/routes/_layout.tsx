@@ -1,6 +1,8 @@
 import { authorsQueryOptions } from '@/api/author';
 import { genresQueryOptions } from '@/api/genre';
+import AppSidebar from '@/components/layouts/AppSidebar';
 import Navbar from '@/components/layouts/Navbar';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 
@@ -14,10 +16,15 @@ function Layout() {
 
   return (
     <>
-      <Navbar />
-      <main className="px-3 lg:px-48">
-        <Outlet />
-      </main>
+      <SidebarProvider defaultOpen={false}>
+        <AppSidebar variant="inset" />
+        <SidebarInset>
+          <Navbar />
+          <main className="px-3 lg:px-48">
+            <Outlet />
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
     </>
   );
 }
