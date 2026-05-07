@@ -8,5 +8,3 @@ export PYTHONPATH=$PYTHONPATH:.
 python -m app.prestart
 
 alembic upgrade head
-
-python -m app.initial_data

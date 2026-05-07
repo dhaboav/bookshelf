@@ -34,5 +34,19 @@ Follow these steps to set up the project locally:
 4. **Run the backend project:**
 
     ```bash
-        fastapi dev
+        fastapi dev app/main.py
     ```
+
+### Workflow (Docker)
+
+1. **Build & Run docker image:**
+
+    ```bash
+    docker compose up -d --build
+    ```
+
+2. **Stop docker image:**
+
+    ```bash
+    docker compose down
+    ``` 
