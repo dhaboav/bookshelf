@@ -20,6 +20,6 @@ export type BookPublic = {
   description?: string | null;
 };
 
-export type BookSearch = {
+export type Search = {
   q?: string;
 };

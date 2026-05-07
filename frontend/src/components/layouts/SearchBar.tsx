@@ -1,15 +1,22 @@
 import { ButtonGroup } from '@/components/ui/button-group';
 import { Input } from '@/components/ui/input';
-import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useLocation, useNavigate, useSearch } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 
 const SearchBar = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const search: any = useSearch({ strict: false });
   const [value, setValue] = useState(search.q || '');
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const getPlaceholder = () => {
+    const path = location.pathname;
+    if (path.includes('/author')) return 'Search Author...';
+    if (path.includes('/genre')) return 'Search Genre...';
+    return 'Search Book...';
+  };
   // Ctrl + K Logic
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -45,12 +52,11 @@ const SearchBar = () => {
         <Input
           ref={inputRef}
           className="w-24 lg:w-full"
-          placeholder="Search book..."
+          placeholder={getPlaceholder()}
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
 
-        {/* Visual hint for the user (only on large screens) */}
         <kbd className="bg-muted pointer-events-none absolute right-2 hidden h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none lg:flex">
           <span className="text-xs">⌘</span>K
         </kbd>

@@ -1,5 +1,5 @@
 import { booksQueryOptions } from '@/api/book';
-import type { BookSearch } from '@/client';
+import type { Search } from '@/client';
 import { BookCard } from '@/components/books/BookCard';
 import ErrorComponent from '@/components/layouts/Error';
 import PaginationWrapper from '@/components/layouts/PaginationWrapper';
@@ -17,7 +17,7 @@ function loadingPage() {
 }
 
 export const Route = createFileRoute('/_layout/')({
-  validateSearch: (search: Record<string, unknown>): BookSearch => {
+  validateSearch: (search: Record<string, unknown>): Search => {
     return {
       q: (search.q as string) || undefined,
     };

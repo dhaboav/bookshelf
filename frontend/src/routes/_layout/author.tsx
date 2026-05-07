@@ -1,4 +1,5 @@
 import { authorsQueryOptions } from '@/api/author';
+import type { Search } from '@/client';
 import DeleteAuthor from '@/components/authors/DeleteAuthor';
 import EditAuthor from '@/components/authors/EditAuthor';
 
@@ -13,8 +14,14 @@ import {
 } from '@/components/ui/table';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
+import { useMemo } from 'react';
 
 export const Route = createFileRoute('/_layout/author')({
+  validateSearch: (search: Record<string, unknown>): Search => {
+    return {
+      q: (search.q as string) || undefined,
+    };
+  },
   component: Authors,
   head: () => ({
     meta: [
@@ -26,7 +33,16 @@ export const Route = createFileRoute('/_layout/author')({
 });
 
 function Authors() {
+  const { q } = Route.useSearch();
   const { data: authors } = useQuery(authorsQueryOptions);
+
+  // Search
+  const filteredAuthors = useMemo(() => {
+    if (!authors || !q) return authors || [];
+
+    return authors.filter((author) => author.author?.includes(q));
+  }, [authors, q]);
+
   if (!authors || authors.length === 0) {
     return (
       <div className="my-8 text-center">
@@ -36,31 +52,39 @@ function Authors() {
   }
 
   return (
-    <Table className="mt-8">
-      <TableCaption>A list of authors.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead>ID</TableHead>
-          <TableHead>Author</TableHead>
-          <TableHead>Books</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {authors.map((data) => (
-          <TableRow key={data.id}>
-            <TableCell className="font-mono text-slate-500">{data.id}</TableCell>
-            <TableCell className="font-medium">{data.author}</TableCell>
-            <TableCell className="font-medium">{data.total_books}</TableCell>
-            <TableCell>
-              <div className="flex justify-end gap-2">
-                <EditAuthor author={data} />
-                <DeleteAuthor id={data.id} />
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <>
+      {filteredAuthors.length === 0 ? (
+        <div className="my-8 text-center">
+          <h3 className="text-2xl font-semibold text-gray-700">No results found for "{q}"</h3>
+        </div>
+      ) : (
+        <Table className="mt-8">
+          <TableCaption>A list of authors.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Author</TableHead>
+              <TableHead>Books</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredAuthors.map((data) => (
+              <TableRow key={data.id}>
+                <TableCell className="font-mono text-slate-500">{data.id}</TableCell>
+                <TableCell className="font-medium">{data.author}</TableCell>
+                <TableCell className="font-medium">{data.total_books}</TableCell>
+                <TableCell>
+                  <div className="flex justify-end gap-2">
+                    <EditAuthor author={data} />
+                    <DeleteAuthor id={data.id} />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </>
   );
 }

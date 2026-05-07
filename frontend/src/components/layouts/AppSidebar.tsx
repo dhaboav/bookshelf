@@ -8,7 +8,6 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 
-import reactLogo from '@/assets/react.svg';
 import { Link } from '@tanstack/react-router';
 import { LibraryBig, Users } from 'lucide-react';
 
@@ -16,20 +15,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link to="/" className="flex items-center gap-x-2">
-                <img
-                  src={reactLogo}
-                  className="animation-duration-[10s] h-6 animate-spin"
-                  alt="Logo"
-                />
-                <h1 className="font-semibold lg:text-lg">React Library</h1>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <span>Menu</span>
       </SidebarHeader>
 
       <SidebarContent>
