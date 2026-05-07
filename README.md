@@ -1,31 +1,43 @@
 # Bookshelf Project
 
+### Overview
+
+This project's purpose is to help me manage physical book than turn it into digital record for personal usage. It can add genres, authors and books also able to search with keywords for all of it
+
+---
+
 ## Requirements
 
-- [MySQL v8.0.44 ](https://www.mysql.com/): You'll need this running locally for now. I haven't added it to the Docker Compose yet, though it's a straightforward fix if you'd rather run it there..
+- Docker
 
 ## Technology Stack and Features
 
 - ⚡ [**FastAPI**](https://fastapi.tiangolo.com) for the Python backend API.
   - 🧰 [SQLModel](https://sqlmodel.tiangolo.com) for the Python SQL database interactions (ORM).
   - 🔍 [Pydantic](https://docs.pydantic.dev), used by FastAPI, for the data validation and settings management.
-  - 💾 [MySQL](https://www.mysql.com/) as the SQL database.
 - 🚀 [React](https://react.dev) for the frontend.
   - 💃 Using TypeScript [Vite](https://vitejs.dev), and other parts of a modern frontend stack.
   - 🎨 [Tailwind CSS](https://tailwindcss.com) and [shadcn/ui](https://ui.shadcn.com) for the frontend components.
-- 🐋 [Docker Compose](https://www.docker.com) for development and production.
+  - 🌴 [Tanstack](https://tanstack.com/) for the glue and smooth ui handle.
+- 💾 [MySQL](https://www.mysql.com/) as the SQL database.
+- 🐋 [Docker](https://www.docker.com) for development and production.
 
-### Homepage - Mobile
 
-[![API docs](img/mobile.png)](https://github.com/dhaboav/bookshelf)
-
+### Credit
 The book cover is currently hardcoded, using the cover art from the web novel Reverend Insanity by Gu Zhen Ren.
 
 [![book cover](./frontend/public/cover.jpg)](https://www.webnovel.com/book/reverend-insanity_7996858406002505)
 
-### Homepage - PC
+### Homepage & Author(+Genre) - Mobile
 
-[![API docs](img/pc.png)](https://github.com/dhaboav/bookshelf)
+[![Mobile](img/mobile.png)](https://github.com/dhaboav/bookshelf)
+[![Mobile 2](img/mobile-2.png)](https://github.com/dhaboav/bookshelf)
+[![Mobile Author](img/author.png)](https://github.com/dhaboav/bookshelf)
+
+### Homepage & Genre(+Author) - PC
+
+[![PC](img/pc.png)](https://github.com/dhaboav/bookshelf)
+[![PC Genre](img/pc-2.png)](https://github.com/dhaboav/bookshelf)
 
 ### Interactive API Documentation
 
