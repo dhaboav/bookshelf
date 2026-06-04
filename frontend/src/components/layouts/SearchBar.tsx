@@ -46,6 +46,15 @@ const SearchBar = () => {
     return () => clearTimeout(timeout);
   }, [value, navigate]);
 
+  useEffect(() => {
+    if (search.q !== undefined && search.q !== value) {
+      setValue(search.q);
+    } else if (search.q === undefined && value !== '') {
+      // Optional: Clears the input field if the query string is wiped out
+      setValue('');
+    }
+  }, [search.q]);
+
   return (
     <ButtonGroup>
       <div className="relative flex items-center">

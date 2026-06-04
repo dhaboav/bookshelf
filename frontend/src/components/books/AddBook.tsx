@@ -1,6 +1,7 @@
 import { authorsQueryOptions } from '@/api/author';
 import { createBookMutation } from '@/api/book';
 import { genresQueryOptions } from '@/api/genre';
+import { Scanner } from '@/components/layouts/Scanner';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -38,6 +39,7 @@ const AddBook = () => {
     resolver: zodResolver(bookBaseSchema),
     mode: 'onSubmit',
     defaultValues: {
+      isbn: '',
       title: '',
       author_id: undefined,
       genre_id: undefined,
@@ -75,7 +77,33 @@ const AddBook = () => {
             Fill out the form below to add a new book to your library.
           </DialogDescription>
           <FieldGroup>
+            <Scanner
+              disabled={mutation.isPending}
+              onScanSuccess={(scannedCode) => {
+                form.setValue('isbn', scannedCode, { shouldValidate: true });
+              }}
+            />
             <div className="flex flex-col gap-3 lg:grid lg:grid-cols-2">
+              <Controller
+                name="isbn"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      ISBN<span className="text-red-600">*</span>
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      type="text"
+                      placeholder="Scan or enter book ISBN"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              ></Controller>
+
               <Controller
                 name="title"
                 control={form.control}

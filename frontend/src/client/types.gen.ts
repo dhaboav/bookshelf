@@ -12,6 +12,7 @@ export type AuthorPublic = {
 
 export type BookPublic = {
   id: number;
+  isbn?: string | null;
   title: string;
   author?: AuthorPublic | null;
   genre?: GenrePublic | null;

@@ -3,6 +3,10 @@ import * as z from 'zod';
 const currentYear = new Date().getFullYear();
 
 export const bookBaseSchema = z.object({
+  isbn: z
+    .string()
+    .min(13, 'ISBN must be at least 13 characters long')
+    .max(13, 'ISBN must be at most 13 characters long'),
   title: z
     .string()
     .min(4, 'Title must be at least 4 characters.')

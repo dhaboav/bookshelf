@@ -8,20 +8,47 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 
-import { Link } from '@tanstack/react-router';
-import { LibraryBig, Users } from 'lucide-react';
+import { Scanner } from '@/components/layouts/Scanner';
+import { Link, useLocation, useNavigate } from '@tanstack/react-router';
+import { LibraryBig, Tags, Users } from 'lucide-react';
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const path = location.pathname;
+  const isBookPage = path === '/';
+
+  const handleScanSuccess = (scannedCode: string) => {
+    // Inject barcode parameter into search bar
+    navigate({
+      to: '.',
+      search: (prev: any) => ({
+        ...prev,
+        q: scannedCode,
+      }),
+      replace: true,
+    });
+  };
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="border-b px-4 py-3">
         <span>Menu</span>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="gap-0 py-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild isActive={path === '/'}>
+              <Link to="/" className="flex items-center gap-x-2">
+                <LibraryBig className="h-4 w-4" />
+                <span>Books</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={path === '/author'}>
               <Link to="/author" className="flex items-center gap-x-2">
                 <Users />
                 <span>Authors</span>
@@ -30,13 +57,20 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
           </SidebarMenuItem>
 
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild isActive={path === '/genre'}>
               <Link to="/genre" className="flex items-center gap-x-2">
-                <LibraryBig />
+                <Tags />
                 <span>Genres</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
+
+          {isBookPage && <div className="my-2 border-t border-dashed" />}
+          {isBookPage && (
+            <SidebarMenuItem className="px-2">
+              <Scanner onScanSuccess={handleScanSuccess} />
+            </SidebarMenuItem>
+          )}
         </SidebarMenu>
       </SidebarContent>
 
@@ -44,7 +78,12 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
         <span>Bookshelf v1.1</span>
         <span>
           Created with ❤️ by{' '}
-          <a href="https://github.com/dhaboav" className="text-red-600">
+          <a
+            href="https://github.com/dhaboav"
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-red-500 hover:underline"
+          >
             dhaboav
           </a>
         </span>
