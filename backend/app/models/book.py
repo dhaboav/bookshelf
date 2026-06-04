@@ -20,6 +20,7 @@ class Book(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str
+    isbn: str = Field(min_length=13, max_length=13, unique=True)
     author_id: Optional[int] = Field(default=None, foreign_key="author.id")
     genre_id: Optional[int] = Field(default=None, foreign_key="genre.id")
     description: Optional[str] = None

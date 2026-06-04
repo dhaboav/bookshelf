@@ -1,6 +1,7 @@
 """API for book.
 Utilities:
 - get_book_by_id: Get data by id.
+- is_isbn_exist: Check is isbn exist or not with ISBN.
 
 APIs:
 - [POST] create_book    : Create a book data.
@@ -44,6 +45,26 @@ def get_book_by_id(session: SessionDep, book_id: int) -> Book:
     return db_book
 
 
+def is_isbn_exist(session: SessionDep, isbn: str) -> None:
+    """
+    Utility function to check isbn exist or not.
+
+    Args:
+        session (SessionDep): Database session dependency.
+        isbn (str): ISBN of the book that to check.
+
+    Return:
+        None: If the ISBN is unique and available.
+
+    Raises:
+        HTTPException: HTTP 400 if isbn exists.
+    """
+    stmt = select(Book).where(Book.isbn == isbn)
+    existing_isbn = session.exec(stmt).first()
+    if existing_isbn:
+        raise HTTPException(400, f"The book with ISBN '{isbn}' already exists")
+
+
 @router.post("/", response_model=Message, status_code=201)
 def create_book(session: SessionDep, request: BookCreate):
     """API to create a new book.
@@ -58,6 +79,7 @@ def create_book(session: SessionDep, request: BookCreate):
         HTTPException: HTTP 400 Bad Request if genre doesn't exists.
     """
 
+    is_isbn_exist(session, request.isbn)
     genre = get_genre(session, request.genre_id)
     if not genre:
         raise HTTPException(400, "The genre doesn't exists")
@@ -110,6 +132,9 @@ def update_book(session: SessionDep, id: int, request: BookUpdate):
         author_db = get_author(session, update_data["author_id"])
         if not author_db:
             raise HTTPException(404, "The author not found")
+
+    elif "isbn" in update_data:
+        is_isbn_exist(session, request.isbn)
 
     book.sqlmodel_update(update_data)
 

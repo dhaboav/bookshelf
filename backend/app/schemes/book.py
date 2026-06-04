@@ -10,6 +10,7 @@ from app.utils import get_current_year_utc
 class BookPublic(SQLModel):
     id: int
     title: str
+    isbn: str = Field(min_length=13, max_length=13)
     author: Optional[AuthorPublic] = None
     genre: Optional[GenrePublic] = None
     description: Optional[str] = None
@@ -21,6 +22,7 @@ class BookCreate(SQLModel):
     """Scheme for create book"""
 
     title: str
+    isbn: str = Field(min_length=13, max_length=13)
     author_id: int
     genre_id: int
     description: Optional[str] = None
@@ -32,6 +34,7 @@ class BookUpdate(SQLModel):
     """Scheme for update book"""
 
     title: Optional[str] = None
+    isbn: str = Field(min_length=13, max_length=13)
     author_id: Optional[int] = None
     genre_id: Optional[int] = None
     description: Optional[str] = None
