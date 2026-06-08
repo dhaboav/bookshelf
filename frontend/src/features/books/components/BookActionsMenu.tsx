@@ -1,12 +1,12 @@
 import type { BookPublic } from '@/client';
-import DeleteBook from '@/components/books/DeleteBook';
-import EditBook from '@/components/books/EditBook';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import DeleteBook from '@/features/books/components/DeleteBook';
+import EditBook from '@/features/books/components/EditBook';
 import { EllipsisVertical } from 'lucide-react';
 import { useState } from 'react';
 

@@ -2,11 +2,8 @@ import * as z from 'zod';
 
 const currentYear = new Date().getFullYear();
 
-export const bookBaseSchema = z.object({
-  isbn: z
-    .string()
-    .min(13, 'ISBN must be at least 13 characters long')
-    .max(13, 'ISBN must be at most 13 characters long'),
+export const bookSchema = z.object({
+  isbn: z.string().length(13, 'ISBN must be exactly 13 characters long'),
   title: z
     .string()
     .min(4, 'Title must be at least 4 characters.')
@@ -26,10 +23,10 @@ export const bookBaseSchema = z.object({
     .or(z.literal('')),
 });
 
-export const editBookSchema = bookBaseSchema.extend({
+export const editBookSchema = bookSchema.extend({
   author_id: z.number().optional(),
   genre_id: z.number().optional(),
 });
 
-export type BookCreateInput = z.infer<typeof bookBaseSchema>;
+export type BookCreateInput = z.infer<typeof bookSchema>;
 export type BookEditInput = z.infer<typeof editBookSchema>;

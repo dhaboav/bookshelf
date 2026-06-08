@@ -1,8 +1,8 @@
-import { booksQueryOptions } from '@/api/book';
 import type { Search } from '@/client';
-import { BookCard } from '@/components/books/BookCard';
 import ErrorComponent from '@/components/layouts/Error';
 import PaginationWrapper from '@/components/layouts/PaginationWrapper';
+import { BookCard } from '@/features/books/components/BookCard';
+import { booksQueryOptions } from '@/features/books/hooks/useBookQueries';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';

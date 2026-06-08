@@ -1,7 +1,7 @@
 import { Calendar, CircleUserRound, ScrollText } from 'lucide-react';
 
 import type { BookPublic } from '@/client';
-import { BookActionsMenu } from '@/components/books/BookActionsMenu';
+import { BookActionsMenu } from '@/features/books/components/BookActionsMenu';
 
 export function BookCard({ ...book }: BookPublic) {
   return (

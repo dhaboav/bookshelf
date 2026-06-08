@@ -1,9 +1,9 @@
 import reactLogo from '@/assets/react.svg';
 import AddAuthor from '@/components/authors/AddAuthor';
-import AddBook from '@/components/books/AddBook';
 import AddGenre from '@/components/genres/AddGenre';
 import SearchBar from '@/components/layouts/SearchBar';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import AddBook from '@/features/books/components/AddBook';
 import { Link, useLocation } from '@tanstack/react-router';
 
 const Navbar = () => {
