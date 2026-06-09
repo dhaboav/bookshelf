@@ -1,7 +1,7 @@
-import type { Search } from '@/client';
 import { genresQueryOptions } from '@/features/genres/hooks/useGenreQueries';
 import DeleteGenre from '@/features/genres/ui/DeleteGenre';
 import EditGenre from '@/features/genres/ui/EditGenre';
+import type { Search } from '@/shared/model';
 
 import {
   Table,

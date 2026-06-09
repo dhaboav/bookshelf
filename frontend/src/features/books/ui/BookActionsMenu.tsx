@@ -1,6 +1,6 @@
 import type { BookPublic } from '@/entities/books';
 import { DeleteBook } from '@/features/books/ui/DeleteBook';
-import { EditBook } from '@/features/books/ui/EditBook';
+import { UpdateBook } from '@/features/books/ui/UpdateBook';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/shared/ui';
 import { EllipsisVertical } from 'lucide-react';
 import { useState } from 'react';
@@ -20,7 +20,7 @@ export const BookActionsMenu = ({ book }: BookActionsMenuProps) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <EditBook book={book} onSuccess={() => setOpen(false)} />
+        <UpdateBook book={book} onSuccess={() => setOpen(false)} />
         <DeleteBook id={book.id} onSuccess={() => setOpen(false)} />
       </DropdownMenuContent>
     </DropdownMenu>

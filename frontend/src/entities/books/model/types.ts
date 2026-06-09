@@ -1,5 +1,5 @@
-import type { AuthorPublic } from '@/entities/author/model';
-import type { GenrePublic } from '@/entities/genres/model';
+import type { AuthorPublic } from '@/entities/authors';
+import type { GenrePublic } from '@/entities/genres';
 
 export type BookPublic = {
   id: number;

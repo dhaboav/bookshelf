@@ -1,6 +1,6 @@
 import reactLogo from '@/assets/react.svg';
 import SearchBar from '@/components/layouts/SearchBar';
-import AddAuthor from '@/features/authors/ui/AddAuthor';
+import { AddAuthor } from '@/features/authors/ui/AddAuthor';
 import { AddBook } from '@/features/books';
 import AddGenre from '@/features/genres/ui/AddGenre';
 import { SidebarTrigger } from '@/shared/ui';

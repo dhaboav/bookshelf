@@ -1,6 +1,6 @@
-import { deleteAuthorMutation } from '@/features/authors/hooks/useAuthorQueries';
-import { Button } from '@/shared/ui/button';
+import { useDeleteAuthor } from '@/features/authors';
 import {
+  Button,
   Dialog,
   DialogClose,
   DialogContent,
@@ -9,27 +9,28 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/shared/ui/dialog';
-import { Spinner } from '@/shared/ui/spinner';
+  Spinner,
+} from '@/shared/ui';
 
 import { TrashIcon } from 'lucide-react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 
 interface DeleteAuthorProps {
   id: number;
+  onSuccess: () => void;
 }
 
-const DeleteAuthor = ({ id }: DeleteAuthorProps) => {
+export const DeleteAuthor = ({ id, onSuccess }: DeleteAuthorProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { handleSubmit } = useForm();
+  const { mutate: deleteAuthor, isPending } = useDeleteAuthor();
 
-  const mutation = deleteAuthorMutation(id, () => {
-    setIsOpen(false);
-  });
-
-  const onSubmit = () => {
-    mutation.mutate(id);
+  const handleDelete = () => {
+    deleteAuthor(id, {
+      onSuccess: () => {
+        setIsOpen(false);
+        onSuccess();
+      },
+    });
   };
 
   return (
@@ -41,42 +42,34 @@ const DeleteAuthor = ({ id }: DeleteAuthorProps) => {
       </DialogTrigger>
 
       <DialogContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>
-            <DialogTitle>Delete author</DialogTitle>
-            <DialogDescription>
-              This author will be permanently deleted. Are you sure? You will not be able to undo
-              this action.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Delete author</DialogTitle>
+          <DialogDescription>
+            This author will be permanently deleted. Are you sure? You will not be able to undo this
+            action.
+          </DialogDescription>
+        </DialogHeader>
 
-          <DialogFooter className="mt-2 lg:mt-0">
-            <DialogClose asChild>
-              <Button variant="ghost" type="button" disabled={mutation.isPending}>
-                Cancel
-              </Button>
-            </DialogClose>
-
-            <Button
-              className="lg:w-24"
-              variant="destructive"
-              type="submit"
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending ? (
-                <div className="flex flex-row items-center gap-x-1">
-                  <Spinner data-icon="inline-start" />
-                  <span>Delete</span>
-                </div>
-              ) : (
-                'Delete'
-              )}
+        <DialogFooter className="mt-2 lg:mt-0">
+          <DialogClose asChild>
+            <Button variant="ghost" type="button" disabled={isPending}>
+              Cancel
             </Button>
-          </DialogFooter>
-        </form>
+          </DialogClose>
+
+          <Button
+            className="lg:w-24"
+            variant="destructive"
+            disabled={isPending}
+            onClick={handleDelete}
+          >
+            <div className="flex items-center gap-x-1">
+              {isPending && <Spinner data-icon="inline-start" />}
+              <span>{isPending ? 'Deleting...' : 'Delete'}</span>
+            </div>
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
-
-export default DeleteAuthor;

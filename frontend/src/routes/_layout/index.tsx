@@ -1,8 +1,8 @@
-import type { Search } from '@/client';
 import ErrorComponent from '@/components/layouts/Error';
 import PaginationWrapper from '@/components/layouts/PaginationWrapper';
 import { BookCard, booksQueryOptions } from '@/entities/books';
 import { BookActionsMenu } from '@/features/books';
+import type { Search } from '@/shared/model';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';

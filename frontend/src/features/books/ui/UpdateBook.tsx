@@ -4,10 +4,9 @@ import { SquarePen } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { authorsQueryOptions } from '@/entities/authors';
 import type { BookPublic } from '@/entities/books';
-import { authorsQueryOptions } from '@/features/authors/hooks/useAuthorQueries';
-import { useEditBook } from '@/features/books';
-import { editBookSchema, type BookEditInput } from '@/features/books/schemas/book.schema';
+import { updateBookSchema, useUpdateBook, type BookUpdateInput } from '@/features/books';
 import { genresQueryOptions } from '@/features/genres/hooks/useGenreQueries';
 
 import {
@@ -36,14 +35,14 @@ import {
   Textarea,
 } from '@/shared/ui';
 
-interface EditBookProps {
+interface UpdateBookProps {
   book: BookPublic;
   onSuccess: () => void;
 }
 
-export const EditBook = ({ book, onSuccess }: EditBookProps) => {
+export const UpdateBook = ({ book, onSuccess }: UpdateBookProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { mutate: editBook, isPending } = useEditBook();
+  const { mutate: updateBook, isPending } = useUpdateBook();
 
   const {
     register,
@@ -51,8 +50,8 @@ export const EditBook = ({ book, onSuccess }: EditBookProps) => {
     control,
     reset,
     formState: { errors },
-  } = useForm<BookEditInput>({
-    resolver: zodResolver(editBookSchema),
+  } = useForm<BookUpdateInput>({
+    resolver: zodResolver(updateBookSchema),
     mode: 'onSubmit',
     defaultValues: {
       isbn: book.isbn ?? undefined,
@@ -83,8 +82,8 @@ export const EditBook = ({ book, onSuccess }: EditBookProps) => {
     }
   };
 
-  const onSubmit = (data: BookEditInput) => {
-    editBook(
+  const onSubmit = (data: BookUpdateInput) => {
+    updateBook(
       { id: book.id, data },
       {
         onSuccess: () => {

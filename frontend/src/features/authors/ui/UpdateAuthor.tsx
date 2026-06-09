@@ -1,4 +1,6 @@
-import { authorSchema, useCreateAuthor, type AuthorSchema } from '@/features/authors';
+import type { AuthorPublic } from '@/entities/authors';
+import { authorSchema, useUpdateAuthor, type AuthorSchema } from '@/features/authors';
+
 import {
   Button,
   Dialog,
@@ -16,14 +18,20 @@ import {
   Input,
   Spinner,
 } from '@/shared/ui';
+
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus } from 'lucide-react';
+import { EditIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-export const AddAuthor = () => {
+interface UpdateAuthorProps {
+  author: AuthorPublic;
+  onSuccess: () => void;
+}
+
+export const UpdateAuthor = ({ author, onSuccess }: UpdateAuthorProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { mutate: createAuthor, isPending } = useCreateAuthor();
+  const { mutate: updateAuthor, isPending } = useUpdateAuthor();
 
   const {
     register,
@@ -34,38 +42,46 @@ export const AddAuthor = () => {
     resolver: zodResolver(authorSchema),
     mode: 'onSubmit',
     defaultValues: {
-      author: '',
+      author: author.author,
     },
   });
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
-    if (!open) reset();
+    if (!open) {
+      reset({
+        author: author.author,
+      });
+    }
   };
 
   const onSubmit = (data: AuthorSchema) => {
-    createAuthor(data, {
-      onSuccess: () => {
-        handleOpenChange(false);
+    updateAuthor(
+      { id: author.id, data },
+      {
+        onSuccess: () => {
+          handleOpenChange(false);
+          onSuccess();
+        },
       },
-    });
+    );
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus />
+      <DialogTrigger asChild onSelect={(e) => e.preventDefault()} onClick={() => setIsOpen(true)}>
+        <Button variant="ghost" size="icon" className="bg-transparent text-gray-400">
+          <EditIcon />
         </Button>
       </DialogTrigger>
 
       <DialogContent className="max-h-138 overflow-y-auto">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader className="mb-3">
-            <DialogTitle>Add a Author</DialogTitle>
+            <DialogTitle>Edit Author</DialogTitle>
           </DialogHeader>
           <DialogDescription className="sr-only">
-            Fill out the form below to add a new author to your library.
+            Fill out the form below to edit the author to your library.
           </DialogDescription>
 
           <FieldGroup>
@@ -76,7 +92,7 @@ export const AddAuthor = () => {
               <Input
                 {...register('author')}
                 id="author"
-                placeholder="Author Name"
+                placeholder="Book author"
                 aria-invalid={!!errors.author}
               />
               {errors.author && <FieldError errors={[errors.author]} />}

@@ -23,10 +23,10 @@ export const bookSchema = z.object({
     .or(z.literal('')),
 });
 
-export const editBookSchema = bookSchema.extend({
+export const updateBookSchema = bookSchema.extend({
   author_id: z.number().optional(),
   genre_id: z.number().optional(),
 });
 
 export type BookCreateInput = z.infer<typeof bookSchema>;
-export type BookEditInput = z.infer<typeof editBookSchema>;
+export type BookUpdateInput = z.infer<typeof updateBookSchema>;

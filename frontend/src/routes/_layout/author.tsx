@@ -1,7 +1,6 @@
-import type { Search } from '@/client';
-import { authorsQueryOptions } from '@/features/authors/hooks/useAuthorQueries';
-import DeleteAuthor from '@/features/authors/ui/DeleteAuthor';
-import EditAuthor from '@/features/authors/ui/EditAuthor';
+import { authorsQueryOptions } from '@/entities/authors';
+import { DeleteAuthor, UpdateAuthor } from '@/features/authors';
+import type { Search } from '@/shared/model';
 
 import {
   Table,
@@ -76,8 +75,8 @@ function Authors() {
                 <TableCell className="font-medium">{data.total_books}</TableCell>
                 <TableCell>
                   <div className="flex justify-end gap-2">
-                    <EditAuthor author={data} />
-                    <DeleteAuthor id={data.id} />
+                    <UpdateAuthor author={data} onSuccess={() => {}} />
+                    <DeleteAuthor id={data.id} onSuccess={() => {}} />
                   </div>
                 </TableCell>
               </TableRow>

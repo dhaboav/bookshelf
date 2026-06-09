@@ -1,6 +1,6 @@
 import AppSidebar from '@/components/layouts/AppSidebar';
 import Navbar from '@/components/layouts/Navbar';
-import { authorsQueryOptions } from '@/features/authors/hooks/useAuthorQueries';
+import { authorsQueryOptions } from '@/entities/authors';
 import { genresQueryOptions } from '@/features/genres/hooks/useGenreQueries';
 import { SidebarInset, SidebarProvider } from '@/shared/ui';
 import { useQuery } from '@tanstack/react-query';
