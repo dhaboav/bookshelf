@@ -1,7 +1,7 @@
-import { authorsQueryOptions } from '@/api/author';
 import type { Search } from '@/client';
-import DeleteAuthor from '@/components/authors/DeleteAuthor';
-import EditAuthor from '@/components/authors/EditAuthor';
+import { authorsQueryOptions } from '@/features/authors/hooks/useAuthorQueries';
+import DeleteAuthor from '@/features/authors/ui/DeleteAuthor';
+import EditAuthor from '@/features/authors/ui/EditAuthor';
 
 import {
   Table,
@@ -11,7 +11,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/shared/ui';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';

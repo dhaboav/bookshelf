@@ -1,8 +1,8 @@
 import type { Search } from '@/client';
 import ErrorComponent from '@/components/layouts/Error';
 import PaginationWrapper from '@/components/layouts/PaginationWrapper';
-import { BookCard } from '@/features/books/components/BookCard';
-import { booksQueryOptions } from '@/features/books/hooks/useBookQueries';
+import { BookCard, booksQueryOptions } from '@/entities/books';
+import { BookActionsMenu } from '@/features/books';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';
@@ -71,7 +71,9 @@ function Books() {
         <PaginationWrapper
           items={filteredBooks}
           itemsPerPage={12}
-          renderItem={(book) => <BookCard {...book} />}
+          renderItem={(book) => (
+            <BookCard book={book} actionsSlot={<BookActionsMenu book={book} />} />
+          )}
         />
       )}
     </div>

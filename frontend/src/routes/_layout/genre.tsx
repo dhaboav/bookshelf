@@ -1,7 +1,7 @@
-import { genresQueryOptions } from '@/api/genre';
 import type { Search } from '@/client';
-import DeleteGenre from '@/components/genres/DeleteGenre';
-import EditGenre from '@/components/genres/EditGenre';
+import { genresQueryOptions } from '@/features/genres/hooks/useGenreQueries';
+import DeleteGenre from '@/features/genres/ui/DeleteGenre';
+import EditGenre from '@/features/genres/ui/EditGenre';
 
 import {
   Table,
@@ -11,7 +11,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/shared/ui';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';

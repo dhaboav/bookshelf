@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui';
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import { Camera, XCircle, Zap, ZapOff } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';

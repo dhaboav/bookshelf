@@ -1,5 +1,4 @@
-import { ButtonGroup } from '@/components/ui/button-group';
-import { Input } from '@/components/ui/input';
+import { ButtonGroup, Input } from '@/shared/ui';
 import { useLocation, useNavigate, useSearch } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 

@@ -5,7 +5,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '@/components/ui/pagination';
+} from '@/shared/ui';
 import { useMemo, useState, type ReactNode } from 'react';
 
 interface PaginationWrapperProps<T> {

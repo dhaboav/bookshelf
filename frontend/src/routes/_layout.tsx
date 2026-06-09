@@ -1,8 +1,8 @@
-import { authorsQueryOptions } from '@/api/author';
-import { genresQueryOptions } from '@/api/genre';
 import AppSidebar from '@/components/layouts/AppSidebar';
 import Navbar from '@/components/layouts/Navbar';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { authorsQueryOptions } from '@/features/authors/hooks/useAuthorQueries';
+import { genresQueryOptions } from '@/features/genres/hooks/useGenreQueries';
+import { SidebarInset, SidebarProvider } from '@/shared/ui';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 

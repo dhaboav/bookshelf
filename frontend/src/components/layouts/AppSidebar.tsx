@@ -6,7 +6,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
+} from '@/shared/ui';
 
 import { Scanner } from '@/components/layouts/Scanner';
 import { Link, useLocation, useNavigate } from '@tanstack/react-router';
