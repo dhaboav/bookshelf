@@ -6,8 +6,8 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { authorsQueryOptions } from '@/entities/authors';
 import type { BookPublic } from '@/entities/books';
+import { genresQueryOptions } from '@/entities/genres';
 import { updateBookSchema, useUpdateBook, type BookUpdateInput } from '@/features/books';
-import { genresQueryOptions } from '@/features/genres/hooks/useGenreQueries';
 
 import {
   Button,

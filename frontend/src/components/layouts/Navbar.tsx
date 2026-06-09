@@ -1,8 +1,8 @@
 import reactLogo from '@/assets/react.svg';
 import SearchBar from '@/components/layouts/SearchBar';
-import { AddAuthor } from '@/features/authors/ui/AddAuthor';
+import { AddAuthor } from '@/features/authors';
 import { AddBook } from '@/features/books';
-import AddGenre from '@/features/genres/ui/AddGenre';
+import { AddGenre } from '@/features/genres';
 import { SidebarTrigger } from '@/shared/ui';
 import { Link, useLocation } from '@tanstack/react-router';
 

@@ -1,6 +1,6 @@
-import { deleteGenreMutation } from '@/features/genres/hooks/useGenreQueries';
-import { Button } from '@/shared/ui/button';
+import { useDeleteGenre } from '@/features/genres';
 import {
+  Button,
   Dialog,
   DialogClose,
   DialogContent,
@@ -9,27 +9,28 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/shared/ui/dialog';
-import { Spinner } from '@/shared/ui/spinner';
+  Spinner,
+} from '@/shared/ui';
 
 import { TrashIcon } from 'lucide-react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 
 interface DeleteGenreProps {
   id: number;
+  onSuccess: () => void;
 }
 
-const DeleteGenre = ({ id }: DeleteGenreProps) => {
+export const DeleteGenre = ({ id, onSuccess }: DeleteGenreProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { handleSubmit } = useForm();
+  const { mutate: deleteGenre, isPending } = useDeleteGenre();
 
-  const mutation = deleteGenreMutation(id, () => {
-    setIsOpen(false);
-  });
-
-  const onSubmit = () => {
-    mutation.mutate(id);
+  const handleDelete = () => {
+    deleteGenre(id, {
+      onSuccess: () => {
+        setIsOpen(false);
+        onSuccess();
+      },
+    });
   };
 
   return (
@@ -41,42 +42,34 @@ const DeleteGenre = ({ id }: DeleteGenreProps) => {
       </DialogTrigger>
 
       <DialogContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>
-            <DialogTitle>Delete a genre</DialogTitle>
-            <DialogDescription>
-              This genre will be permanently deleted. Are you sure? You will not be able to undo
-              this action.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Delete a genre</DialogTitle>
+          <DialogDescription>
+            This genre will be permanently deleted. Are you sure? You will not be able to undo this
+            action.
+          </DialogDescription>
+        </DialogHeader>
 
-          <DialogFooter className="mt-2 lg:mt-0">
-            <DialogClose asChild>
-              <Button variant="ghost" type="button" disabled={mutation.isPending}>
-                Cancel
-              </Button>
-            </DialogClose>
-
-            <Button
-              className="lg:w-24"
-              variant="destructive"
-              type="submit"
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending ? (
-                <div className="flex flex-row items-center gap-x-1">
-                  <Spinner data-icon="inline-start" />
-                  <span>Delete</span>
-                </div>
-              ) : (
-                'Delete'
-              )}
+        <DialogFooter className="mt-2 lg:mt-0">
+          <DialogClose asChild>
+            <Button variant="ghost" type="button" disabled={isPending}>
+              Cancel
             </Button>
-          </DialogFooter>
-        </form>
+          </DialogClose>
+
+          <Button
+            className="lg:w-24"
+            variant="destructive"
+            disabled={isPending}
+            onClick={handleDelete}
+          >
+            <div className="flex items-center gap-x-1">
+              {isPending && <Spinner data-icon="inline-start" />}
+              <span>{isPending ? 'Deleting...' : 'Delete'}</span>
+            </div>
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
-
-export default DeleteGenre;

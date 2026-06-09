@@ -6,8 +6,8 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { Scanner } from '@/components/layouts/Scanner';
 import { authorsQueryOptions } from '@/entities/authors';
+import { genresQueryOptions } from '@/entities/genres';
 import { bookSchema, useCreateBook, type BookCreateInput } from '@/features/books';
-import { genresQueryOptions } from '@/features/genres/hooks/useGenreQueries';
 
 import {
   Button,

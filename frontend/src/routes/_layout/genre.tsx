@@ -1,6 +1,5 @@
-import { genresQueryOptions } from '@/features/genres/hooks/useGenreQueries';
-import DeleteGenre from '@/features/genres/ui/DeleteGenre';
-import EditGenre from '@/features/genres/ui/EditGenre';
+import { genresQueryOptions } from '@/entities/genres';
+import { DeleteGenre, UpdateGenre } from '@/features/genres';
 import type { Search } from '@/shared/model';
 
 import {
@@ -76,8 +75,8 @@ function Genres() {
                 <TableCell className="font-medium">{data.total_books}</TableCell>
                 <TableCell>
                   <div className="flex justify-end gap-2">
-                    <EditGenre genre={data} />
-                    <DeleteGenre id={data.id} />
+                    <UpdateGenre genre={data} onSuccess={() => {}} />
+                    <DeleteGenre id={data.id} onSuccess={() => {}} />
                   </div>
                 </TableCell>
               </TableRow>

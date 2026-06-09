@@ -1,4 +1,6 @@
-import { genreSchema, useCreateGenre, type GenreSchema } from '@/features/genres';
+import type { GenrePublic } from '@/entities/genres';
+import { genreSchema, useUpdateGenre, type GenreSchema } from '@/features/genres';
+
 import {
   Button,
   Dialog,
@@ -16,14 +18,20 @@ import {
   Input,
   Spinner,
 } from '@/shared/ui';
+
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus } from 'lucide-react';
+import { EditIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-export const AddGenre = () => {
+interface UpdateGenreProps {
+  genre: GenrePublic;
+  onSuccess: () => void;
+}
+
+export const UpdateGenre = ({ genre, onSuccess }: UpdateGenreProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { mutate: createGenre, isPending } = useCreateGenre();
+  const { mutate: updateGenre, isPending } = useUpdateGenre();
 
   const {
     register,
@@ -34,39 +42,46 @@ export const AddGenre = () => {
     resolver: zodResolver(genreSchema),
     mode: 'onSubmit',
     defaultValues: {
-      genre: '',
+      genre: genre.genre,
     },
   });
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
-    if (!open) reset();
+    if (!open) {
+      reset({
+        genre: genre.genre,
+      });
+    }
   };
 
   const onSubmit = (data: GenreSchema) => {
-    createGenre(data, {
-      onSuccess: () => {
-        handleOpenChange(false);
+    updateGenre(
+      { id: genre.id, data },
+      {
+        onSuccess: () => {
+          handleOpenChange(false);
+          onSuccess();
+        },
       },
-    });
+    );
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus />
+      <DialogTrigger asChild onSelect={(e) => e.preventDefault()} onClick={() => setIsOpen(true)}>
+        <Button variant="ghost" size="icon" className="bg-transparent text-gray-400">
+          <EditIcon />
         </Button>
       </DialogTrigger>
 
       <DialogContent className="max-h-138 overflow-y-auto">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader className="mb-3">
-            <DialogTitle>Add a new Genre</DialogTitle>
+            <DialogTitle>Edit the genre</DialogTitle>
           </DialogHeader>
-
           <DialogDescription className="sr-only">
-            Fill out the form below to add a new genre to your library.
+            Fill out the form below to edit the genre to your library.
           </DialogDescription>
 
           <FieldGroup>
@@ -77,7 +92,7 @@ export const AddGenre = () => {
               <Input
                 {...register('genre')}
                 id="genre"
-                placeholder="Genre Name"
+                placeholder="Book genre"
                 aria-invalid={!!errors.genre}
               />
               {errors.genre && <FieldError errors={[errors.genre]} />}
@@ -90,6 +105,7 @@ export const AddGenre = () => {
                 Cancel
               </Button>
             </DialogClose>
+
             <Button type="submit" disabled={isPending}>
               <div className="flex items-center gap-x-1">
                 {isPending && <Spinner data-icon="inline-start" />}
