@@ -17,3 +17,9 @@ export * from './spinner';
 export * from './table';
 export * from './textarea';
 export * from './tooltip';
+
+export { EmptyState } from './empty-state';
+export { ErrorComponent } from './error-component';
+export { LoadingComponent } from './loading-component';
+export { NotFound } from './not-found';
+export { PaginationWrapper } from './pagination-wrapper';

@@ -4,9 +4,9 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import { Scanner } from '@/components/layouts/Scanner';
 import { authorsQueryOptions } from '@/entities/authors';
 import { genresQueryOptions } from '@/entities/genres';
+import { BarcodeScanner } from '@/features/barcode-scanner';
 import { bookSchema, useCreateBook, type BookCreateInput } from '@/features/books';
 
 import {
@@ -94,7 +94,7 @@ export const AddBook = () => {
           </DialogDescription>
 
           <FieldGroup>
-            <Scanner
+            <BarcodeScanner
               disabled={isPending}
               onScanSuccess={(scannedCode) => {
                 setValue('isbn', scannedCode, { shouldValidate: true });
