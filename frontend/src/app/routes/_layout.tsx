@@ -16,8 +16,8 @@ function Layout() {
 
   return (
     <>
-      <SidebarProvider defaultOpen={false}>
-        <SidebarComponent variant="inset" />
+      <SidebarProvider>
+        <SidebarComponent />
         <SidebarInset>
           <Navbar />
           <main className="px-3 lg:px-48">

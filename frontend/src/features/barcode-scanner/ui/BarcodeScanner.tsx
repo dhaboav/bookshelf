@@ -1,21 +1,27 @@
 import { Button } from '@/shared/ui';
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
-import { Camera, XCircle, Zap, ZapOff } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { XCircle, Zap, ZapOff } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+
+type InjectorButtonElement = React.ReactElement<
+  React.ComponentProps<typeof Button> & {
+    'data-scanning'?: boolean;
+  }
+>;
 
 interface BarcodeScannerProps {
   onScanSuccess: (decodedText: string) => void;
   disabled?: boolean;
+  actionButton: InjectorButtonElement;
 }
 
-export const BarcodeScanner = ({ onScanSuccess, disabled }: BarcodeScannerProps) => {
+export const BarcodeScanner = ({ onScanSuccess, disabled, actionButton }: BarcodeScannerProps) => {
   const [isScanning, setIsScanning] = useState(false);
   const [isFlashOn, setIsFlashOn] = useState(false);
   const [hasFlash, setHasFlash] = useState(false);
   const qrScannerRef = useRef<Html5Qrcode | null>(null);
   const SCANNER_ELEMENT_ID = 'isbn-modular-scanner-view';
 
-  // Native video helper
   const getVideoTrack = (): MediaStreamTrack | null => {
     const video = document.getElementById(SCANNER_ELEMENT_ID)?.querySelector('video');
     return (video?.srcObject as MediaStream | null)?.getVideoTracks()[0] || null;
@@ -46,7 +52,6 @@ export const BarcodeScanner = ({ onScanSuccess, disabled }: BarcodeScannerProps)
           },
         );
 
-        // Checking flash hardware
         const track = getVideoTrack();
         if (track && typeof track.getCapabilities === 'function') {
           setHasFlash('torch' in track.getCapabilities());
@@ -99,6 +104,13 @@ export const BarcodeScanner = ({ onScanSuccess, disabled }: BarcodeScannerProps)
     };
   }, []);
 
+  if (!React.isValidElement(actionButton)) return actionButton;
+  const injectorProps = {
+    onClick: isScanning ? stopScanner : startScanner,
+    disabled: disabled,
+    'data-scanning': isScanning,
+  };
+
   return (
     <div className="flex w-full flex-col gap-3">
       {isScanning && (
@@ -144,17 +156,7 @@ export const BarcodeScanner = ({ onScanSuccess, disabled }: BarcodeScannerProps)
           ></div>
         </div>
       )}
-
-      <Button
-        type="button"
-        variant={isScanning ? 'secondary' : 'default'}
-        onClick={isScanning ? stopScanner : startScanner}
-        disabled={disabled}
-        className="shrink-0 gap-1.5"
-      >
-        <Camera className="h-4 w-4" />
-        {isScanning ? 'Cam On' : 'Scan'}
-      </Button>
+      {React.cloneElement(actionButton, injectorProps)}
     </div>
   );
 };

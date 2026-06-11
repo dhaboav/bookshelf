@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
+import { Plus, ScanLine } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -99,6 +99,12 @@ export const AddBook = () => {
               onScanSuccess={(scannedCode) => {
                 setValue('isbn', scannedCode, { shouldValidate: true });
               }}
+              actionButton={
+                <Button variant="outline" className="w-full">
+                  <ScanLine className="mr-2 size-4" />
+                  Scan
+                </Button>
+              }
             />
 
             <div className="flex flex-col gap-3 lg:grid lg:grid-cols-2">

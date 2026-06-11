@@ -1,7 +1,7 @@
 # =========================
-# Builder / Dev stage
+# Builder stage
 # =========================
-FROM node:24-alpine AS development
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
@@ -15,15 +15,10 @@ ARG VITE_API_URL
 
 ENV VITE_API_URL=$VITE_API_URL
 
-# =========================
-# Production Build stage
-# =========================
-FROM development AS build
-
 RUN npm run build
 
 # =========================
-# Runtime stage (Production only)
+# Runtime stage
 # =========================
 FROM nginx:alpine-slim AS runtime
 

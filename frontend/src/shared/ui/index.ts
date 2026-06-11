@@ -18,6 +18,7 @@ export * from './table';
 export * from './textarea';
 export * from './tooltip';
 
+export { CustomSidebarTrigger } from './CustomSidebarTrigger';
 export { EmptyState } from './empty-state';
 export { ErrorComponent } from './error-component';
 export { LoadingComponent } from './loading-component';

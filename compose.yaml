@@ -52,35 +52,16 @@ services:
       - MYSQL_DB=${MYSQL_DB?Variable not set}
     ports:
       - "8000:8000"
-    develop:
-      watch:
-        - action: sync
-          path: ./backend
-          target: /app
-          ignore:
-            - ./backend/__pycache__
-            - ./backend/.venv
 
   frontend:
     image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
     build:
       context: .
       dockerfile: frontend/Dockerfile
-      target: development
       args:
         - VITE_API_URL=${VITE_API_URL?Variable not set}
     ports:
-      - "5173:5173" #"5173:80" production
-
-    entrypoint: []
-    command: npm run dev -- --host 0.0.0.0
-    develop:
-      watch:
-        - action: sync
-          path: ./frontend
-          target: /app
-          ignore:
-            - ./frontend/node_modules
+      - "5173:80"
 
 volumes:
   db-data:
