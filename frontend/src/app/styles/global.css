@@ -44,14 +44,16 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /*  */
-  --color-gold: var(--gold);
+  --color-gold: oklch(0.7656 0.151 87.27);;
   --font-display: "Cormorant Garamond", serif;
   --font-mono: "JetBrains Mono", monospace;
+  --text-tiny: 0.625rem;
+
 }
 
 :root {
 
-  --gold: #d4af37;
+  
 
   --radius: 0.625rem;
   --background: oklch(1 0 0);

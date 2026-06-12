@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, ScanLine } from 'lucide-react';
+import { ScanLine } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -9,31 +9,34 @@ import { genresQueryOptions } from '@/entities/genres';
 import { BarcodeScanner } from '@/features/barcode-scanner';
 import { bookSchema, useCreateBook, type BookCreateInput } from '@/features/books';
 
+import { DialogCustom } from '@/entities/DialogCustom';
 import {
   Button,
-  Dialog,
   DialogClose,
-  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   Field,
   FieldError,
-  FieldGroup,
   FieldLabel,
   Input,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
   Spinner,
   Textarea,
 } from '@/shared/ui';
+
+const LABEL_CLASS = 'text-foreground/40 text-[10px] uppercase tracking-[0.2em] block font-medium';
+const FormLabel = ({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) => (
+  <FieldLabel htmlFor={htmlFor} className={LABEL_CLASS}>
+    {children}
+  </FieldLabel>
+);
 
 export const AddBook = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -70,61 +73,63 @@ export const AddBook = () => {
 
   const onSubmit = (data: BookCreateInput) => {
     createBook(data, {
-      onSuccess: () => {
-        handleOpenChange(false);
-      },
+      onSuccess: () => handleOpenChange(false),
     });
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus />
-        </Button>
-      </DialogTrigger>
+    <DialogCustom
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+      className="bg-sidebar flex h-auto max-h-[95vh] flex-col overflow-hidden p-0 lg:max-w-3xl"
+    >
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-1 flex-col overflow-hidden">
+        <DialogHeader className="border-border/10 shrink-0 border-b p-6">
+          <DialogTitle>Catalogue Volume</DialogTitle>
+          <DialogDescription>Enter metadata or scan the barcode to begin.</DialogDescription>
+        </DialogHeader>
 
-      <DialogContent className="max-h-138 overflow-y-auto">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader className="mb-3">
-            <DialogTitle>Add a Book</DialogTitle>
-          </DialogHeader>
-          <DialogDescription className="sr-only">
-            Fill out the form below to add a new book to your library.
-          </DialogDescription>
-
-          <FieldGroup>
-            <BarcodeScanner
-              disabled={isPending}
-              onScanSuccess={(scannedCode) => {
-                setValue('isbn', scannedCode, { shouldValidate: true });
-              }}
-              actionButton={
-                <Button variant="outline" className="w-full">
-                  <ScanLine className="mr-2 size-4" />
-                  Scan
-                </Button>
-              }
-            />
-
-            <div className="flex flex-col gap-3 lg:grid lg:grid-cols-2">
+        <div className="flex-1 space-y-4 overflow-y-auto p-6">
+          <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
+            <div className="w-full space-y-4">
               <Field data-invalid={!!errors.isbn}>
-                <FieldLabel htmlFor="isbn">
-                  ISBN<span className="text-red-600">*</span>
-                </FieldLabel>
-                <Input
-                  {...register('isbn')}
-                  id="isbn"
-                  placeholder="Scan or enter book ISBN"
-                  aria-invalid={!!errors.isbn}
-                />
+                <FormLabel htmlFor="isbn">
+                  ISBN / SCAN<span className="text-red-600">*</span>
+                </FormLabel>
+                <div className="flex w-full flex-row gap-x-2">
+                  <Input
+                    {...register('isbn')}
+                    id="isbn"
+                    placeholder="978-0..."
+                    aria-invalid={!!errors.isbn}
+                    className="w-[75%] lg:w-[80%]"
+                  />
+                  <div className="w-[25%] lg:w-[20%]">
+                    <BarcodeScanner
+                      disabled={isPending}
+                      onScanSuccess={(scannedCode) => {
+                        setValue('isbn', scannedCode, { shouldValidate: true });
+                      }}
+                      actionButton={
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="text-foreground/70 flex h-10 w-full cursor-pointer items-center justify-center gap-1 text-xs"
+                        >
+                          <ScanLine className="size-4" />
+                          <span className="hidden sm:inline">Scan</span>
+                        </Button>
+                      }
+                    />
+                  </div>
+                </div>
                 {errors.isbn && <FieldError errors={[errors.isbn]} />}
               </Field>
 
               <Field data-invalid={!!errors.title}>
-                <FieldLabel htmlFor="title">
-                  Title<span className="text-red-600">*</span>
-                </FieldLabel>
+                <FormLabel htmlFor="title">
+                  TITLE<span className="text-red-600">*</span>
+                </FormLabel>
                 <Input
                   {...register('title')}
                   id="title"
@@ -139,19 +144,19 @@ export const AddBook = () => {
                 control={control}
                 render={({ field }) => (
                   <Field data-invalid={!!errors.author_id}>
-                    <FieldLabel htmlFor="author_id">
-                      Author<span className="text-red-600">*</span>
-                    </FieldLabel>
+                    <FormLabel htmlFor="author_id">
+                      AUTHOR<span className="text-red-600">*</span>
+                    </FormLabel>
                     <Select
+                      name="author_id"
                       onValueChange={(val) => field.onChange(Number(val))}
                       value={field.value?.toString()}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select author" />
+                      <SelectTrigger id="author_id" name="author_id">
+                        <SelectValue placeholder="Author name" />
                       </SelectTrigger>
                       <SelectContent position="popper">
                         <SelectGroup>
-                          <SelectLabel>Authors</SelectLabel>
                           {authors?.map((a: any) => (
                             <SelectItem key={a.id} value={a.id.toString()}>
                               {a.author}
@@ -165,96 +170,102 @@ export const AddBook = () => {
                 )}
               />
 
-              <Controller
-                name="genre_id"
-                control={control}
-                render={({ field }) => (
-                  <Field data-invalid={!!errors.genre_id}>
-                    <FieldLabel htmlFor="genre_id">
-                      Genre<span className="text-red-600">*</span>
-                    </FieldLabel>
-                    <Select
-                      onValueChange={(val) => field.onChange(Number(val))}
-                      value={field.value?.toString()}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select genre" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        <SelectGroup>
-                          <SelectLabel>Genres</SelectLabel>
-                          {genres?.map((g: any) => (
-                            <SelectItem key={g.id} value={g.id.toString()}>
-                              {g.genre}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                    {errors.genre_id && <FieldError errors={[errors.genre_id]} />}
-                  </Field>
-                )}
-              />
+              <div className="grid grid-cols-2 gap-4">
+                <Controller
+                  name="genre_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Field data-invalid={!!errors.genre_id}>
+                      <FormLabel htmlFor="genre_id">GENRE</FormLabel>
+                      <Select
+                        name="genre_id"
+                        onValueChange={(val) => field.onChange(Number(val))}
+                        value={field.value?.toString()}
+                      >
+                        <SelectTrigger id="genre_id" name="genre_id">
+                          <SelectValue placeholder="Select genre" />
+                        </SelectTrigger>
+                        <SelectContent position="popper">
+                          <SelectGroup>
+                            {genres?.map((g: any) => (
+                              <SelectItem key={g.id} value={g.id.toString()}>
+                                {g.genre}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      {errors.genre_id && <FieldError errors={[errors.genre_id]} />}
+                    </Field>
+                  )}
+                />
+
+                <Field data-invalid={!!errors.published_year}>
+                  <FormLabel htmlFor="published_year">YEAR</FormLabel>
+                  <Input
+                    {...register('published_year', { valueAsNumber: true })}
+                    id="published_year"
+                    type="number"
+                    placeholder="2026"
+                    aria-invalid={!!errors.published_year}
+                  />
+                  {errors.published_year && <FieldError errors={[errors.published_year]} />}
+                </Field>
+              </div>
+            </div>
+
+            <div className="flex h-full w-full flex-col justify-between space-y-4">
+              <Field data-invalid={!!errors.description} className="flex flex-1 flex-col">
+                <FormLabel htmlFor="description">DESCRIPTION</FormLabel>
+                <Textarea
+                  {...register('description')}
+                  id="description"
+                  placeholder="A short summary..."
+                  className="min-h-[120px] resize-none overflow-y-auto lg:h-[190px]"
+                  aria-invalid={!!errors.description}
+                />
+                {errors.description && <FieldError errors={[errors.description]} />}
+              </Field>
 
               <Field data-invalid={!!errors.total_pages}>
-                <FieldLabel htmlFor="total_pages">
-                  Total Pages<span className="text-red-600">*</span>
-                </FieldLabel>
+                <FormLabel htmlFor="total_pages">
+                  TOTAL PAGES<span className="text-red-600">*</span>
+                </FormLabel>
                 <Input
                   {...register('total_pages', { valueAsNumber: true })}
                   id="total_pages"
                   type="number"
-                  placeholder="e.g. 132"
+                  placeholder="0"
                   aria-invalid={!!errors.total_pages}
                 />
                 {errors.total_pages && <FieldError errors={[errors.total_pages]} />}
               </Field>
-
-              <Field data-invalid={!!errors.published_year}>
-                <FieldLabel htmlFor="published_year">
-                  Year Published<span className="text-red-600">*</span>
-                </FieldLabel>
-                <Input
-                  {...register('published_year', { valueAsNumber: true })}
-                  id="published_year"
-                  type="number"
-                  placeholder="e.g. 2026"
-                  aria-invalid={!!errors.published_year}
-                />
-                {errors.published_year && <FieldError errors={[errors.published_year]} />}
-              </Field>
             </div>
+          </div>
+        </div>
 
-            <Field data-invalid={!!errors.description}>
-              <FieldLabel htmlFor="description">Description</FieldLabel>
-              <Textarea
-                {...register('description')}
-                id="description"
-                placeholder="A short summary..."
-                rows={8}
-                className="h-32 overflow-y-auto"
-                aria-invalid={!!errors.description}
-              />
-              {errors.description && <FieldError errors={[errors.description]} />}
-            </Field>
-          </FieldGroup>
-
-          <DialogFooter className="mt-4 justify-start">
-            <DialogClose asChild>
-              <Button variant="outline" disabled={isPending}>
-                Cancel
-              </Button>
-            </DialogClose>
-
-            <Button type="submit" disabled={isPending}>
-              <div className="flex items-center gap-x-1">
-                {isPending && <Spinner data-icon="inline-start" />}
-                <span>{isPending ? 'Saving...' : 'Save'}</span>
-              </div>
+        <DialogFooter className="border-border/10 bg-background/50 flex shrink-0 flex-row gap-3 border-t p-6">
+          <DialogClose asChild>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isPending}
+              className="text-foreground/60 hover:text-foreground h-11 cursor-pointer rounded-xl border border-white/10 px-6 text-sm font-medium transition-colors hover:bg-white/5"
+            >
+              Cancel
             </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+          </DialogClose>
+
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="bg-gold/10 border-gold/20 text-gold hover:bg-gold/20 flex h-11 flex-1 cursor-pointer items-center justify-center gap-x-2 rounded-xl border text-sm font-medium tracking-wide transition-all"
+          >
+            {isPending && <Spinner data-icon="inline-start" />}
+            <span>{isPending ? 'Registering...' : 'Register Volume'}</span>
+          </Button>
+        </DialogFooter>
+      </form>
+    </DialogCustom>
   );
 };
