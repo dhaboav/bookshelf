@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogOverlay, DialogTrigger } from '@/shared/ui';
+import { Button, Dialog, DialogContent, DialogTrigger } from '@/shared/ui';
 import { Plus } from 'lucide-react';
 
 interface DialogCustomProps {
@@ -19,7 +19,6 @@ export const DialogCustom = ({ open, onOpenChange, children, className }: Dialog
           <Plus className="size-4" />
         </Button>
       </DialogTrigger>
-      <DialogOverlay className="bg-black/50 backdrop-blur-md" />
       <DialogContent className={className}>{children}</DialogContent>
     </Dialog>
   );

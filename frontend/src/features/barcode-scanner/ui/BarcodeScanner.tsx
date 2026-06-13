@@ -1,162 +1,142 @@
-import { Button } from '@/shared/ui';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/ui';
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
-import { XCircle, Zap, ZapOff } from 'lucide-react';
+import { Zap, ZapOff } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-
-type InjectorButtonElement = React.ReactElement<
-  React.ComponentProps<typeof Button> & {
-    'data-scanning'?: boolean;
-  }
->;
 
 interface BarcodeScannerProps {
   onScanSuccess: (decodedText: string) => void;
   disabled?: boolean;
-  actionButton: InjectorButtonElement;
+  actionButton: React.ReactElement;
 }
 
 export const BarcodeScanner = ({ onScanSuccess, disabled, actionButton }: BarcodeScannerProps) => {
-  const [isScanning, setIsScanning] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [isFlashOn, setIsFlashOn] = useState(false);
   const [hasFlash, setHasFlash] = useState(false);
   const qrScannerRef = useRef<Html5Qrcode | null>(null);
-  const SCANNER_ELEMENT_ID = 'isbn-modular-scanner-view';
+  const SCANNER_ID = 'isbn-scanner-view';
 
   const getVideoTrack = (): MediaStreamTrack | null => {
-    const video = document.getElementById(SCANNER_ELEMENT_ID)?.querySelector('video');
+    const video = document.getElementById(SCANNER_ID)?.querySelector('video');
     return (video?.srcObject as MediaStream | null)?.getVideoTracks()[0] || null;
   };
 
-  const startScanner = async () => {
-    setIsScanning(true);
-    setIsFlashOn(false);
-    setHasFlash(false);
+  useEffect(() => {
+    if (!isOpen) return;
 
-    setTimeout(async () => {
+    const timer = setTimeout(async () => {
       try {
-        const scannerInstance = new Html5Qrcode(SCANNER_ELEMENT_ID, {
+        const instance = new Html5Qrcode(SCANNER_ID, {
           formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13],
           verbose: false,
         });
-        qrScannerRef.current = scannerInstance;
+        qrScannerRef.current = instance;
 
-        await scannerInstance.start(
+        await instance.start(
           { facingMode: 'environment' },
           { fps: 10, qrbox: { width: 260, height: 140 } },
-          (decodedText) => {
-            onScanSuccess(decodedText);
-            stopScanner();
+          (text) => {
+            onScanSuccess(text);
+            setIsOpen(false);
           },
-          () => {
-            /* Absorb frame misses */
-          },
+          () => {},
         );
 
         const track = getVideoTrack();
-        if (track && typeof track.getCapabilities === 'function') {
-          setHasFlash('torch' in track.getCapabilities());
-        }
+        setHasFlash(
+          !!track &&
+            typeof track.getCapabilities === 'function' &&
+            'torch' in track.getCapabilities(),
+        );
       } catch (err) {
-        console.error('Camera access failed:', err);
-        setIsScanning(false);
+        console.error('Camera initialization failed:', err);
+        setIsOpen(false);
       }
-    }, 120);
-  };
+    }, 150);
+
+    return () => {
+      clearTimeout(timer);
+      if (qrScannerRef.current?.isScanning) {
+        qrScannerRef.current
+          .stop()
+          .then(() => {
+            qrScannerRef.current = null;
+          })
+          .catch(console.error);
+      }
+      setIsFlashOn(false);
+      setHasFlash(false);
+    };
+  }, [isOpen]);
 
   const toggleFlash = async () => {
-    if (!qrScannerRef.current?.isScanning || !hasFlash) return;
+    const track = getVideoTrack();
+    if (!track) return;
     try {
       const nextState = !isFlashOn;
-      const track = getVideoTrack();
-      if (track) {
-        await track.applyConstraints({ advanced: [{ torch: nextState }] } as any);
-        setIsFlashOn(nextState);
-      }
+      await track.applyConstraints({ advanced: [{ torch: nextState }] } as any);
+      setIsFlashOn(nextState);
     } catch (err) {
-      console.error('Failed to toggle flash:', err);
+      console.error('Flash toggle failed:', err);
     }
   };
-
-  const stopScanner = async () => {
-    if (qrScannerRef.current?.isScanning) {
-      try {
-        if (isFlashOn) {
-          await getVideoTrack()
-            ?.applyConstraints({ advanced: [{ torch: false }] } as any)
-            .catch(() => {});
-        }
-        await qrScannerRef.current.stop();
-      } catch (err) {
-        console.error('Failed to stop stream:', err);
-      }
-    }
-    qrScannerRef.current = null;
-    setIsScanning(false);
-    setIsFlashOn(false);
-    setHasFlash(false);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (qrScannerRef.current?.isScanning) {
-        qrScannerRef.current.stop().catch(console.error);
-      }
-    };
-  }, []);
 
   if (!React.isValidElement(actionButton)) return actionButton;
-  const injectorProps = {
-    onClick: isScanning ? stopScanner : startScanner,
-    disabled: disabled,
-    'data-scanning': isScanning,
-  };
 
   return (
-    <div className="flex w-full flex-col gap-3">
-      {isScanning && (
-        <div className="bg-muted/30 animate-in fade-in-50 relative rounded-xl border border-dashed p-3 duration-200">
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <span className="flex animate-pulse items-center gap-1.5 text-xs font-semibold text-amber-600">
-              <span className="h-2 w-2 rounded-full bg-amber-500"></span>
-              Camera Active: Align book barcode
-            </span>
+    <>
+      {React.cloneElement(actionButton as any, {
+        onClick: () => setIsOpen(true),
+        disabled,
+        'data-scanning': isOpen ? 'true' : undefined,
+      })}
 
-            <div className="flex items-center gap-1">
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="bg-sidebar rounded-2xl border border-white/10 p-6 shadow-2xl lg:max-w-md">
+          <DialogHeader className="flex">
+            <DialogTitle className="text-sm font-semibold tracking-wide uppercase">
+              Barcode Scanner
+            </DialogTitle>
+
+            <div className="flex flex-row items-center justify-between">
+              <DialogDescription className="text-foreground/40 text-xs">
+                Align barcode inside the frame.
+              </DialogDescription>
+
               {hasFlash && (
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={toggleFlash}
-                  className={`h-6 px-2 ${isFlashOn ? 'text-amber-500 hover:text-amber-600' : 'text-muted-foreground'}`}
+                  className={`h-7 rounded-lg px-2.5 text-xs ${isFlashOn ? 'bg-amber-500/10 text-amber-500' : 'text-foreground/40'}`}
                 >
                   {isFlashOn ? (
-                    <Zap className="mr-1 h-3.5 w-3.5 fill-amber-500" />
+                    <Zap className="size-3.5 fill-amber-500" />
                   ) : (
-                    <ZapOff className="mr-1 h-3.5 w-3.5" />
+                    <ZapOff className="size-3.5" />
                   )}
-                  {isFlashOn ? 'Flash On' : 'Flash Off'}
                 </Button>
               )}
+            </div>
+          </DialogHeader>
 
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={stopScanner}
-                className="text-muted-foreground hover:text-destructive h-6 px-2"
-              >
-                <XCircle className="mr-1 h-3.5 w-3.5" /> Turn Off
-              </Button>
+          <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl border border-white/5 bg-black lg:aspect-[4/3]">
+            <div id={SCANNER_ID} className="h-full w-full" />
+            <div className="absolute top-3 left-3 flex items-center gap-1.5 rounded-md bg-black px-2 py-1 backdrop-blur-lg">
+              <span className="h-1 w-1 animate-ping rounded-full bg-red-600" />
+              <span className="text-tiny font-medium text-red-600 uppercase">Live</span>
             </div>
           </div>
-          <div
-            id={SCANNER_ELEMENT_ID}
-            className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-zinc-950"
-          ></div>
-        </div>
-      )}
-      {React.cloneElement(actionButton, injectorProps)}
-    </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };

@@ -8,6 +8,7 @@ export const bookSchema = z.object({
     .string()
     .min(4, 'Title must be at least 4 characters.')
     .max(255, 'Title must be at most 255 characters.'),
+  cover: z.string().optional().or(z.literal('')),
   author_id: z.number(),
   genre_id: z.number(),
   total_pages: z.number(),

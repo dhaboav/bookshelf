@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
-import { ScanLine } from 'lucide-react';
-import { useState } from 'react';
+import { ImagePlus, ScanLine, Upload } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { authorsQueryOptions } from '@/entities/authors';
@@ -40,6 +40,7 @@ const FormLabel = ({ htmlFor, children }: { htmlFor: string; children: React.Rea
 
 export const AddBook = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const { mutate: createBook, isPending } = useCreateBook();
 
   const {
@@ -55,6 +56,7 @@ export const AddBook = () => {
     defaultValues: {
       isbn: '',
       title: '',
+      cover: '',
       author_id: undefined,
       genre_id: undefined,
       total_pages: 0,
@@ -81,7 +83,7 @@ export const AddBook = () => {
     <DialogCustom
       open={isOpen}
       onOpenChange={handleOpenChange}
-      className="bg-sidebar flex h-auto max-h-[95vh] flex-col overflow-hidden p-0 lg:max-w-3xl"
+      className="bg-sidebar flex h-auto max-h-[85vh] flex-col overflow-hidden p-0 lg:max-h-[95vh] lg:max-w-3xl"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-1 flex-col overflow-hidden">
         <DialogHeader className="border-border/10 shrink-0 border-b p-6">
@@ -91,6 +93,75 @@ export const AddBook = () => {
 
         <div className="flex-1 space-y-4 overflow-y-auto p-6">
           <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
+            <Controller
+              name="cover"
+              control={control}
+              render={({ field }) => (
+                <Field data-invalid={!!errors.cover} className="w-full">
+                  <FormLabel htmlFor="cover_input">Cover</FormLabel>
+
+                  <button
+                    type="button"
+                    disabled={isPending}
+                    onClick={() => fileRef.current?.click()}
+                    className="bg-background/30 group relative flex aspect-[4/5] w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl ring-1 ring-white/10 transition-all hover:ring-white/20"
+                  >
+                    {field.value ? (
+                      <>
+                        <img
+                          src={field.value}
+                          alt="Cover preview"
+                          className="h-full w-full object-cover"
+                        />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/70 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                          <Upload className="size-4" />
+                          <span className="font-mono text-[9px] tracking-widest uppercase">
+                            Replace
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-foreground/40 group-hover:text-foreground/70 flex flex-col items-center gap-2 transition-colors">
+                        <ImagePlus className="size-6" />
+                        <span className="font-mono text-[9px] tracking-widest uppercase">
+                          Upload
+                        </span>
+                      </div>
+                    )}
+                  </button>
+
+                  <input
+                    id="cover_input"
+                    ref={fileRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const files = e.target.files;
+                      if (files && files.length > 0) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          field.onChange(reader.result as string);
+                        };
+                        reader.readAsDataURL(files[0]);
+                      }
+                    }}
+                    className="hidden"
+                  />
+
+                  {field.value && (
+                    <button
+                      type="button"
+                      onClick={() => field.onChange('')}
+                      className="text-foreground/40 mt-2 w-full cursor-pointer text-center font-mono text-[9px] tracking-widest uppercase transition-colors hover:text-red-500"
+                    >
+                      Remove cover
+                    </button>
+                  )}
+
+                  {errors.cover && <FieldError errors={[errors.cover]} />}
+                </Field>
+              )}
+            />
             <div className="w-full space-y-4">
               <Field data-invalid={!!errors.isbn}>
                 <FormLabel htmlFor="isbn">
@@ -139,37 +210,6 @@ export const AddBook = () => {
                 {errors.title && <FieldError errors={[errors.title]} />}
               </Field>
 
-              <Controller
-                name="author_id"
-                control={control}
-                render={({ field }) => (
-                  <Field data-invalid={!!errors.author_id}>
-                    <FormLabel htmlFor="author_id">
-                      AUTHOR<span className="text-red-600">*</span>
-                    </FormLabel>
-                    <Select
-                      name="author_id"
-                      onValueChange={(val) => field.onChange(Number(val))}
-                      value={field.value?.toString()}
-                    >
-                      <SelectTrigger id="author_id" name="author_id">
-                        <SelectValue placeholder="Author name" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        <SelectGroup>
-                          {authors?.map((a: any) => (
-                            <SelectItem key={a.id} value={a.id.toString()}>
-                              {a.author}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                    {errors.author_id && <FieldError errors={[errors.author_id]} />}
-                  </Field>
-                )}
-              />
-
               <div className="grid grid-cols-2 gap-4">
                 <Controller
                   name="genre_id"
@@ -200,6 +240,39 @@ export const AddBook = () => {
                   )}
                 />
 
+                <Controller
+                  name="author_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Field data-invalid={!!errors.author_id}>
+                      <FormLabel htmlFor="author_id">
+                        AUTHOR<span className="text-red-600">*</span>
+                      </FormLabel>
+                      <Select
+                        name="author_id"
+                        onValueChange={(val) => field.onChange(Number(val))}
+                        value={field.value?.toString()}
+                      >
+                        <SelectTrigger id="author_id" name="author_id">
+                          <SelectValue placeholder="Author name" />
+                        </SelectTrigger>
+                        <SelectContent position="popper">
+                          <SelectGroup>
+                            {authors?.map((a: any) => (
+                              <SelectItem key={a.id} value={a.id.toString()}>
+                                {a.author}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      {errors.author_id && <FieldError errors={[errors.author_id]} />}
+                    </Field>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <Field data-invalid={!!errors.published_year}>
                   <FormLabel htmlFor="published_year">YEAR</FormLabel>
                   <Input
@@ -211,34 +284,32 @@ export const AddBook = () => {
                   />
                   {errors.published_year && <FieldError errors={[errors.published_year]} />}
                 </Field>
-              </div>
-            </div>
 
-            <div className="flex h-full w-full flex-col justify-between space-y-4">
+                <Field data-invalid={!!errors.total_pages}>
+                  <FormLabel htmlFor="total_pages">
+                    TOTAL PAGES<span className="text-red-600">*</span>
+                  </FormLabel>
+                  <Input
+                    {...register('total_pages', { valueAsNumber: true })}
+                    id="total_pages"
+                    type="number"
+                    placeholder="0"
+                    aria-invalid={!!errors.total_pages}
+                  />
+                  {errors.total_pages && <FieldError errors={[errors.total_pages]} />}
+                </Field>
+              </div>
+
               <Field data-invalid={!!errors.description} className="flex flex-1 flex-col">
                 <FormLabel htmlFor="description">DESCRIPTION</FormLabel>
                 <Textarea
                   {...register('description')}
                   id="description"
                   placeholder="A short summary..."
-                  className="min-h-[120px] resize-none overflow-y-auto lg:h-[190px]"
+                  className="min-h-[120px] resize-none overflow-y-auto lg:h-[140px]"
                   aria-invalid={!!errors.description}
                 />
                 {errors.description && <FieldError errors={[errors.description]} />}
-              </Field>
-
-              <Field data-invalid={!!errors.total_pages}>
-                <FormLabel htmlFor="total_pages">
-                  TOTAL PAGES<span className="text-red-600">*</span>
-                </FormLabel>
-                <Input
-                  {...register('total_pages', { valueAsNumber: true })}
-                  id="total_pages"
-                  type="number"
-                  placeholder="0"
-                  aria-invalid={!!errors.total_pages}
-                />
-                {errors.total_pages && <FieldError errors={[errors.total_pages]} />}
               </Field>
             </div>
           </div>
