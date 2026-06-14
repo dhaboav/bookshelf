@@ -21,6 +21,7 @@ export * from './tooltip';
 export { CustomSidebarTrigger } from './CustomSidebarTrigger';
 export { EmptyState } from './empty-state';
 export { ErrorComponent } from './error-component';
+export * from './generic-form-dialog';
 export { LoadingComponent } from './loading-component';
 export { NotFound } from './not-found';
 export { PaginationWrapper } from './pagination-wrapper';

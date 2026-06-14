@@ -1,19 +1,7 @@
 import { useDeleteBook } from '@/features/books';
+import { DropdownMenuItem, GenericDeleteDialog } from '@/shared/ui';
 import { Trash } from 'lucide-react';
 import { useState } from 'react';
-
-import {
-  Button,
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DropdownMenuItem,
-  Spinner,
-} from '@/shared/ui';
 
 interface DeleteBookProps {
   id: number;
@@ -34,44 +22,22 @@ export const DeleteBook = ({ id, onSuccess }: DeleteBookProps) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenuItem
-        variant="destructive"
-        onSelect={(e) => e.preventDefault()}
-        onClick={() => setIsOpen(true)}
-      >
-        <Trash /> Delete
-      </DropdownMenuItem>
-
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Delete Book</DialogTitle>
-          <DialogDescription>
-            This book will be permanently deleted. Are you sure? You will not be able to undo this
-            action.
-          </DialogDescription>
-        </DialogHeader>
-
-        <DialogFooter className="mt-2 lg:mt-0">
-          <DialogClose asChild>
-            <Button variant="ghost" type="button" disabled={isPending}>
-              Cancel
-            </Button>
-          </DialogClose>
-
-          <Button
-            className="lg:w-24"
-            variant="destructive"
-            disabled={isPending}
-            onClick={handleDelete}
-          >
-            <div className="flex items-center gap-x-1">
-              {isPending && <Spinner data-icon="inline-start" />}
-              <span>{isPending ? 'Deleting...' : 'Delete'}</span>
-            </div>
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <GenericDeleteDialog
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      title="Delete Book"
+      labelName="Book"
+      isPending={isPending}
+      onSubmit={handleDelete}
+      triggerButton={
+        <DropdownMenuItem
+          variant="destructive"
+          onSelect={(e) => e.preventDefault()}
+          className="cursor-pointer"
+        >
+          <Trash /> Delete
+        </DropdownMenuItem>
+      }
+    />
   );
 };

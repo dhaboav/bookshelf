@@ -1,67 +1,49 @@
-import { DialogCustom } from '@/entities/DialogCustom';
-import { authorSchema, useCreateAuthor, type AuthorSchema } from '@/features/authors';
 import {
   Button,
-  DialogClose,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
+  GenericInputFormDialog,
   Input,
-  Spinner,
 } from '@/shared/ui';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useCreateAuthor } from '../hooks/useAuthorQueries';
+import { authorSchema, type AuthorSchema } from '../schemas/author.schema';
 
 export const AddAuthor = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { mutate: createAuthor, isPending } = useCreateAuthor();
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<AuthorSchema>({
-    resolver: zodResolver(authorSchema),
-    mode: 'onSubmit',
-    defaultValues: {
-      author: '',
-    },
-  });
-
-  const handleOpenChange = (open: boolean) => {
-    setIsOpen(open);
-    if (!open) reset();
-  };
-
-  const onSubmit = (data: AuthorSchema) => {
+  const handleFormSubmit = (data: AuthorSchema) => {
     createAuthor(data, {
       onSuccess: () => {
-        handleOpenChange(false);
+        setIsOpen(false);
       },
     });
   };
 
   return (
-    <DialogCustom
-      open={isOpen}
-      onOpenChange={handleOpenChange}
-      className="max-h-138 overflow-y-auto"
-    >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogHeader className="mb-3">
-          <DialogTitle>Add a Author</DialogTitle>
-        </DialogHeader>
-        <DialogDescription className="sr-only">
-          Fill out the form below to add a new author to your library.
-        </DialogDescription>
-
+    <GenericInputFormDialog
+      triggerButton={
+        <Button
+          size="icon"
+          className="bg-gold/10 border-gold/20 text-gold hover:bg-gold/20 h-8 w-8 cursor-pointer rounded-full border"
+        >
+          <Plus className="size-4" />
+        </Button>
+      }
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      title="Add a new author"
+      labelName="Author Name"
+      buttonLabel="Add"
+      schema={authorSchema}
+      isPending={isPending}
+      defaultValues={{ author: '' }}
+      onSubmit={handleFormSubmit}
+      content={({ register, errors }) => (
         <FieldGroup>
           <Field data-invalid={!!errors.author}>
             <FieldLabel htmlFor="author">
@@ -70,35 +52,13 @@ export const AddAuthor = () => {
             <Input
               {...register('author')}
               id="author"
-              placeholder="Author Name"
+              placeholder="Book author"
               aria-invalid={!!errors.author}
             />
             {errors.author && <FieldError errors={[errors.author]} />}
           </Field>
         </FieldGroup>
-
-        <DialogFooter className="border-border/10 bg-background/50 flex shrink-0 flex-row gap-3 border-t py-6">
-          <DialogClose asChild>
-            <Button
-              type="button"
-              variant="outline"
-              disabled={isPending}
-              className="text-foreground/60 hover:text-foreground h-11 cursor-pointer rounded-xl border border-white/10 px-6 text-sm font-medium transition-colors hover:bg-white/5"
-            >
-              Cancel
-            </Button>
-          </DialogClose>
-
-          <Button
-            type="submit"
-            disabled={isPending}
-            className="bg-gold/10 border-gold/20 text-gold hover:bg-gold/20 flex h-11 flex-1 cursor-pointer items-center justify-center gap-x-2 rounded-xl border text-sm font-medium tracking-wide transition-all"
-          >
-            {isPending && <Spinner data-icon="inline-start" />}
-            <span>{isPending ? 'Saving...' : 'Save'}</span>
-          </Button>
-        </DialogFooter>
-      </form>
-    </DialogCustom>
+      )}
+    />
   );
 };
