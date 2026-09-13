@@ -19,6 +19,8 @@ export const useCreateBook = () => {
     onSuccess: () => {
       toast.success('Successfully added a new book entry');
       queryClient.invalidateQueries({ queryKey: ['books'] });
+      queryClient.invalidateQueries({ queryKey: ['authors'] });
+      queryClient.invalidateQueries({ queryKey: ['genres'] });
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to create');
@@ -47,6 +49,8 @@ export const useUpdateBook = () => {
     onSuccess: () => {
       toast.success('Successfully updating book entry');
       queryClient.invalidateQueries({ queryKey: ['books'] });
+      queryClient.invalidateQueries({ queryKey: ['authors'] });
+      queryClient.invalidateQueries({ queryKey: ['genres'] });
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to updated');
@@ -66,6 +70,8 @@ export const useDeleteBook = () => {
     onSuccess: () => {
       toast.success('The book was deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['books'] });
+      queryClient.invalidateQueries({ queryKey: ['authors'] });
+      queryClient.invalidateQueries({ queryKey: ['genres'] });
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to delete');
