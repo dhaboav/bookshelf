@@ -1,52 +1,9 @@
 # Bookshelf Project - Backend
 
-The backend is built with [FastAPI](https://fastapi.tiangolo.com/), [Alembic](https://alembic.sqlalchemy.org/), [Python](https://www.python.org/)
+The backend service for the Bookshelf application, built with FastAPI, Alembic, SQLModel, and Pydantic.
 
+## Architecture & Project Structure
 
-### Workflow (Non Docker)
-
-Follow these steps to set up the project locally:
-
-1. **Install Python dependencies:**
-
-    Install the required Python packages using `pip`:
-
-    ```bash
-    pip install -r requirments.txt
-    ```
-
-3. **Set up the environment file:**
-
-    Copy the `.env.example` file from root folder to `.env` inside `./backend` folder to configure environment variables:
-
-    - **On Windows:**
-
-        ```bash
-        copy .env.example .env
-        ```
-
-    - **On macOS/Linux:**
-
-        ```bash
-        cp .env.example .env
-        ```
-
-4. **Run the backend project:**
-
-    ```bash
-        fastapi dev app/main.py
-    ```
-
-### Workflow (Docker)
-
-1. **Build & Run docker image:**
-
-    ```bash
-    docker compose up -d --build
-    ```
-
-2. **Stop docker image:**
-
-    ```bash
-    docker compose down
-    ``` 
+* `app/`— Core application source code containing models, business logic, schemas, API routes, and the main entrypoint.
+* `migration/`— Alembic database migration scripts and configurations.
+* `scripts/`— Utility scripts for Docker Compose initialization and setup workflows.

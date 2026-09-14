@@ -1,30 +1,56 @@
 # Bookshelf Project
 
-A friendly, digital library assistant that helps you turn your physical stack of books into an organized digital collection. You can easily add your favorite authors, categorize books by genres, and find any book instantly using the search tool.
+A full-stack digital library management application designed to organize physical book collections, track authors, categorize genres, and search items efficiently.
 
-## Requirements
+## Tech Stack
 
-Before you start, make sure you have installed:
-- [Docker](https://www.docker.com) (The magic software that bundles and runs the whole app automatically).
+- **Frontend:** React, Typescript, Vite, Tailwind CSS, shadcn/ui, TanStack Query & Router.
+- **Backend:** FastAPI, SQLModel, Pydantic.
+- **Database:** MySQL.
 
-## The Tech Ingredients
+## Getting Started
 
-We built this project using some of the coolest tools in web development, split into three main parts:
+### Prerequisites
 
-### 1. The Frontend (The Face 🌐)
-This is the beautiful screen you see and click on.
-* **React & TypeScript** — The building blocks used to create our pages.
-* **Vite** — The super-fast engine that runs our local code.
-* **Tailwind CSS & shadcn/ui** — The styling paintbrush that makes everything look modern and clean.
-* **TanStack (Query & Router)** — The smart glue that connects our screens together and fetches data smoothly.
+- [Docker](https://www.docker.com) installed on your system.
 
-### 2. The Backend (The Brain 🧠)
-This works silently in the background, making sure all data calculations are correct.
-* **FastAPI** — A lightning-fast Python framework that acts as the communication bridge.
-* **SQLModel & Pydantic** — The smart assistants that check and organize our data safely.
+### Quick Setup
 
-### 3. The Database (The Memory Vault 💾)
-* **MySQL** — The permanent filing cabinet where all your books, authors, and genres are safely stored.
+Choose how you want to run or deploy the project based on your workflow:
+
+#### Production-Ready (Docker Compose)
+
+Best for running the complete, containerized application stack out-of-the-box.
+
+1. Copy the env example file and update it with your credentials:
+    ```bash
+    cp .env.example .env
+    ```
+2. Build the project with docker compose:
+    ```bash
+    docker compose build
+    ```
+3. Wake up the entire app (add `-d` to run in the background, or omit it to view live logs):
+    ```bash
+    docker compose up
+    ```
+4. Put the app to sleep safely when done:
+    ```bash
+    docker compose down
+    ```
+#### Development Environment (Dev Containers)
+
+Best for active development and local iteration, providing hot-reloading, a pre-configured VS Code/Codespaces workspace, and a standalone database.
+
+- Follow the step-by-step instructions in [.devcontainer/README.md](./.devcontainer/README.md)
+
+## Deep Dive Documentation
+
+Explore specific component guides, environment setups, and local workflows:
+
+- 🐳 Dev Container: [.devcontainer/README.md](./.devcontainer/README.md)
+- 🌐 Frontend Coding: [frontend/README.md](./frontend/README.md)
+- 🧠 Backend Coding: [backend/README.md](./backend/README.md)
 
 ## App Previews
 
@@ -46,38 +72,6 @@ The book cover art is currently using the placeholder artwork from the web novel
 FastAPI automatically builds an interactive playground where you can test how the data engine works. You can view it live at **http://localhost:8000/docs** after starting the backend.
 ![API docs](img/docs.png)
 
-## How To Use It
-
-You can **fork or clone** this repository to make it your own!
-
-### 1. Configure Your Settings
-Create a `.env` file in your root folder using our template to set up your database passwords and connection keys safely.
-
-### 2. Start the App (The Full Setup)
-We use **Docker Compose** so you can start both the frontend and backend with simple commands:
-
-* **Build the project tools:**
-  ```bash
-  docker compose build
-  ```
-
-* **Wake up the entire application:**
-  ```bash
-  docker compose up
-  ```
-  
-* **Put the app to sleep safely when done:**
-  ```bash
-  docker compose down
-  ```
-
-## Deep Dive Documentation
-
-Want to work on specific parts of the project? Check out our dedicated guidebooks:
-
-- 🌐 Frontend Coding: [frontend/README.md](./frontend/README.md)
-- 🧠 Backend Coding: [backend/README.md](./backend/README.md)
-
 ## License
 
-This project is open-source and free to customize under the **MIT License**.
+This project is open-source and available under the **MIT License**.
