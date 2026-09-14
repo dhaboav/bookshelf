@@ -1,0 +1,18 @@
+services:
+  db:
+    image: mysql:8.0.44
+    container_name: mysql_standalone
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD?Variable not set}
+      - MYSQL_DATABASE=${MYSQL_DB?Variable not set}
+      - MYSQL_USER=${MYSQL_USER?Variable not set}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD?Variable not set}
+    ports:
+      - "3306:3306"
+    volumes:
+      - bookshelf_db-data:/var/lib/mysql
+
+volumes:
+  bookshelf_db-data:
+    external: true
