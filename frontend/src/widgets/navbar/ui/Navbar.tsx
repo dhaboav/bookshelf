@@ -18,7 +18,7 @@ export const Navbar = () => {
         <CustomSidebarTrigger />
         <Link to="/" className="flex cursor-pointer items-center gap-x-2">
           <img src={reactLogo} className="animation-duration-[10s] h-6 animate-spin" alt="Logo" />
-          <h1 className="font-semibold lg:text-lg">React Library</h1>
+          <h1 className="font-semibold lg:text-lg">Athenaeum</h1>
         </Link>
       </div>
 

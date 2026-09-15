@@ -14,6 +14,7 @@ class BookPublic(SQLModel):
     author: Optional[AuthorPublic] = None
     genre: Optional[GenrePublic] = None
     description: Optional[str] = None
+    cover_img: Optional[str] = None
     total_pages: int
     published_year: int = Field(ge=1950, le=get_current_year_utc())
 
@@ -26,6 +27,7 @@ class BookCreate(SQLModel):
     author_id: int
     genre_id: int
     description: Optional[str] = None
+    cover_img: Optional[str] = None
     total_pages: int
     published_year: int = Field(ge=1950, le=get_current_year_utc())
 
@@ -38,6 +40,7 @@ class BookUpdate(SQLModel):
     author_id: Optional[int] = None
     genre_id: Optional[int] = None
     description: Optional[str] = None
+    cover_img: Optional[str] = None
     total_pages: Optional[int] = None
     published_year: Optional[int] = Field(
         default=None, ge=1950, le=get_current_year_utc()

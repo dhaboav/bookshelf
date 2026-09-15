@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import DateTime
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel, Text
 
 from app.utils import get_datetime_utc
 
@@ -23,7 +23,8 @@ class Book(SQLModel, table=True):
     isbn: str = Field(min_length=13, max_length=13, unique=True)
     author_id: Optional[int] = Field(default=None, foreign_key="author.id")
     genre_id: Optional[int] = Field(default=None, foreign_key="genre.id")
-    description: Optional[str] = None
+    description: Optional[str] = Field(default=None, sa_type=Text)
+    cover_img: Optional[str] = None
     total_pages: int
     published_year: int
     created_at: Optional[datetime] = Field(

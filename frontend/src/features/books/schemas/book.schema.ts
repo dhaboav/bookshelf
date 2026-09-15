@@ -17,11 +17,7 @@ export const bookSchema = z.object({
     .int('Year must be an integer.')
     .min(2000, 'Year must be 2000 or later.')
     .max(currentYear, 'Year cant more than present year.'),
-  description: z
-    .string()
-    .max(255, 'Description must be at most 255 characters.')
-    .optional()
-    .or(z.literal('')),
+  description: z.string().optional().or(z.literal('')),
 });
 
 export const updateBookSchema = bookSchema.extend({
