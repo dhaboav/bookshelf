@@ -1,12 +1,14 @@
 export * from './button';
 export * from './button-group';
 export * from './card';
+export * from './command';
 export * from './dialog';
 export * from './dropdown-menu';
 export * from './field';
 export * from './input';
 export * from './label';
 export * from './pagination';
+export * from './popover';
 export * from './select';
 export * from './separator';
 export * from './sheet';
@@ -18,6 +20,7 @@ export * from './table';
 export * from './textarea';
 export * from './tooltip';
 
+export { Combobox } from './combobox';
 export { CustomSidebarTrigger } from './CustomSidebarTrigger';
 export { EmptyState } from './empty-state';
 export { ErrorComponent } from './error-component';

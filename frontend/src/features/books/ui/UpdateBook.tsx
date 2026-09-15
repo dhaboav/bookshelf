@@ -11,6 +11,7 @@ import { updateBookSchema, useUpdateBook, type BookUpdateInput } from '@/feature
 
 import {
   Button,
+  Combobox,
   Dialog,
   DialogClose,
   DialogContent,
@@ -24,13 +25,6 @@ import {
   FieldGroup,
   FieldLabel,
   Input,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
   Spinner,
   Textarea,
 } from '@/shared/ui';
@@ -133,24 +127,15 @@ export const UpdateBook = ({ book, onSuccess }: UpdateBookProps) => {
                     <FieldLabel htmlFor="author_id">
                       Author<span className="text-red-600">*</span>
                     </FieldLabel>
-                    <Select
-                      onValueChange={(val) => field.onChange(Number(val))}
-                      value={field.value?.toString()}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select author" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        <SelectGroup>
-                          <SelectLabel>Authors</SelectLabel>
-                          {authors?.map((a: any) => (
-                            <SelectItem key={a.id} value={a.id.toString()}>
-                              {a.author}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                    <Combobox
+                      name="author_id"
+                      items={authors?.map((a: any) => ({ id: a.id, label: a.author })) ?? []}
+                      value={field.value}
+                      onChange={(val) => field.onChange(val ? Number(val) : null)}
+                      placeholder="Select an author"
+                      searchPlaceholder="Search author..."
+                      emptyText="No author found."
+                    />
                     {errors.author_id && <FieldError errors={[errors.author_id]} />}
                   </Field>
                 )}
@@ -164,24 +149,15 @@ export const UpdateBook = ({ book, onSuccess }: UpdateBookProps) => {
                     <FieldLabel htmlFor="genre_id">
                       Genre<span className="text-red-600">*</span>
                     </FieldLabel>
-                    <Select
-                      onValueChange={(val) => field.onChange(Number(val))}
-                      value={field.value?.toString()}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select genre" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        <SelectGroup>
-                          <SelectLabel>Genres</SelectLabel>
-                          {genres?.map((g: any) => (
-                            <SelectItem key={g.id} value={g.id.toString()}>
-                              {g.genre}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                    <Combobox
+                      name="genre_id"
+                      items={genres?.map((g: any) => ({ id: g.id, label: g.genre })) ?? []}
+                      value={field.value}
+                      onChange={(val) => field.onChange(val ? Number(val) : null)}
+                      placeholder="Select a genre"
+                      searchPlaceholder="Search genre..."
+                      emptyText="No genre found."
+                    />
                     {errors.genre_id && <FieldError errors={[errors.genre_id]} />}
                   </Field>
                 )}

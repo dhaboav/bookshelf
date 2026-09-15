@@ -1,4 +1,3 @@
-// 📄 src/features/books/ui/AddBook.tsx
 import { useQuery } from '@tanstack/react-query';
 import { ImagePlus, Plus, ScanLine, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
@@ -8,20 +7,15 @@ import { authorsQueryOptions } from '@/entities/authors';
 import { genresQueryOptions } from '@/entities/genres';
 import { BarcodeScanner } from '@/features/barcode-scanner';
 import { bookSchema, useCreateBook, type BookCreateInput } from '@/features/books';
-import { GenericInputFormDialog } from '@/shared/ui';
 
 import {
   Button,
+  Combobox,
   Field,
   FieldError,
   FieldLabel,
+  GenericInputFormDialog,
   Input,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Textarea,
 } from '@/shared/ui';
 
@@ -193,25 +187,18 @@ export const AddBook = () => {
                 control={control}
                 render={({ field }) => (
                   <Field data-invalid={!!errors.genre_id}>
-                    <FormLabel htmlFor="genre_id">GENRE</FormLabel>
-                    <Select
+                    <FormLabel htmlFor="genre_id">
+                      GENRE<span className="text-red-600">*</span>
+                    </FormLabel>
+                    <Combobox
                       name="genre_id"
-                      onValueChange={(val) => field.onChange(Number(val))}
-                      value={field.value?.toString() ?? ''}
-                    >
-                      <SelectTrigger id="genre_id">
-                        <SelectValue placeholder="Select genre" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        <SelectGroup>
-                          {genres?.map((g: any) => (
-                            <SelectItem key={g.id} value={g.id.toString()}>
-                              {g.genre}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                      items={genres?.map((g: any) => ({ id: g.id, label: g.genre })) ?? []}
+                      value={field.value}
+                      onChange={(val) => field.onChange(val ? Number(val) : null)}
+                      placeholder="Select a genre"
+                      searchPlaceholder="Search genre..."
+                      emptyText="No genre found."
+                    />
                     {errors.genre_id && <FieldError errors={[errors.genre_id]} />}
                   </Field>
                 )}
@@ -225,24 +212,15 @@ export const AddBook = () => {
                     <FormLabel htmlFor="author_id">
                       AUTHOR<span className="text-red-600">*</span>
                     </FormLabel>
-                    <Select
+                    <Combobox
                       name="author_id"
-                      onValueChange={(val) => field.onChange(Number(val))}
-                      value={field.value?.toString() ?? ''}
-                    >
-                      <SelectTrigger id="author_id">
-                        <SelectValue placeholder="Author name" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        <SelectGroup>
-                          {authors?.map((a: any) => (
-                            <SelectItem key={a.id} value={a.id.toString()}>
-                              {a.author}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                      items={authors?.map((a: any) => ({ id: a.id, label: a.author })) ?? []}
+                      value={field.value}
+                      onChange={(val) => field.onChange(val ? Number(val) : null)}
+                      placeholder="Select an author"
+                      searchPlaceholder="Search author..."
+                      emptyText="No author found."
+                    />
                     {errors.author_id && <FieldError errors={[errors.author_id]} />}
                   </Field>
                 )}
