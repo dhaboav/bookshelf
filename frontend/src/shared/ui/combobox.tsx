@@ -35,7 +35,7 @@ export function Combobox({
   const selectedItem = items.find((item) => item.id === value);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -63,15 +63,12 @@ export function Combobox({
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList
             className={cn(
-              'max-h-40 overflow-y-auto overscroll-contain',
+              'max-h-40 overflow-y-auto',
               '[&::-webkit-scrollbar]:w-0.5',
               '[&::-webkit-scrollbar-track]:bg-transparent',
               '[&::-webkit-scrollbar-thumb]:bg-muted-foreground/30',
               'hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/50',
             )}
-            onWheel={(e) => {
-              e.stopPropagation();
-            }}
           >
             <CommandEmpty>{emptyText}</CommandEmpty>
             <CommandGroup>
