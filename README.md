@@ -6,7 +6,7 @@ A full-stack digital library management application designed to organize physica
 
 - **Frontend:** React, Typescript, Vite, Tailwind CSS, shadcn/ui, TanStack Query & Router.
 - **Backend:** FastAPI, SQLModel, Pydantic.
-- **Database:** MySQL.
+- **Database:** Postgres.
 
 ## Getting Started
 

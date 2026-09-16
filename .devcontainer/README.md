@@ -1,14 +1,14 @@
 # Bookshelf Project - .devcontainer
 
-This repository provides a unified development environment using Dev Containers that combines a Python (FastAPI) backend, a Node.js frontend, and a standalone MySQL database running via Docker Compose.
+This repository provides a unified development environment using Dev Containers that combines a Python (FastAPI) backend, a Node.js frontend, and a standalone Postgres database running via Docker Compose.
 
 ### Architecture Overview
 
 - **Dev Container:** Runs the development workspace with Node.js and Python pre-installed.
 
-- **Standalone Database(`sql-compose.yaml`):** Runs as an independent MySQL container outside the Dev Container lifecycle, ensuring persistent storage.
+- **Standalone Database(`sql-compose.yaml`):** Runs as an independent Postgres container outside the Dev Container lifecycle, ensuring persistent storage.
 
-- **Networking:** The backend inside the Dev Container connects to the MySQL instance via `host.docker.internal:3306`, which is configured via the db host and port settings in `.env` file in root.
+- **Networking:** The backend inside the Dev Container connects to the Postgres instance via `host.docker.internal:5432`, which is configured via the db host and port settings in `.env` file in root.
 
 ### Quick Start Guide
 

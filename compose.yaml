@@ -1,20 +1,21 @@
 services:
   db:
-    image: mysql:8.0.44
+    image: postgres:16-alpine
     restart: always
     volumes:
-      - db-data:/var/lib/mysql
+      - db-data:/var/lib/postgresql/data
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD?Variable not set}
-      - MYSQL_DATABASE=${MYSQL_DB?Variable not set}
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - POSTGRES_DB=${POSTGRES_DB?Variable not set}
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 10s
     ports:
-      - "3306:3306"
+      - "5432:5432"
 
   prestart:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
@@ -28,11 +29,11 @@ services:
     command: bash scripts/prestart.sh
     environment:
       - PROJECT_NAME=${PROJECT_NAME?Variable not set}
-      - MYSQL_USER=${MYSQL_USER?Variable not set}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD?Variable not set}
-      - MYSQL_HOST=${MYSQL_HOST?Variable not set}
-      - MYSQL_PORT=${MYSQL_PORT?Variable not set}
-      - MYSQL_DB=${MYSQL_DB?Variable not set}
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - POSTGRES_HOST=${POSTGRES_HOST?Variable not set}
+      - POSTGRES_DB=${POSTGRES_DB?Variable not set}
+      - POSTGRES_PORT=${POSTGRES_PORT?Variable not set}
 
   backend:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
@@ -45,11 +46,11 @@ services:
         condition: service_completed_successfully
     environment:
       - PROJECT_NAME=${PROJECT_NAME?Variable not set}
-      - MYSQL_USER=${MYSQL_USER?Variable not set}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD?Variable not set}
-      - MYSQL_HOST=${MYSQL_HOST?Variable not set}
-      - MYSQL_PORT=${MYSQL_PORT?Variable not set}
-      - MYSQL_DB=${MYSQL_DB?Variable not set}
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - POSTGRES_HOST=${POSTGRES_HOST?Variable not set}
+      - POSTGRES_DB=${POSTGRES_DB?Variable not set}
+      - POSTGRES_PORT=${POSTGRES_PORT?Variable not set}
     ports:
       - "8000:8000"
 

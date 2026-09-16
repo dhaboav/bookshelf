@@ -5,10 +5,10 @@ This module provides class for configuration in application.
 Features:
     - Take information from .env.
     - Setup project title.
-    - Configure mysql database url.
+    - Configure database url.
 """
 
-from pydantic import MySQLDsn, computed_field
+from pydantic import PostgresDsn, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -22,22 +22,22 @@ class Settings(BaseSettings):
     FRONTEND_HOST: str = "http://localhost:5173"
 
     PROJECT_NAME: str
-    MYSQL_USER: str
-    MYSQL_PASSWORD: str = ""
-    MYSQL_HOST: str
-    MYSQL_PORT: int = 3306
-    MYSQL_DB: str = ""
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str = ""
+    POSTGRES_HOST: str
+    POSTGRES_PORT: int = 5432
+    POSTGRES_DB: str = ""
 
     @computed_field
     @property
-    def SQLALCHEMY_DATABASE_URI(self) -> MySQLDsn:
-        return MySQLDsn.build(
-            scheme="mysql+pymysql",
-            username=self.MYSQL_USER,
-            password=self.MYSQL_PASSWORD,
-            host=self.MYSQL_HOST,
-            port=self.MYSQL_PORT,
-            path=self.MYSQL_DB,
+    def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
+        return PostgresDsn.build(
+            scheme="postgresql+psycopg2",
+            username=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD,
+            host=self.POSTGRES_HOST,
+            port=self.POSTGRES_PORT,
+            path=self.POSTGRES_DB,
         )
 
 
