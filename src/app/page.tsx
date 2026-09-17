@@ -1,7 +1,7 @@
-import { deleteAuthor, getAuthorsWithBookCount } from '@/actions/authors';
-import { ItemTable } from '@/components/item/ItemTable';
+import { getBooks } from '@/actions/books';
+import { BookCard } from '@/components/book/BookCard';
 
 export default async function Home() {
-  const data = await getAuthorsWithBookCount();
-  return <ItemTable items={data} label="Author" onDelete={deleteAuthor} />;
+  const books = await getBooks();
+  return books.map((book) => <BookCard key={book.id} book={book} />);
 }
