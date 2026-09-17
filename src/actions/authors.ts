@@ -22,9 +22,10 @@ export const addAuthor = async (name: string) => {
 
 export const updateAuthor = async (id: number, name: string) => {
   await db.update(authors).set({ name: name }).where(eq(authors.id, id));
+  revalidatePath('/authors');
 };
 
 export const deleteAuthor = async (id: number) => {
   await db.delete(authors).where(eq(authors.id, id));
-  revalidatePath('/');
+  revalidatePath('/authors');
 };

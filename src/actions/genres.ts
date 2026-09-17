@@ -22,9 +22,10 @@ export const addGenre = async (name: string) => {
 
 export const updateGenre = async (id: number, name: string) => {
   await db.update(genres).set({ name: name }).where(eq(genres.id, id));
+  revalidatePath('/genres');
 };
 
 export const deleteGenre = async (id: number) => {
   await db.delete(genres).where(eq(genres.id, id));
-  revalidatePath('/');
+  revalidatePath('/genres');
 };

@@ -11,14 +11,8 @@ export async function GET() {
       status: 'success',
       message: 'Koneksi database berhasil!',
     });
-  } catch (error: any) {
-    return NextResponse.json(
-      {
-        status: 'error',
-        message: 'Koneksi gagal!',
-        error: error.message,
-      },
-      { status: 500 },
-    );
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

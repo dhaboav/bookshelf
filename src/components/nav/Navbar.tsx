@@ -1,4 +1,4 @@
-import { AppSidebarBtn } from './AppSidebarBtn';
+import { AppSidebarBtn } from '@/components/nav/AppSidebarBtn';
 
 import Image from 'next/image';
 import Link from 'next/link';

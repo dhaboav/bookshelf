@@ -1,3 +1,5 @@
+import { ItemDelete } from '@/components/item/ItemDelete';
+import { ItemUpdate } from '@/components/item/ItemUpdate';
 import {
   Table,
   TableBody,
@@ -6,8 +8,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../ui/table';
-import { ItemDelete } from './ItemDelete';
+} from '@/components/ui/table';
 
 interface Item {
   id: number;
@@ -18,10 +19,11 @@ interface Item {
 interface Props {
   items: Item[];
   label: 'Author' | 'Genre';
+  onUpdate: (id: number, name: string) => Promise<void>;
   onDelete: (id: number) => Promise<void>;
 }
 
-export const ItemTable = ({ items, label, onDelete }: Props) => {
+export const ItemTable = ({ items, label, onUpdate, onDelete }: Props) => {
   return (
     <Table className="mt-8">
       <TableCaption>A list of {label}s</TableCaption>
@@ -41,7 +43,12 @@ export const ItemTable = ({ items, label, onDelete }: Props) => {
             <TableCell>{item.totalBooks}</TableCell>
             <TableCell>
               <div className="flex justify-end gap-2">
-                <span>Edit</span>
+                <ItemUpdate
+                  id={item.id}
+                  label={label}
+                  initialName={item.name}
+                  onUpdate={onUpdate}
+                />
                 <ItemDelete id={item.id} label={label} onDelete={onDelete} />
               </div>
             </TableCell>

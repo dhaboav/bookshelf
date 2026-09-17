@@ -2,6 +2,8 @@ import type { Book } from '@/actions/books';
 import { Calendar, CircleUserRound, ScrollText } from 'lucide-react';
 import type { ReactNode } from 'react';
 
+import Image from 'next/image';
+
 interface Props {
   book: Book;
   actionsSlot?: ReactNode;
@@ -11,7 +13,7 @@ export function BookCard({ book, actionsSlot }: Props) {
   return (
     <div className="flex h-36 w-full flex-row items-center overflow-hidden">
       <div className="h-full w-24 shrink-0">
-        <img
+        <Image
           src={book.cover_img || 'next.svg'}
           alt={book.title || 'Book cover'}
           className="h-full w-full rounded-sm object-cover"

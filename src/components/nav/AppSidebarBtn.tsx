@@ -1,7 +1,7 @@
 'use client';
+import { Button } from '@/components/ui/button';
+import { useSidebar } from '@/components/ui/sidebar';
 import { Menu } from 'lucide-react';
-import { Button } from '../ui/button';
-import { useSidebar } from '../ui/sidebar';
 
 export const AppSidebarBtn = () => {
   const { openMobile, setOpenMobile } = useSidebar();

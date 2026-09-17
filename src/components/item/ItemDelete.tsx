@@ -1,8 +1,5 @@
 'use client';
-
-import { TrashIcon } from 'lucide-react';
-import { useTransition } from 'react';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -11,8 +8,10 @@ import {
   DialogFooter,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
-import { Spinner } from '../ui/spinner';
+} from '@/components/ui/dialog';
+import { Spinner } from '@/components/ui/spinner';
+import { TrashIcon } from 'lucide-react';
+import { useTransition } from 'react';
 
 interface Props {
   id: number;
