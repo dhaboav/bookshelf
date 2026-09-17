@@ -1,18 +1,16 @@
 {
   "name": "bookshelf",
-  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-  "runArgs": ["--add-host=host.docker.internal:host-gateway"],
-  "forwardPorts": [8000,5173],
-  "postCreateCommand": "pip install --user -r backend/requirements.txt && npm install --prefix frontend",
-  "features": {
-		"ghcr.io/devcontainers/features/node:1": { "version": "22" },
-		"ghcr.io/devcontainers/features/python:1": { "version": "latest"}
-	},
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "forwardPorts": [3000,5432],
+  "postCreateCommand": "npm install",
   "customizations": {
     "vscode": {
       "extensions": [
         "esbenp.prettier-vscode",
         "oderwat.indent-rainbow",
+        "dbaeumer.vscode-eslint",
         "bradlc.vscode-tailwindcss"
       ]
     }
