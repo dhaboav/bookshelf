@@ -18,6 +18,7 @@ export const getAuthorsWithBookCount = async () => {
 
 export const addAuthor = async (name: string) => {
   await db.insert(authors).values({ name: name });
+  revalidatePath('/authors');
 };
 
 export const updateAuthor = async (id: number, name: string) => {

@@ -18,6 +18,7 @@ export const getGenresWithBookCount = async () => {
 
 export const addGenre = async (name: string) => {
   await db.insert(genres).values({ name: name });
+  revalidatePath('/genres');
 };
 
 export const updateGenre = async (id: number, name: string) => {

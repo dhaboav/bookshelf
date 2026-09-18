@@ -38,7 +38,7 @@ export const ItemDelete = ({ id, label, onDelete }: Props) => {
             <TrashIcon />
           </Button>
         }
-      ></DialogTrigger>
+      />
 
       <DialogContent className="bg-sidebar px-6">
         <DialogTitle className="font-display text-foreground text-xl">Delete {label}</DialogTitle>
