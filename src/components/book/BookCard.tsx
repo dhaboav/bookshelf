@@ -15,6 +15,8 @@ export function BookCard({ book, actionsSlot }: Props) {
       <div className="h-full w-24 shrink-0">
         <Image
           src={book.cover_img || 'next.svg'}
+          width={1000}
+          height={700}
           alt={book.title || 'Book cover'}
           className="h-full w-full rounded-sm object-cover"
         />
