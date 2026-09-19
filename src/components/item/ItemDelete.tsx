@@ -10,24 +10,39 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
+import { toast } from '@/components/ui/toast';
 import { TrashIcon } from 'lucide-react';
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 
 interface Props {
   id: number;
   label: string;
-  onDelete: (id: number) => Promise<void>;
+  onDelete: (id: number) => Promise<any>;
 }
 
 export const ItemDelete = ({ id, label, onDelete }: Props) => {
+  const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+
   const handleDelete = () => {
     startTransition(async () => {
-      await onDelete(id);
+      try {
+        const result = await onDelete(id);
+        if (!result.success) {
+          toast.add({ type: 'error', description: result.message });
+          setOpen(false);
+          return;
+        }
+        setOpen(false);
+        toast.add({ type: 'success', description: result.message });
+      } catch (error) {
+        console.error('An unexpected error occurred:', error);
+      }
     });
   };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
           <Button

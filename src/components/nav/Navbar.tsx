@@ -1,19 +1,23 @@
 'use client';
-import { addGenre } from '@/actions/genres';
-import { ItemCreate } from '@/components/item/ItemCreate';
-import { AppSidebarBtn } from '@/components/nav/AppSidebarBtn';
-import { SearchBar } from '@/components/nav/SearchBar';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const routeConfig: Record<string, { label: string; onCreate: (name: string) => Promise<void> }> = {
-  '/genres': { label: 'Genre', onCreate: addGenre },
+import { AddAuthor } from '@/components/authors/AddAuthor';
+import { AddBook } from '@/components/book/AddBook';
+import { AddGenre } from '@/components/genres/AddGenre';
+import { AppSidebarBtn } from '@/components/nav/AppSidebarBtn';
+
+const routeConfig: Record<string, React.ReactNode> = {
+  '/': <AddBook />,
+  '/authors': <AddAuthor />,
+  '/genres': <AddGenre />,
 };
 
 export const Navbar = () => {
   const pathname = usePathname();
-  const currentConfig = routeConfig[pathname];
+  const ActionComponent = routeConfig[pathname];
+
   return (
     <nav className="bg-background sticky top-0 flex h-15 w-full items-center justify-between border-b-2 px-3 lg:px-48">
       <div className="flex items-center gap-x-2">
@@ -30,14 +34,7 @@ export const Navbar = () => {
         </Link>
       </div>
 
-      <div className="flex items-center gap-x-2">
-        {currentConfig && (
-          <>
-            <SearchBar placeholder={currentConfig?.label?.toLowerCase() ?? ''} />
-            <ItemCreate label={currentConfig?.label} onCreate={currentConfig?.onCreate} />
-          </>
-        )}
-      </div>
+      <div className="flex items-center gap-x-2">{ActionComponent || null}</div>
     </nav>
   );
 };

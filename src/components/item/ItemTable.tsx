@@ -1,5 +1,6 @@
+import { UpdateAuthor } from '@/components/authors/UpdateAuthor';
+import { UpdateGenre } from '@/components/genres/UpdateGenre';
 import { ItemDelete } from '@/components/item/ItemDelete';
-import { ItemUpdate } from '@/components/item/ItemUpdate';
 import {
   Table,
   TableBody,
@@ -18,12 +19,11 @@ interface Item {
 
 interface Props {
   items: Item[];
-  label: 'Author' | 'Genre';
-  onUpdate: (id: number, name: string) => Promise<void>;
-  onDelete: (id: number) => Promise<void>;
+  label: string;
+  onDelete: (id: number) => Promise<any>;
 }
 
-export const ItemTable = ({ items, label, onUpdate, onDelete }: Props) => {
+export const ItemTable = ({ items, label, onDelete }: Props) => {
   return (
     <Table className="mt-8">
       <TableCaption>A list of {label}s</TableCaption>
@@ -43,12 +43,11 @@ export const ItemTable = ({ items, label, onUpdate, onDelete }: Props) => {
             <TableCell>{item.totalBooks}</TableCell>
             <TableCell>
               <div className="flex justify-end gap-2">
-                <ItemUpdate
-                  id={item.id}
-                  label={label}
-                  initialName={item.name}
-                  onUpdate={onUpdate}
-                />
+                {label === 'Author' ? (
+                  <UpdateAuthor id={item.id} initialName={item.name} />
+                ) : (
+                  <UpdateGenre id={item.id} initialName={item.name} />
+                )}
                 <ItemDelete id={item.id} label={label} onDelete={onDelete} />
               </div>
             </TableCell>
