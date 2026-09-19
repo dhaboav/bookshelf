@@ -1,6 +1,7 @@
 import { AppSidebar } from '@/components/nav/AppSidebar';
 import { Navbar } from '@/components/nav/Navbar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { Toaster } from '@/components/ui/toast';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
             <main className="px-3 lg:px-48">{children}</main>
           </SidebarInset>
         </SidebarProvider>
+        <Toaster />
       </body>
     </html>
   );

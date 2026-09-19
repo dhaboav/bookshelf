@@ -1,5 +1,4 @@
 'use client';
-import { addAuthor } from '@/actions/authors';
 import { addGenre } from '@/actions/genres';
 import { ItemCreate } from '@/components/item/ItemCreate';
 import { AppSidebarBtn } from '@/components/nav/AppSidebarBtn';
@@ -9,8 +8,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const routeConfig: Record<string, { label: string; onCreate: (name: string) => Promise<void> }> = {
-  '/': { label: 'Book', onCreate: addAuthor },
-  '/authors': { label: 'Author', onCreate: addAuthor },
   '/genres': { label: 'Genre', onCreate: addGenre },
 };
 

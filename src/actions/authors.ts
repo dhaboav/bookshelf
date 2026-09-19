@@ -1,8 +1,25 @@
 'use server';
 import { db } from '@/db/drizzle';
-import { authors, books } from '@/db/schema';
+import { authorInsertSchema, authors } from '@/db/schema/authors';
+import { books } from '@/db/schema/books';
 import { count, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+
+export const addAuthor = async (name: string) => {
+  const parsed = authorInsertSchema.safeParse({ name });
+  if (!parsed.success) {
+    return { success: false, message: 'Please enter a valid input.' };
+  }
+
+  try {
+    await db.insert(authors).values(parsed.data);
+    revalidatePath('/authors');
+    return { success: true, message: 'Author added successfully.' };
+  } catch (error) {
+    console.error('Database error:', error);
+    return { success: false, message: 'Something went wrong. Please try again.' };
+  }
+};
 
 export const getAuthorsWithBookCount = async () => {
   return await db
@@ -15,12 +32,6 @@ export const getAuthorsWithBookCount = async () => {
     .leftJoin(books, eq(books.author_id, authors.id))
     .groupBy(authors.id);
 };
-
-export const addAuthor = async (name: string) => {
-  await db.insert(authors).values({ name: name });
-  revalidatePath('/authors');
-};
-
 export const updateAuthor = async (id: number, name: string) => {
   await db.update(authors).set({ name: name }).where(eq(authors.id, id));
   revalidatePath('/authors');

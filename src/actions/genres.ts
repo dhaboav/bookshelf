@@ -1,6 +1,7 @@
 'use server';
 import { db } from '@/db/drizzle';
-import { books, genres } from '@/db/schema';
+import { books } from '@/db/schema/books';
+import { genres } from '@/db/schema/genres';
 import { count, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 

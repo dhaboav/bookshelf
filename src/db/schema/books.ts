@@ -1,4 +1,6 @@
 import { integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { authors } from './authors';
+import { genres } from './genres';
 
 export const timestamps = {
   created_at: timestamp({ withTimezone: true }).defaultNow().notNull(),
@@ -7,16 +9,6 @@ export const timestamps = {
     .$onUpdate(() => new Date())
     .notNull(),
 };
-
-export const authors = pgTable('author', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  name: text().notNull(),
-});
-
-export const genres = pgTable('genre', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  name: text().notNull().unique(),
-});
 
 export const books = pgTable('book', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
