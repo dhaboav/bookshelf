@@ -12,7 +12,7 @@ export const ItemDialog = ({ label, open, setIsOpen, triggerBtn, children }: Pro
   return (
     <Dialog open={open} onOpenChange={setIsOpen}>
       {triggerBtn}
-      <DialogContent className="bg-sidebar px-6">
+      <DialogContent className="bg-sidebar max-h-[85vh] overflow-y-auto px-6 lg:max-h-[95vh] lg:max-w-xl">
         <DialogTitle className="font-display text-foreground text-xl">{label}</DialogTitle>
         <DialogDescription className="text-foreground/60 mt-2 text-sm">
           Fill out the form below to {label.toLowerCase()}.

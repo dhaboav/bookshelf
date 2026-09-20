@@ -55,7 +55,7 @@ export const ItemDelete = ({ id, label, onDelete }: Props) => {
         }
       />
 
-      <DialogContent className="bg-sidebar px-6">
+      <DialogContent className="bg-sidebar max-h-[85vh] overflow-y-auto px-6 lg:max-h-[95vh] lg:max-w-md">
         <DialogTitle className="font-display text-foreground text-xl">Delete {label}</DialogTitle>
         <DialogDescription className="text-foreground/60 mt-2 text-sm">
           This {label.toLowerCase()} will be permanently deleted. Are you sure? You will not be able

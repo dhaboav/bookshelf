@@ -24,7 +24,7 @@ export const addBook = async (data: BookInput) => {
     await db.insert(books).values(parsed.data);
     revalidatePath('/books');
     return { success: true, message: 'Book added successfully.' };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Database error:', error);
     return { success: false, message: 'Something went wrong. Please try again.' };
   }
