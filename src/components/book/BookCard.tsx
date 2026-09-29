@@ -1,8 +1,8 @@
-import type { Book } from '@/actions/books';
 import { Calendar, CircleUserRound, ScrollText } from 'lucide-react';
+import Image from 'next/image';
 import type { ReactNode } from 'react';
 
-import Image from 'next/image';
+import type { Book } from '@/db/crud/books';
 
 interface Props {
   book: Book;
@@ -31,9 +31,7 @@ export function BookCard({ book, actionsSlot }: Props) {
         </div>
 
         <h3 className="truncate text-lg font-bold">{book.title}</h3>
-        <p className="line-clamp-2 text-sm font-light text-gray-700 dark:text-gray-300">
-          {book.description}
-        </p>
+        <p className="line-clamp-2 text-sm font-light text-gray-700 dark:text-gray-300">{book.description}</p>
         <div className="mt-1.5 grid grid-cols-3 items-center">
           <div className="flex flex-row items-center gap-x-1">
             <CircleUserRound className="w-4" />

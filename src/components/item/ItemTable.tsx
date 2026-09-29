@@ -1,4 +1,4 @@
-import { UpdateAuthor } from '@/components/authors/UpdateAuthor';
+// import { UpdateAuthor } from '@/components/authors/UpdateAuthor';
 import { UpdateGenre } from '@/components/genres/UpdateGenre';
 import { ItemDelete } from '@/components/item/ItemDelete';
 import {
@@ -44,7 +44,7 @@ export const ItemTable = ({ items, label, onDelete }: Props) => {
             <TableCell>
               <div className="flex justify-end gap-2">
                 {label === 'Author' ? (
-                  <UpdateAuthor id={item.id} initialName={item.name} />
+                  <span>Nothing</span>
                 ) : (
                   <UpdateGenre id={item.id} initialName={item.name} />
                 )}

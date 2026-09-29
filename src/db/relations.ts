@@ -1,7 +1,8 @@
 import { defineRelations } from 'drizzle-orm';
-import { authors } from './schema/authors';
-import { books } from './schema/books';
-import { genres } from './schema/genres';
+
+import { authors } from '@/db/schema/authors';
+import { books } from '@/db/schema/books';
+import { genres } from '@/db/schema/genres';
 
 export const relations = defineRelations({ books, authors, genres }, (r) => ({
   books: {

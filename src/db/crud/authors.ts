@@ -1,9 +1,10 @@
 'use server';
-import { db } from '@/db/drizzle';
-import { authorInsertSchema, authors, authorUpdateSchema } from '@/db/schema/authors';
-import { books } from '@/db/schema/books';
 import { count, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+
+import { db } from '@/db/drizzle';
+import { authorInsertSchema, authorUpdateSchema, authors } from '@/db/schema/authors';
+import { books } from '@/db/schema/books';
 
 export const addAuthor = async (name: string) => {
   const parsed = authorInsertSchema.safeParse({ name });

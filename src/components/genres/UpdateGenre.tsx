@@ -1,21 +1,16 @@
 'use client';
-import { updateAuthor } from '@/actions/authors';
-import { ItemDialog } from '@/components/item/ItemDialog';
-import { ItemDialogFooter } from '@/components/item/ItemDialogFooter';
-import { Button } from '@/components/ui/button';
-import { DialogTrigger } from '@/components/ui/dialog';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { toast } from '@/components/ui/toast';
-import { genreUpdateSchema } from '@/db/schema/genres';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, SubmitHandler, useForm } from '@formisch/react';
 import { EditIcon } from 'lucide-react';
 import { useState, useTransition } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import * as z from 'zod';
 
-type FormType = z.infer<typeof genreUpdateSchema>;
-const genreResolver = zodResolver(genreUpdateSchema);
+import { ItemDialog } from '@/components/item/ItemDialog';
+import { Button } from '@/components/ui/button';
+import { DialogTrigger } from '@/components/ui/dialog';
+import { toast } from '@/components/ui/toast';
+import { updateGenre } from '@/db/crud/genres';
+import { genreUpdateSchema } from '@/db/schema/genres';
+
+import { InputField } from '../ui/shared-form-fields';
 
 interface Props {
   id: number;
@@ -26,15 +21,15 @@ export const UpdateGenre = ({ id, initialName }: Props) => {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<FormType>({
-    resolver: genreResolver,
-    defaultValues: { name: initialName },
+  const form = useForm({
+    schema: genreUpdateSchema,
+    initialInput: { name: initialName },
   });
 
-  const onSubmit = (data: FormType) => {
+  const handleSubmit: SubmitHandler<typeof genreUpdateSchema> = (values) => {
     startTransition(async () => {
       try {
-        const result = await updateAuthor(id, data.name!);
+        const result = await updateGenre(id, values.name!);
         if (!result.success) {
           toast.add({ type: 'error', description: result.message });
           return;
@@ -65,36 +60,12 @@ export const UpdateGenre = ({ id, initialName }: Props) => {
           }
         />
       }
+      formID="form-update-genre"
+      isPending={isPending}
     >
-      <form
-        id={`author-update-form-${id}`}
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4"
-      >
-        <Controller
-          name="name"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="name">Name</FieldLabel>
-              <Input
-                {...field}
-                id="name"
-                placeholder="Author name"
-                autoComplete="off"
-                aria-invalid={fieldState.invalid}
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-
-        <ItemDialogFooter
-          label="Update"
-          isPending={isPending}
-          formId={`author-update-form-${id}`}
-        />
-      </form>
+      <Form of={form} id="form-update-genre" onSubmit={handleSubmit} className="space-y-4">
+        <InputField of={form} path="name" label="name" placeholder="Author name" />
+      </Form>
     </ItemDialog>
   );
 };

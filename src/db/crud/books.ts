@@ -1,8 +1,9 @@
 'use server';
-import { db } from '@/db/drizzle';
-import { bookInsertSchema, books } from '@/db/schema/books';
 import { revalidatePath } from 'next/cache';
 import z from 'zod';
+
+import { db } from '@/db/drizzle';
+import { bookInsertSchema, books } from '@/db/schema/books';
 
 export const getBooks = async () => {
   return await db.query.books.findMany({

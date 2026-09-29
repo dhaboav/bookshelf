@@ -1,12 +1,13 @@
 import { integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
-import { createSchemaFactory } from 'drizzle-orm/zod';
-import { z } from 'zod/v4';
+import { createInsertSchema } from 'drizzle-orm/valibot';
+import { length, maxLength, maxValue, minLength, minValue, omit, pipe, toNumber, unknown } from 'valibot';
+
 import { authors } from './authors';
 import { genres } from './genres';
 
 // Helpers
 const currentYear = new Date().getFullYear();
-export const timestamps = {
+const timestamps = {
   created_at: timestamp({ withTimezone: true }).defaultNow().notNull(),
   updated_at: timestamp({ withTimezone: true })
     .defaultNow()
@@ -14,7 +15,7 @@ export const timestamps = {
     .notNull(),
 };
 
-export const books = pgTable('book', {
+const books = pgTable('book', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   title: text().notNull(),
   isbn: varchar({ length: 13 }).notNull().unique(),
@@ -31,29 +32,31 @@ export const books = pgTable('book', {
   ...timestamps,
 });
 
-const { createInsertSchema } = createSchemaFactory({
-  coerce: {
-    number: true,
-  },
-});
-
-export const bookInsertSchema = createInsertSchema(books, {
+// Schemas
+const baseBookInsertSchema = createInsertSchema(books, {
   title: (schema) =>
-    schema
-      .min(4, 'Title must be at least 4 characters.')
-      .max(255, 'Title cannot exceed 255 characters.'),
-  isbn: (schema) => schema.length(13, 'ISBN must be exactly 13 characters long'),
-  total_pages: z.coerce
-    .number<number>()
-    .min(1, 'Must have at least 1 page.')
-    .max(10000, 'Page count cannot exceed 10,000.'),
-  published_year: z.coerce
-    .number<number>()
-    .min(2000, 'Year must be 2000 or later.')
-    .max(currentYear, 'Year cant more than present year.'),
-  author_id: z.coerce.number(),
-  genre_id: z.coerce.number(),
-}).omit({
-  created_at: true,
-  updated_at: true,
+    pipe(
+      schema,
+      minLength(4, 'Title must be at least 4 characters.'),
+      maxLength(255, 'Title cannot exceed 255 characters.'),
+    ),
+  isbn: (schema) => pipe(schema, length(13, 'ISBN must be exactly 13 characters long')),
+  total_pages: pipe(
+    unknown(),
+    toNumber(),
+    minValue(1, 'Must have at least 1 page.'),
+    maxValue(10000, 'Page count cannot exceed 10,000.'),
+  ),
+  published_year: (schema) =>
+    pipe(
+      unknown(),
+      toNumber(),
+      minValue(2000, 'Year must be 2000 or later.'),
+      maxValue(currentYear, "Year can't be more than present year."),
+    ),
+  author_id: pipe(unknown(), toNumber()),
+  genre_id: pipe(unknown(), toNumber()),
 });
+const bookInsertSchema = omit(baseBookInsertSchema, ['created_at', 'updated_at']);
+
+export { bookInsertSchema, books };

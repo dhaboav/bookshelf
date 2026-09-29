@@ -1,4 +1,7 @@
 'use client';
+import { BookOpen, Tag, Users, X } from 'lucide-react';
+import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
 import {
   Sidebar,
@@ -10,8 +13,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { BookOpen, Tag, Users, X } from 'lucide-react';
-import Link from 'next/link';
 
 const MENU_ITEMS = [
   { num: '01', label: 'Books', icon: BookOpen, to: '/' },

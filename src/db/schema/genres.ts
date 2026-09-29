@@ -1,16 +1,16 @@
 import { integer, pgTable, text } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createUpdateSchema } from 'drizzle-orm/zod';
+import { createInsertSchema, createUpdateSchema } from 'drizzle-orm/valibot';
+import { StringSchema, minLength, pipe } from 'valibot';
 
-export const genres = pgTable('genre', {
+const genres = pgTable('genre', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: text().notNull().unique(),
 });
 
 // Schemas
-export const genreInsertSchema = createInsertSchema(genres, {
-  name: (schema) => schema.min(4, 'Name must be at least 4 characters.'),
-});
+const nameRule = (schema: StringSchema<undefined>) =>
+  pipe(schema, minLength(4, 'Name must be at least 4 characters.'));
+const genreInsertSchema = createInsertSchema(genres, { name: nameRule });
+const genreUpdateSchema = createUpdateSchema(genres, { name: nameRule });
 
-export const genreUpdateSchema = createUpdateSchema(genres, {
-  name: (schema) => schema.min(4, 'Name must be at least 4 characters.'),
-});
+export { genreInsertSchema, genres, genreUpdateSchema };

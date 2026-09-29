@@ -1,20 +1,6 @@
-import { AppSidebar } from '@/components/nav/AppSidebar';
-import { Navbar } from '@/components/nav/Navbar';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { Toaster } from '@/components/ui/toast';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+
 import './globals.css';
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
 
 export const metadata: Metadata = {
   title: 'Bookshelf',
@@ -23,17 +9,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="dark flex min-h-full flex-col">
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <Navbar />
-            <main className="px-3 lg:px-48">{children}</main>
-          </SidebarInset>
-        </SidebarProvider>
-        <Toaster />
-      </body>
+    <html lang="en">
+      <body className="dark flex min-h-full flex-col">{children}</body>
     </html>
   );
 }

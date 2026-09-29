@@ -1,5 +1,5 @@
-import { deleteAuthor, getAuthorsWithBookCount } from '@/actions/authors';
 import { ItemTable } from '@/components/item/ItemTable';
+import { deleteAuthor, getAuthorsWithBookCount } from '@/db/crud/authors';
 
 export default async function AuthorsPage() {
   const data = await getAuthorsWithBookCount();

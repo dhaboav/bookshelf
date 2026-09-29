@@ -3,14 +3,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { AddAuthor } from '@/components/authors/AddAuthor';
-import { AddBook } from '@/components/book/AddBook';
-import { AddGenre } from '@/components/genres/AddGenre';
 import { AppSidebarBtn } from '@/components/nav/AppSidebarBtn';
+
+import { AddBook } from '../book/AddBook';
+import { AddGenre } from '../genres/AddGenre';
 
 const routeConfig: Record<string, React.ReactNode> = {
   '/': <AddBook />,
-  '/authors': <AddAuthor />,
+  // '/authors': <AddAuthor />,
   '/genres': <AddGenre />,
 };
 

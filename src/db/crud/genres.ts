@@ -1,11 +1,13 @@
 'use server';
-import { db } from '@/db/drizzle';
-import { books } from '@/db/schema/books';
-import { genreInsertSchema, genres, genreUpdateSchema } from '@/db/schema/genres';
 import { count, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import * as v from 'valibot';
 
-export const getGenresWithBookCount = async () => {
+import { db } from '@/db/drizzle';
+import { books } from '@/db/schema/books';
+import { genreInsertSchema, genreUpdateSchema, genres } from '@/db/schema/genres';
+
+const getGenresWithBookCount = async () => {
   return await db
     .select({
       id: genres.id,
@@ -17,14 +19,14 @@ export const getGenresWithBookCount = async () => {
     .groupBy(genres.id);
 };
 
-export const addGenre = async (name: string) => {
-  const parsed = genreInsertSchema.safeParse({ name });
+const addGenre = async (name: string) => {
+  const parsed = v.safeParse(genreInsertSchema, { name });
   if (!parsed.success) {
     return { success: false, message: 'Please enter a valid input.' };
   }
 
   try {
-    await db.insert(genres).values(parsed.data);
+    await db.insert(genres).values(parsed.output);
     revalidatePath('/genres');
     return { success: true, message: 'Genre added successfully.' };
   } catch (error) {
@@ -33,14 +35,15 @@ export const addGenre = async (name: string) => {
   }
 };
 
-export const updateGenre = async (id: number, name: string) => {
-  const parsed = genreUpdateSchema.safeParse({ name });
-  if (!parsed.success) {
+const updateGenre = async (id: number, name: string) => {
+  const result = v.safeParse(genreUpdateSchema, { name });
+
+  if (!result.success) {
     return { success: false, message: 'Please enter a valid input.' };
   }
 
   try {
-    await db.update(genres).set({ name: parsed.data.name }).where(eq(genres.id, id));
+    await db.update(genres).set(result.output).where(eq(genres.id, id));
     revalidatePath('/genres');
     return { success: true, message: 'Genre updated successfully.' };
   } catch (error) {
@@ -49,7 +52,7 @@ export const updateGenre = async (id: number, name: string) => {
   }
 };
 
-export const deleteGenre = async (id: number) => {
+const deleteGenre = async (id: number) => {
   try {
     await db.delete(genres).where(eq(genres.id, id));
     revalidatePath('/genres');
@@ -58,3 +61,5 @@ export const deleteGenre = async (id: number) => {
     return { success: false, message: 'Failed to delete genre.' };
   }
 };
+
+export { addGenre, deleteGenre, getGenresWithBookCount, updateGenre };

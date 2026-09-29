@@ -1,4 +1,7 @@
 'use client';
+import { TrashIcon } from 'lucide-react';
+import { useState, useTransition } from 'react';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -11,8 +14,6 @@ import {
 } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from '@/components/ui/toast';
-import { TrashIcon } from 'lucide-react';
-import { useState, useTransition } from 'react';
 
 interface Props {
   id: number;
@@ -45,11 +46,7 @@ export const ItemDelete = ({ id, label, onDelete }: Props) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-destructive cursor-pointer bg-transparent"
-          >
+          <Button variant="ghost" size="icon" className="text-destructive cursor-pointer bg-transparent">
             <TrashIcon />
           </Button>
         }
@@ -58,8 +55,8 @@ export const ItemDelete = ({ id, label, onDelete }: Props) => {
       <DialogContent className="bg-sidebar max-h-[85vh] overflow-y-auto px-6 lg:max-h-[95vh] lg:max-w-md">
         <DialogTitle className="font-display text-foreground text-xl">Delete {label}</DialogTitle>
         <DialogDescription className="text-foreground/60 mt-2 text-sm">
-          This {label.toLowerCase()} will be permanently deleted. Are you sure? You will not be able
-          to undo this action.
+          This {label.toLowerCase()} will be permanently deleted. Are you sure? You will not be able to undo
+          this action.
         </DialogDescription>
         <DialogFooter className="mt-6 flex flex-row gap-3">
           <DialogClose
