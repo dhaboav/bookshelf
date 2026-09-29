@@ -13,4 +13,4 @@ const nameRule = (schema: StringSchema<undefined>) =>
 const genreInsertSchema = createInsertSchema(genres, { name: nameRule });
 const genreUpdateSchema = createUpdateSchema(genres, { name: nameRule });
 
-export { genreInsertSchema, genres, genreUpdateSchema };
+export { genres, genreInsertSchema, genreUpdateSchema };

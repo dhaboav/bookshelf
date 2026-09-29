@@ -13,4 +13,4 @@ const nameRule = (schema: StringSchema<undefined>) =>
 const authorInsertSchema = createInsertSchema(authors, { name: nameRule });
 const authorUpdateSchema = createUpdateSchema(authors, { name: nameRule });
 
-export { authorInsertSchema, authors, authorUpdateSchema };
+export { authors, authorInsertSchema, authorUpdateSchema };

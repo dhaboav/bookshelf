@@ -1,8 +1,9 @@
 'use client';
-import { BookOpen, Tag, Users, X } from 'lucide-react';
+
+import { BookOpenIcon, MenuIcon, TagIcon, UsersIcon, XIcon } from 'lucide-react';
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/ui/button';
 import {
   Sidebar,
   SidebarContent,
@@ -12,15 +13,32 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@/components/ui/sidebar';
+} from '@/ui/sidebar';
 
 const MENU_ITEMS = [
-  { num: '01', label: 'Books', icon: BookOpen, to: '/' },
-  { num: '02', label: 'Authors', icon: Users, to: '/authors' },
-  { num: '03', label: 'Genres', icon: Tag, to: '/genres' },
+  { num: '01', label: 'Books', icon: BookOpenIcon, to: '/' },
+  { num: '02', label: 'Authors', icon: UsersIcon, to: '/authors' },
+  { num: '03', label: 'Genres', icon: TagIcon, to: '/genres' },
 ] as const;
 
-export const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
+function AppSidebarTrigger() {
+  const { openMobile, setOpenMobile } = useSidebar();
+  if (openMobile) return null;
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setOpenMobile(true)}
+      className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-zinc-800 md:hidden"
+      aria-label="Open Menu"
+    >
+      <MenuIcon className="text-foreground size-4" />
+    </Button>
+  );
+}
+
+function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { setOpenMobile } = useSidebar();
 
   return (
@@ -28,7 +46,7 @@ export const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =
       <SidebarHeader className="mb-4 flex flex-row justify-between p-6">
         <div>
           <h1 className="font-display text-gold text-3xl tracking-tight italic">Athenaeum</h1>
-          <p className="text-foreground/30 mt-1 font-mono text-[10px] tracking-[0.25em] uppercase">
+          <p className="text-foreground/30 mt-1 font-mono text-tiny tracking-[0.25em] uppercase">
             Private Collection
           </p>
         </div>
@@ -40,7 +58,7 @@ export const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =
           className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-zinc-800 md:hidden"
           aria-label="Close Menu"
         >
-          <X className="text-foreground size-4" />
+          <XIcon className="text-foreground size-4" />
         </Button>
       </SidebarHeader>
 
@@ -54,7 +72,7 @@ export const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =
                     href={to}
                     className="text-foreground/60 flex items-center gap-x-2 rounded-lg border border-transparent transition-all"
                   >
-                    <span className="font-mono text-[10px] opacity-50">{num}</span>
+                    <span className="font-mono text-tiny opacity-50">{num}</span>
                     <Icon />
                     <span className="text-sm font-medium">{label}</span>
                   </Link>
@@ -83,4 +101,6 @@ export const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =
       </SidebarFooter>
     </Sidebar>
   );
-};
+}
+
+export { AppSidebar, AppSidebarTrigger };

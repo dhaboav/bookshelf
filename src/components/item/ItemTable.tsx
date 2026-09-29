@@ -1,15 +1,7 @@
 // import { UpdateAuthor } from '@/components/authors/UpdateAuthor';
 import { UpdateGenre } from '@/components/genres/UpdateGenre';
 import { ItemDelete } from '@/components/item/ItemDelete';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table';
 
 interface Item {
   id: number;
@@ -23,7 +15,7 @@ interface Props {
   onDelete: (id: number) => Promise<any>;
 }
 
-export const ItemTable = ({ items, label, onDelete }: Props) => {
+function ItemTable({ items, label, onDelete }: Props) {
   return (
     <Table className="mt-8">
       <TableCaption>A list of {label}s</TableCaption>
@@ -41,19 +33,15 @@ export const ItemTable = ({ items, label, onDelete }: Props) => {
             <TableCell>{item.id}</TableCell>
             <TableCell>{item.name}</TableCell>
             <TableCell>{item.totalBooks}</TableCell>
-            <TableCell>
-              <div className="flex justify-end gap-2">
-                {label === 'Author' ? (
-                  <span>Nothing</span>
-                ) : (
-                  <UpdateGenre id={item.id} initialName={item.name} />
-                )}
-                <ItemDelete id={item.id} label={label} onDelete={onDelete} />
-              </div>
+            <TableCell className="flex justify-end gap-2">
+              <UpdateGenre id={item.id} initialName={item.name} />
+              <ItemDelete id={item.id} onDelete={onDelete} />
             </TableCell>
           </TableRow>
         ))}
       </TableBody>
     </Table>
   );
-};
+}
+
+export { ItemTable };

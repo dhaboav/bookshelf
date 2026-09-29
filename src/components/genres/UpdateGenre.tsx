@@ -44,10 +44,11 @@ export const UpdateGenre = ({ id, initialName }: Props) => {
 
   return (
     <ItemDialog
-      label="Update Genre"
-      open={open}
-      setIsOpen={setOpen}
-      triggerBtn={
+      formID="form-update-genre"
+      isPending={isPending}
+      title="Update Genre"
+      description="Fill out the form below to update the genre"
+      actionTrigger={
         <DialogTrigger
           render={
             <Button
@@ -60,8 +61,6 @@ export const UpdateGenre = ({ id, initialName }: Props) => {
           }
         />
       }
-      formID="form-update-genre"
-      isPending={isPending}
     >
       <Form of={form} id="form-update-genre" onSubmit={handleSubmit} className="space-y-4">
         <InputField of={form} path="name" label="name" placeholder="Author name" />

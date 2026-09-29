@@ -1,34 +1,34 @@
 'use server';
+
 import { revalidatePath } from 'next/cache';
-import z from 'zod';
+import { InferInput, safeParse } from 'valibot';
 
 import { db } from '@/db/drizzle';
 import { bookInsertSchema, books } from '@/db/schema/books';
 
-export const getBooks = async () => {
+async function getBooks() {
   return await db.query.books.findMany({
     with: {
       author: true,
       genre: true,
     },
   });
-};
+}
 
-export type BookInput = z.infer<typeof bookInsertSchema>;
-export const addBook = async (data: BookInput) => {
-  const parsed = bookInsertSchema.safeParse(data);
+async function addBook(data: InferInput<typeof bookInsertSchema>) {
+  const parsed = safeParse(bookInsertSchema, data);
   if (!parsed.success) {
     return { success: false, message: 'Please enter a valid input.' };
   }
 
   try {
-    await db.insert(books).values(parsed.data);
+    await db.insert(books).values(parsed.output);
     revalidatePath('/books');
     return { success: true, message: 'Book added successfully.' };
   } catch (error: any) {
     console.error('Database error:', error);
     return { success: false, message: 'Something went wrong. Please try again.' };
   }
-};
+}
 
-export type Book = Awaited<ReturnType<typeof getBooks>>[number];
+export { getBooks, addBook };

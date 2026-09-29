@@ -57,6 +57,7 @@ const baseBookInsertSchema = createInsertSchema(books, {
   author_id: pipe(unknown(), toNumber()),
   genre_id: pipe(unknown(), toNumber()),
 });
+
 const bookInsertSchema = omit(baseBookInsertSchema, ['created_at', 'updated_at']);
 
-export { bookInsertSchema, books };
+export { books, bookInsertSchema };

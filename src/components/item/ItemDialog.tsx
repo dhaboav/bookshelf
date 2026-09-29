@@ -1,6 +1,8 @@
 import { VariantProps, cva } from 'class-variance-authority';
 import { cn } from 'cn';
+import { ReactNode, useState } from 'react';
 
+import { Button } from '@/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -9,18 +11,7 @@ import {
   DialogFooter,
   DialogTitle,
 } from '@/ui/dialog';
-
-import { Button } from '../ui/button';
-
-interface Props {
-  formID: string;
-  isPending: boolean;
-  label: string;
-  open: boolean;
-  setIsOpen: (open: boolean) => void;
-  triggerBtn: React.ReactNode;
-  children?: React.ReactNode;
-}
+import { Spinner } from '@/ui/spinner';
 
 const formButtonVariants = cva(
   '!flex !h-11 !flex-1 !cursor-pointer !items-center !justify-center !gap-x-2 !rounded-xl !border !text-sm !font-medium tracking-wide transition-all',
@@ -37,24 +28,34 @@ const formButtonVariants = cva(
   },
 );
 
+interface Props extends VariantProps<typeof formButtonVariants> {
+  formID: string;
+  isPending: boolean;
+
+  title: string;
+  description?: string;
+
+  actionTrigger: ReactNode;
+  children?: ReactNode;
+}
+
 export const ItemDialog = ({
   formID,
   isPending,
-  label,
-  open,
-  setIsOpen,
-  triggerBtn,
+  title,
+  description,
+  actionTrigger,
   children,
   variant = 'add',
-}: Props & VariantProps<typeof formButtonVariants>) => {
+}: Props) => {
+  const [open, setOpen] = useState(false);
   return (
-    <Dialog open={open} onOpenChange={setIsOpen}>
-      {triggerBtn}
+    <Dialog open={open} onOpenChange={setOpen}>
+      {actionTrigger}
       <DialogContent className="bg-sidebar max-h-[85vh] overflow-y-auto lg:max-h-[95vh] lg:max-w-xl">
-        <DialogTitle className="font-display text-foreground text-xl">{label}</DialogTitle>
-        <DialogDescription className="text-foreground/60 mt-2 text-sm">
-          Fill out the form below to {label.toLowerCase()}.
-        </DialogDescription>
+        <DialogTitle className="font-display text-foreground text-xl">{title}</DialogTitle>
+        <DialogDescription className="text-foreground/60 mt-2 text-sm">{description}</DialogDescription>
+
         <div className="space-y-4">{children}</div>
 
         <DialogFooter>
@@ -75,6 +76,7 @@ export const ItemDialog = ({
             disabled={isPending}
             className={cn(formButtonVariants({ variant }))}
           >
+            {isPending && <Spinner data-icon="inline-start" />}
             Save
           </Button>
         </DialogFooter>

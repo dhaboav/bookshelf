@@ -3,25 +3,17 @@ import { TrashIcon } from 'lucide-react';
 import { useState, useTransition } from 'react';
 
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Spinner } from '@/components/ui/spinner';
+import { DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/toast';
+
+import { ItemDialog } from './ItemDialog';
 
 interface Props {
   id: number;
-  label: string;
   onDelete: (id: number) => Promise<any>;
 }
 
-export const ItemDelete = ({ id, label, onDelete }: Props) => {
+export const ItemDelete = ({ id, onDelete }: Props) => {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -43,43 +35,25 @@ export const ItemDelete = ({ id, label, onDelete }: Props) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button variant="ghost" size="icon" className="text-destructive cursor-pointer bg-transparent">
-            <TrashIcon />
-          </Button>
-        }
-      />
-
-      <DialogContent className="bg-sidebar max-h-[85vh] overflow-y-auto px-6 lg:max-h-[95vh] lg:max-w-md">
-        <DialogTitle className="font-display text-foreground text-xl">Delete {label}</DialogTitle>
-        <DialogDescription className="text-foreground/60 mt-2 text-sm">
-          This {label.toLowerCase()} will be permanently deleted. Are you sure? You will not be able to undo
-          this action.
-        </DialogDescription>
-        <DialogFooter className="mt-6 flex flex-row gap-3">
-          <DialogClose
-            render={
-              <Button
-                variant="outline"
-                disabled={isPending}
-                className="text-foreground/60 hover:text-foreground h-11 cursor-pointer rounded-xl border border-white/10 px-6 text-sm font-medium transition-colors hover:bg-white/5"
-              >
-                Cancel
-              </Button>
-            }
-          />
-          <Button
-            disabled={isPending}
-            onClick={handleDelete}
-            className="flex h-11 flex-1 cursor-pointer items-center justify-center gap-x-2 rounded-xl border border-red-600/20 bg-red-600/10 text-sm font-medium tracking-wide text-red-500 transition-all hover:bg-red-600/20"
-          >
-            {isPending && <Spinner data-icon="inline-start" />}
-            <span>{isPending ? 'Deleting...' : 'Delete'}</span>
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <ItemDialog
+      formID="form-delete"
+      isPending={isPending}
+      title="Delete"
+      description="This item will be permanently deleted. Are you sure? You will not be able to undo this action."
+      variant="destructive"
+      actionTrigger={
+        <DialogTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 cursor-pointer rounded-full border bg-transparent text-gray-400"
+            >
+              <TrashIcon />
+            </Button>
+          }
+        />
+      }
+    />
   );
 };
