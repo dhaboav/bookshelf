@@ -1,25 +1,39 @@
+// components/Navbar.tsx
 'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ReactNode } from 'react';
 
 import { AppSidebarTrigger } from '@/components/nav/AppSidebar';
-import { addAuthor } from '@/db/crud/authors';
-import { addBook } from '@/db/crud/books';
-import { addGenre } from '@/db/crud/genres';
 
 import { ItemAdd } from '../item/ItemAdd';
 
-const routeConfig: Record<string, ReactNode> = {
-  '/': <ItemAdd key="book" choice="book" onCreateAction={addBook} />,
-  '/authors': <ItemAdd key="author" choice="author" onCreateAction={addAuthor} />,
-  '/genres': <ItemAdd key="genre" choice="genre" onCreateAction={addGenre} />,
-};
+interface NavbarProps {
+  addBookAction: any;
+  addAuthorAction: any;
+  addGenreAction: any;
+  genres: any[];
+  authors: any[];
+}
 
-function Navbar() {
+export function Navbar({ addBookAction, addAuthorAction, addGenreAction, genres, authors }: NavbarProps) {
   const pathname = usePathname();
+
+  const routeConfig: Record<string, React.ReactNode> = {
+    '/': (
+      <ItemAdd
+        key="book"
+        choice="book"
+        onCreateAction={addBookAction}
+        authorData={authors}
+        genreData={genres}
+      />
+    ),
+    '/authors': <ItemAdd key="author" choice="author" onCreateAction={addAuthorAction} />,
+    '/genres': <ItemAdd key="genre" choice="genre" onCreateAction={addGenreAction} />,
+  };
+
   const ActionComponent = routeConfig[pathname];
 
   return (
@@ -42,5 +56,3 @@ function Navbar() {
     </nav>
   );
 }
-
-export { Navbar };

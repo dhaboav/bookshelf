@@ -2,10 +2,8 @@
 
 import { Form, SubmitHandler, useForm } from '@formisch/react';
 import { PlusIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { getAuthorsWithBookCount } from '@/db/crud/authors';
-import { getGenresWithBookCount } from '@/db/crud/genres';
 import { schemas } from '@/db/schema/registry';
 import { Button } from '@/ui/button';
 import { DialogTrigger } from '@/ui/dialog';
@@ -23,30 +21,26 @@ function ItemForm({ form, placeholder }: ItemProps) {
   return <InputField of={form} path="name" label="name" placeholder={placeholder} />;
 }
 
+interface T2 {
+  id: number;
+  name: string;
+}
+
 interface Test {
   value: number;
   label: string;
 }
 
-function BookForm({ form }: { form: any }) {
-  const [genres, setGenres] = useState<Test[]>([]);
-  const [authors, setAuthors] = useState<Test[]>([]);
+function BookForm({ form, dgenre, dauthor }: { form: any; dgenre: T2[]; dauthor: T2[] }) {
+  const genres: Test[] = dgenre.map((item) => ({
+    value: item.id,
+    label: item.name,
+  }));
 
-  useEffect(() => {
-    Promise.all([getGenresWithBookCount(), getAuthorsWithBookCount()]).then(([genreData, authorData]) => {
-      const formattedGenres: Test[] = genreData.map((item) => ({
-        value: item.id,
-        label: item.name,
-      }));
-      setGenres(formattedGenres);
-
-      const formattedAuthors: Test[] = authorData.map((item) => ({
-        value: item.id,
-        label: item.name,
-      }));
-      setAuthors(formattedAuthors);
-    });
-  }, []);
+  const authors: Test[] = dauthor.map((item) => ({
+    value: item.id,
+    label: item.name,
+  }));
 
   return (
     <div className="w-full space-y-4">
@@ -87,9 +81,11 @@ function BookForm({ form }: { form: any }) {
 interface Props {
   choice: 'author' | 'genre' | 'book';
   onCreateAction: (values: any) => Promise<{ success?: boolean; message?: string }>;
+  genreData?: any;
+  authorData?: any;
 }
 
-function ItemAdd({ choice, onCreateAction }: Props) {
+function ItemAdd({ choice, onCreateAction, ...props }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
@@ -118,7 +114,9 @@ function ItemAdd({ choice, onCreateAction }: Props) {
         author_id: '',
         genre_id: '',
       },
-      formComponent: (form: any) => <BookForm form={form} />,
+      formComponent: (form: any) => (
+        <BookForm form={form} dauthor={props.authorData} dgenre={props.genreData} />
+      ),
     },
   }[choice];
 

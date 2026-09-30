@@ -1,19 +1,23 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import { InferInput, safeParse } from 'valibot';
 
 import { db } from '@/db/drizzle';
 import { bookInsertSchema, books } from '@/db/schema/books';
 
-async function getBooks() {
-  return await db.query.books.findMany({
-    with: {
-      author: true,
-      genre: true,
-    },
-  });
-}
+const getBooks = unstable_cache(
+  async () => {
+    return await db.query.books.findMany({
+      with: {
+        author: true,
+        genre: true,
+      },
+    });
+  },
+  ['books-with-relations'],
+  { tags: ['books'] },
+);
 
 async function addBook(data: InferInput<typeof bookInsertSchema>) {
   const parsed = safeParse(bookInsertSchema, data);
@@ -23,6 +27,7 @@ async function addBook(data: InferInput<typeof bookInsertSchema>) {
 
   try {
     await db.insert(books).values(parsed.output);
+    revalidateTag('books', 'max');
     revalidatePath('/books');
     return { success: true, message: 'Book added successfully.' };
   } catch (error: any) {

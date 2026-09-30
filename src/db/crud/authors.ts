@@ -1,24 +1,28 @@
 'use server';
 
 import { count, eq } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import { InferInput, safeParse } from 'valibot';
 
 import { db } from '@/db/drizzle';
 import { authorInsertSchema, authorUpdateSchema, authors } from '@/db/schema/authors';
 import { books } from '@/db/schema/books';
 
-async function getAuthorsWithBookCount() {
-  return await db
-    .select({
-      id: authors.id,
-      name: authors.name,
-      totalBooks: count(books.id),
-    })
-    .from(authors)
-    .leftJoin(books, eq(books.author_id, authors.id))
-    .groupBy(authors.id);
-}
+const getAuthors = unstable_cache(
+  async () => {
+    return await db
+      .select({
+        id: authors.id,
+        name: authors.name,
+        totalBooks: count(books.id),
+      })
+      .from(authors)
+      .leftJoin(books, eq(books.author_id, authors.id))
+      .groupBy(authors.id);
+  },
+  ['authors-with-bookcount'],
+  { tags: ['authors'] },
+);
 
 async function addAuthor(data: InferInput<typeof authorInsertSchema>) {
   const parsed = safeParse(authorInsertSchema, data);
@@ -28,6 +32,7 @@ async function addAuthor(data: InferInput<typeof authorInsertSchema>) {
 
   try {
     await db.insert(authors).values(parsed.output);
+    revalidateTag('authors', 'max');
     revalidatePath('/authors');
     return { success: true, message: 'Author added successfully.' };
   } catch (error) {
@@ -44,6 +49,7 @@ async function updateAuthor(id: number, data: InferInput<typeof authorUpdateSche
 
   try {
     await db.update(authors).set(parsed.output).where(eq(authors.id, id));
+    revalidateTag('authors', 'max');
     revalidatePath('/authors');
     return { success: true, message: 'Author updated successfully.' };
   } catch (error) {
@@ -55,6 +61,7 @@ async function updateAuthor(id: number, data: InferInput<typeof authorUpdateSche
 async function deleteAuthor(id: number) {
   try {
     await db.delete(authors).where(eq(authors.id, id));
+    revalidateTag('authors', 'max');
     revalidatePath('/authors');
     return { success: true, message: 'Author deleted successfully.' };
   } catch (error) {
@@ -62,4 +69,4 @@ async function deleteAuthor(id: number) {
   }
 }
 
-export { getAuthorsWithBookCount, addAuthor, updateAuthor, deleteAuthor };
+export { getAuthors, addAuthor, updateAuthor, deleteAuthor };
