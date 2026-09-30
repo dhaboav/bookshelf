@@ -40,7 +40,6 @@ export const AddGenre = () => {
 
   return (
     <ItemDialog
-      label="Add Genre"
       open={open}
       setIsOpen={setOpen}
       triggerBtn={

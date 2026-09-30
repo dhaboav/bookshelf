@@ -43,7 +43,9 @@ function InputField({ of, path, label, placeholder, type = 'text' }: InputProps)
     <FormischField of={of} path={[path]}>
       {(field) => (
         <Field data-invalid={field.errors !== null}>
-          <FieldLabel htmlFor={label}>{label.toUpperCase()}</FieldLabel>
+          <FieldLabel htmlFor={label} className="text-foreground/60 text-sm">
+            {label.toUpperCase()}
+          </FieldLabel>
           <Input
             {...field.props}
             id={label}

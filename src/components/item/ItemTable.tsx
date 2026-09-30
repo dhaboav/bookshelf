@@ -1,7 +1,11 @@
-// import { UpdateAuthor } from '@/components/authors/UpdateAuthor';
-import { UpdateGenre } from '@/components/genres/UpdateGenre';
+'use client';
+
 import { ItemDelete } from '@/components/item/ItemDelete';
+import { SchemaType } from '@/db/schema/registry';
+import { InputField } from '@/ui/shared-form-fields';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table';
+
+import { ItemUpdate } from './ItemUpdate';
 
 interface Item {
   id: number;
@@ -12,10 +16,12 @@ interface Item {
 interface Props {
   items: Item[];
   label: string;
-  onDelete: (id: number) => Promise<any>;
+
+  updateMethod: any;
+  deleteMethod: any;
 }
 
-function ItemTable({ items, label, onDelete }: Props) {
+function ItemTable({ items, label, updateMethod, deleteMethod }: Props) {
   return (
     <Table className="mt-8">
       <TableCaption>A list of {label}s</TableCaption>
@@ -34,8 +40,16 @@ function ItemTable({ items, label, onDelete }: Props) {
             <TableCell>{item.name}</TableCell>
             <TableCell>{item.totalBooks}</TableCell>
             <TableCell className="flex justify-end gap-2">
-              <UpdateGenre id={item.id} initialName={item.name} />
-              <ItemDelete id={item.id} onDelete={onDelete} />
+              <ItemUpdate
+                id={item.id}
+                label={label}
+                initialData={{ name: item.name }}
+                schemaKey={label.toLowerCase() as SchemaType}
+                onUpdate={updateMethod}
+              >
+                {(form) => <InputField of={form} path="name" label="name" placeholder={`${label} name`} />}
+              </ItemUpdate>
+              <ItemDelete id={item.id} label={label.toLowerCase()} onDelete={deleteMethod} />
             </TableCell>
           </TableRow>
         ))}

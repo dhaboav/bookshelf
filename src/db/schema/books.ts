@@ -15,7 +15,7 @@ const timestamps = {
     .notNull(),
 };
 
-const books = pgTable('book', {
+export const books = pgTable('book', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   title: text().notNull(),
   isbn: varchar({ length: 13 }).notNull().unique(),
@@ -58,6 +58,4 @@ const baseBookInsertSchema = createInsertSchema(books, {
   genre_id: pipe(unknown(), toNumber()),
 });
 
-const bookInsertSchema = omit(baseBookInsertSchema, ['created_at', 'updated_at']);
-
-export { books, bookInsertSchema };
+export const bookInsertSchema = omit(baseBookInsertSchema, ['created_at', 'updated_at']);
