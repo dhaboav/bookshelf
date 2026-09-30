@@ -1,7 +1,7 @@
 'use client';
 
 import { ItemDelete } from '@/components/item/ItemDelete';
-import { SchemaType } from '@/db/schema/registry';
+import { EntityType } from '@/db/schema/registry';
 import { InputField } from '@/ui/shared-form-fields';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table';
 
@@ -44,7 +44,8 @@ function ItemTable({ items, label, updateMethod, deleteMethod }: Props) {
                 id={item.id}
                 label={label}
                 initialData={{ name: item.name }}
-                schemaKey={label.toLowerCase() as SchemaType}
+                entity={label.toLowerCase() as EntityType}
+                action="update"
                 onUpdate={updateMethod}
               >
                 {(form) => <InputField of={form} path="name" label="name" placeholder={`${label} name`} />}

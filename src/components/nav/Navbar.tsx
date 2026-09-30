@@ -6,14 +6,16 @@ import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
 
 import { AppSidebarTrigger } from '@/components/nav/AppSidebar';
+import { addAuthor } from '@/db/crud/authors';
+import { addBook } from '@/db/crud/books';
+import { addGenre } from '@/db/crud/genres';
 
-import { AddBook } from '../book/AddBook';
-import { AddGenre } from '../genres/AddGenre';
+import { ItemAdd } from '../item/ItemAdd';
 
 const routeConfig: Record<string, ReactNode> = {
-  '/': <AddBook />,
-  // '/authors': <AddAuthor />,
-  '/genres': <AddGenre />,
+  '/': <ItemAdd key="book" choice="book" onCreateAction={addBook} />,
+  '/authors': <ItemAdd key="author" choice="author" onCreateAction={addAuthor} />,
+  '/genres': <ItemAdd key="genre" choice="genre" onCreateAction={addGenre} />,
 };
 
 function Navbar() {
@@ -36,7 +38,7 @@ function Navbar() {
         </Link>
       </div>
 
-      <div className="flex items-center gap-x-2">{ActionComponent || null}</div>
+      <div className="flex items-center gap-x-2">{ActionComponent}</div>
     </nav>
   );
 }

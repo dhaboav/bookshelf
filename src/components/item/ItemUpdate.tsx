@@ -4,7 +4,7 @@ import { Form, SubmitHandler, useForm } from '@formisch/react';
 import { EditIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { SchemaType, schemas } from '@/db/schema/registry';
+import { ActionType, EntityType, schemas } from '@/db/schema/registry';
 import { Button } from '@/ui/button';
 import { DialogTrigger } from '@/ui/dialog';
 import { toast } from '@/ui/toast';
@@ -15,18 +15,19 @@ interface Props {
   id: number;
   label: string;
 
-  schemaKey: SchemaType;
+  entity: EntityType;
+  action: string;
   onUpdate: (id: number, values: any) => any;
   initialData: Record<string, any>;
 
   children: (form: any) => React.ReactNode;
 }
 
-function ItemUpdate({ id, label, schemaKey, onUpdate, initialData, children }: Props) {
+function ItemUpdate({ id, label, entity, action, onUpdate, initialData, children }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
-  const activeSchema = schemas[schemaKey];
+  const activeSchema = (schemas[entity] as any)[action];
   const form = useForm({
     schema: activeSchema,
     initialInput: initialData,

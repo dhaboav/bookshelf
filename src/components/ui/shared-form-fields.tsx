@@ -87,31 +87,34 @@ function TextareaField({ of, path, label, placeholder, className }: Props) {
 function ComboboxField({ of, path, label, items, placeholder }: ComboboxProps) {
   return (
     <FormischField of={of} path={[path]}>
-      {(field) => (
-        <Field data-invalid={field.errors !== null}>
-          <FieldLabel htmlFor={label}>{label.toUpperCase()}</FieldLabel>
-          <Combobox
-            id={label}
-            value={(field.input ?? '') as any}
-            items={items}
-            onValueChange={field.onChange}
-          >
-            <ComboboxInput placeholder={placeholder} aria-invalid={field.errors !== null} />
-            <ComboboxContent>
-              <ComboboxEmpty>No Items found.</ComboboxEmpty>
-              <ComboboxList>
-                {(item) => (
-                  <ComboboxItem key={item.value} value={item}>
-                    {item.label}
-                  </ComboboxItem>
-                )}
-              </ComboboxList>
-            </ComboboxContent>
-          </Combobox>
+      {(field) => {
+        const selectedItem = items.find((item) => item.value === field.input);
+        return (
+          <Field data-invalid={field.errors !== null}>
+            <FieldLabel htmlFor={label}>{label.toUpperCase()}</FieldLabel>
+            <Combobox
+              id={label}
+              value={selectedItem ?? ('' as any)}
+              items={items}
+              onValueChange={(item: any) => field.onChange(item ? item.value : '')}
+            >
+              <ComboboxInput placeholder={placeholder} aria-invalid={field.errors !== null} />
+              <ComboboxContent>
+                <ComboboxEmpty>No Items found.</ComboboxEmpty>
+                <ComboboxList>
+                  {(item) => (
+                    <ComboboxItem key={item.value} value={item}>
+                      {item.label}
+                    </ComboboxItem>
+                  )}
+                </ComboboxList>
+              </ComboboxContent>
+            </Combobox>
 
-          {field.errors && <FieldError errors={field.errors.map((message) => ({ message }))} />}
-        </Field>
-      )}
+            {field.errors && <FieldError errors={field.errors.map((message) => ({ message }))} />}
+          </Field>
+        );
+      }}
     </FormischField>
   );
 }

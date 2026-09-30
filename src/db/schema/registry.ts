@@ -1,9 +1,20 @@
-import { authorUpdateSchema } from './authors';
-import { genreUpdateSchema } from './genres';
+import { authorInsertSchema, authorUpdateSchema } from './authors';
+import { bookInsertSchema } from './books';
+import { genreInsertSchema, genreUpdateSchema } from './genres';
 
 export const schemas = {
-  author: authorUpdateSchema,
-  genre: genreUpdateSchema,
+  author: {
+    create: authorInsertSchema,
+    update: authorUpdateSchema,
+  },
+  genre: {
+    create: genreInsertSchema,
+    update: genreUpdateSchema,
+  },
+  book: {
+    create: bookInsertSchema,
+  },
 };
 
-export type SchemaType = keyof typeof schemas;
+export type EntityType = keyof typeof schemas;
+export type ActionType<T extends EntityType> = keyof (typeof schemas)[T];
