@@ -21,6 +21,7 @@ function ItemDelete({ id, label, onDelete }: Props) {
 
   const handleDelete = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('Deleting item with ID:', id);
     setIsPending(true);
 
     try {
@@ -55,7 +56,7 @@ function ItemDelete({ id, label, onDelete }: Props) {
       isOpen={open}
       onClose={setOpen}
       isPending={isPending}
-      title="Delete"
+      title={`Delete ${label}`}
       description="This item will be permanently deleted. Are you sure? You will not be able to undo this action."
       submitButtonLabel="Delete"
       variant="destructive"

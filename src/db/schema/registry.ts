@@ -1,5 +1,5 @@
 import { authorInsertSchema, authorUpdateSchema } from './authors';
-import { bookInsertSchema } from './books';
+import { bookInsertSchema, bookUpdateSchema } from './books';
 import { genreInsertSchema, genreUpdateSchema } from './genres';
 
 export const schemas = {
@@ -13,6 +13,7 @@ export const schemas = {
   },
   book: {
     create: bookInsertSchema,
+    update: bookUpdateSchema,
   },
 };
 
