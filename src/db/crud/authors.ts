@@ -1,28 +1,24 @@
 'use server';
 
 import { count, eq } from 'drizzle-orm';
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { InferInput, safeParse } from 'valibot';
 
 import { db } from '@/db/drizzle';
 import { authorInsertSchema, authorUpdateSchema, authors } from '@/db/schema/authors';
 import { books } from '@/db/schema/books';
 
-const getAuthors = unstable_cache(
-  async () => {
-    return await db
-      .select({
-        id: authors.id,
-        name: authors.name,
-        totalBooks: count(books.id),
-      })
-      .from(authors)
-      .leftJoin(books, eq(books.author_id, authors.id))
-      .groupBy(authors.id);
-  },
-  ['authors-with-bookcount'],
-  { tags: ['authors'] },
-);
+async function getAuthors() {
+  return await db
+    .select({
+      id: authors.id,
+      name: authors.name,
+      totalBooks: count(books.id),
+    })
+    .from(authors)
+    .leftJoin(books, eq(books.author_id, authors.id))
+    .groupBy(authors.id);
+}
 
 async function addAuthor(data: InferInput<typeof authorInsertSchema>) {
   const parsed = safeParse(authorInsertSchema, data);
