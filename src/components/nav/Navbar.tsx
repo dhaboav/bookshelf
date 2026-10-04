@@ -37,7 +37,7 @@ export function Navbar({ addBookAction, addAuthorAction, addGenreAction, genres,
   const ActionComponent = routeConfig[pathname];
 
   return (
-    <nav className="bg-background sticky top-0 flex h-15 w-full items-center justify-between border-b-2 px-3 lg:px-48">
+    <nav className="bg-background sticky top-0 flex h-15 w-full items-center justify-between z-999 border-b-2 px-3 lg:px-48">
       <div className="flex items-center gap-x-2">
         <AppSidebarTrigger />
         <Link href="/" className="flex cursor-pointer items-center gap-x-2">

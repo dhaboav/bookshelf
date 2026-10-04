@@ -1,7 +1,7 @@
 'use client';
 
 import { Form, SubmitHandler, useForm } from '@formisch/react';
-import { EditIcon } from 'lucide-react';
+import { PencilIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import { EntityType, schemas } from '@/db/schema/registry';
@@ -77,7 +77,7 @@ function ItemUpdate({ id, label, entity, action, onUpdate, initialData, children
               size="icon"
               className="h-8 w-8 cursor-pointer rounded-full border bg-transparent text-gray-400"
             >
-              <EditIcon />
+              <PencilIcon />
             </Button>
           }
         />
