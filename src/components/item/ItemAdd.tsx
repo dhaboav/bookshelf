@@ -4,7 +4,7 @@ import { Form, SubmitHandler, useForm } from '@formisch/react';
 import { PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { schemas } from '@/db/schema/registry';
+import { schemas } from '@/schemas/registry';
 import { Button } from '@/ui/button';
 import { DialogTrigger } from '@/ui/dialog';
 import { ComboboxField, InputField, TextareaField } from '@/ui/shared-form-fields';
@@ -84,6 +84,7 @@ interface Props {
   genreData?: any;
   authorData?: any;
 }
+const thisYear = new Date().getFullYear();
 
 function ItemAdd({ choice, onCreateAction, ...props }: Props) {
   const [open, setOpen] = useState(false);
@@ -110,7 +111,7 @@ function ItemAdd({ choice, onCreateAction, ...props }: Props) {
         description: '',
         cover_img: '',
         total_pages: 0,
-        published_year: new Date().getFullYear(),
+        published_year: thisYear,
         author_id: '',
         genre_id: '',
       },

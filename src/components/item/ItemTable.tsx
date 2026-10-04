@@ -1,7 +1,7 @@
 'use client';
 
 import { ItemDelete } from '@/components/item/ItemDelete';
-import { EntityType } from '@/db/schema/registry';
+import { EntityType } from '@/schemas/registry';
 import { InputField } from '@/ui/shared-form-fields';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table';
 

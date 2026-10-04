@@ -1,4 +1,3 @@
-// components/Navbar.tsx
 'use client';
 
 import Image from 'next/image';
@@ -43,9 +42,9 @@ export function Navbar({ addBookAction, addAuthorAction, addGenreAction, genres,
         <Link href="/" className="flex cursor-pointer items-center gap-x-2">
           <Image
             src="/react.svg"
-            width={24}
-            height={24}
-            className="animation-duration-[10s] h-6 w-auto animate-spin"
+            width={10}
+            height={10}
+            className="animation-duration-[10s] h-auto w-auto animate-spin"
             alt="Logo"
           />
           <h1 className="font-semibold lg:text-lg">Athenaeum</h1>

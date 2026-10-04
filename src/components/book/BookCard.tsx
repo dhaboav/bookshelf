@@ -1,12 +1,11 @@
 'use client';
 
-import { CalendarIcon, CircleUserRoundIcon, ScrollTextIcon } from 'lucide-react';
 import Image from 'next/image';
 
 import { deleteBook, updateBook } from '@/db/crud/books';
-import type { Book } from '@/db/schema/books';
+import type { Book } from '@/schemas/books';
 import { Badge } from '@/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
+import { Card, CardHeader, CardTitle } from '@/ui/card';
 import { ComboboxField, InputField, TextareaField } from '@/ui/shared-form-fields';
 
 import { ItemDelete } from '../item/ItemDelete';
@@ -107,7 +106,6 @@ export function BookCard({ book, genres, authors }: Props) {
         <ItemDelete id={book.id} label={book.title} onDelete={deleteBook} />
       </div>
 
-      {/* Card Header */}
       <CardHeader>
         <CardTitle className="text-lg font-semibold">{book.title}</CardTitle>
         <span>{book.author?.name}</span>

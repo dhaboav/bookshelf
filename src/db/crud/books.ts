@@ -1,24 +1,42 @@
 'use server';
 
-import { eq } from 'drizzle-orm';
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
+import { count, eq } from 'drizzle-orm';
+import { cacheTag, updateTag } from 'next/cache';
 import { InferInput, safeParse } from 'valibot';
 
 import { db } from '@/db/drizzle';
-import { bookInsertSchema, bookUpdateSchema, books } from '@/db/schema/books';
+import { bookInsertSchema, bookUpdateSchema, books } from '@/schemas/books';
 
-const getBooks = unstable_cache(
-  async () => {
-    return await db.query.books.findMany({
+async function getBooks(page: number = 1, size: number = 12) {
+  'use cache';
+  cacheTag('books');
+
+  const offset = (page - 1) * size;
+  const [items, totalResult] = await Promise.all([
+    db.query.books.findMany({
+      offset: offset,
+      limit: size,
+      orderBy: { created_at: 'desc' },
       with: {
         author: true,
         genre: true,
       },
-    });
-  },
-  ['books-with-relations'],
-  { tags: ['books'] },
-);
+    }),
+    db.select({ count: count(books.id) }).from(books),
+  ]);
+
+  const total = totalResult[0]?.count || 0;
+  const totalPages = Math.ceil(total / size);
+
+  return {
+    data: items,
+    meta: {
+      current_page: page,
+      total_page: totalPages,
+      size: size,
+    },
+  };
+}
 
 async function addBook(data: InferInput<typeof bookInsertSchema>) {
   const parsed = safeParse(bookInsertSchema, data);
@@ -28,10 +46,9 @@ async function addBook(data: InferInput<typeof bookInsertSchema>) {
 
   try {
     await db.insert(books).values(parsed.output);
-    revalidateTag('books', 'max');
-    revalidatePath('/genres');
-    revalidatePath('/authors');
-    revalidatePath('/books');
+    updateTag('books');
+    updateTag('authors');
+    updateTag('genres');
     return { success: true, message: 'Book added successfully.' };
   } catch (error: any) {
     console.error('Database error:', error);
@@ -47,10 +64,9 @@ async function updateBook(id: number, data: InferInput<typeof bookUpdateSchema>)
 
   try {
     await db.update(books).set(parsed.output).where(eq(books.id, id));
-    revalidateTag('books', 'max');
-    revalidatePath('/genres');
-    revalidatePath('/authors');
-    revalidatePath('/books');
+    updateTag('books');
+    updateTag('authors');
+    updateTag('genres');
     return { success: true, message: 'Book updated successfully.' };
   } catch (error) {
     console.error('Database error:', error);
@@ -61,10 +77,9 @@ async function updateBook(id: number, data: InferInput<typeof bookUpdateSchema>)
 async function deleteBook(id: number) {
   try {
     await db.delete(books).where(eq(books.id, id));
-    revalidateTag('books', 'max');
-    revalidatePath('/genres');
-    revalidatePath('/authors');
-    revalidatePath('/books');
+    updateTag('books');
+    updateTag('authors');
+    updateTag('genres');
     return { success: true, message: 'Book deleted successfully.' };
   } catch (error) {
     return { success: false, message: 'Failed to delete book.' };

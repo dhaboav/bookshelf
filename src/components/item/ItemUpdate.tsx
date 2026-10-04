@@ -4,7 +4,7 @@ import { Form, SubmitHandler, useForm } from '@formisch/react';
 import { PencilIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { EntityType, schemas } from '@/db/schema/registry';
+import { EntityType, schemas } from '@/schemas/registry';
 import { Button } from '@/ui/button';
 import { DialogTrigger } from '@/ui/dialog';
 import { toast } from '@/ui/toast';

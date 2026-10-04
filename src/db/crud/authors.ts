@@ -1,14 +1,17 @@
 'use server';
 
 import { count, eq } from 'drizzle-orm';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { cacheTag, updateTag } from 'next/cache';
 import { InferInput, safeParse } from 'valibot';
 
 import { db } from '@/db/drizzle';
-import { authorInsertSchema, authorUpdateSchema, authors } from '@/db/schema/authors';
-import { books } from '@/db/schema/books';
+import { authorInsertSchema, authorUpdateSchema, authors } from '@/schemas/authors';
+import { books } from '@/schemas/books';
 
 async function getAuthors() {
+  'use cache';
+  cacheTag('authors');
+
   return await db
     .select({
       id: authors.id,
@@ -28,8 +31,8 @@ async function addAuthor(data: InferInput<typeof authorInsertSchema>) {
 
   try {
     await db.insert(authors).values(parsed.output);
-    revalidateTag('authors', 'max');
-    revalidatePath('/authors');
+    updateTag('authors');
+    updateTag('books');
     return { success: true, message: 'Author added successfully.' };
   } catch (error) {
     console.error('Database error:', error);
@@ -45,8 +48,8 @@ async function updateAuthor(id: number, data: InferInput<typeof authorUpdateSche
 
   try {
     await db.update(authors).set(parsed.output).where(eq(authors.id, id));
-    revalidateTag('authors', 'max');
-    revalidatePath('/authors');
+    updateTag('authors');
+    updateTag('books');
     return { success: true, message: 'Author updated successfully.' };
   } catch (error) {
     console.error('Database error:', error);
@@ -57,8 +60,8 @@ async function updateAuthor(id: number, data: InferInput<typeof authorUpdateSche
 async function deleteAuthor(id: number) {
   try {
     await db.delete(authors).where(eq(authors.id, id));
-    revalidateTag('authors', 'max');
-    revalidatePath('/authors');
+    updateTag('authors');
+    updateTag('books');
     return { success: true, message: 'Author deleted successfully.' };
   } catch (error) {
     return { success: false, message: 'Failed to delete author.' };
