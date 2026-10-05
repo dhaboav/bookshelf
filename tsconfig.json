@@ -20,7 +20,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/ui/*": ["./src/components/ui/*"],
+      "@/ui/*": ["./src/shared/ui/*"],
       "@/schemas/*": ["./src/db/schemas/*"],
     }
   },

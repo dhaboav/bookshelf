@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Suspense } from 'react';
 
 import { AppSidebarTrigger } from '@/components/nav/AppSidebar';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/shared/hooks/use-mobile';
 
 import { ItemAdd } from '../item/ItemAdd';
 import { MobileSearchBar, SearchBar } from './SearchBar';

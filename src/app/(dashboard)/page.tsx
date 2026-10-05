@@ -1,10 +1,10 @@
 import { Suspense } from 'react';
 
 import { BookCard } from '@/components/book/BookCard';
-import { BookPagination } from '@/components/book/BookPagination';
 import { getAuthors } from '@/db/crud/authors';
 import { getBooks } from '@/db/crud/books';
 import { getGenres } from '@/db/crud/genres';
+import { DataPagination } from '@/shared/components/pagination/data-pagination';
 
 interface Props {
   searchParams?: Promise<{
@@ -60,7 +60,7 @@ async function BookListContent({ searchParams }: Props) {
             ))}
           </div>
 
-          <BookPagination currentPage={books.meta.current_page} totalPages={books.meta.total_page} />
+          <DataPagination currentPage={books.meta.current_page} pageCount={books.meta.total_page} />
         </>
       )}
     </div>

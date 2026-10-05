@@ -7,7 +7,7 @@ import { cn } from 'cn';
 import { PanelLeftIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { Button } from '@/ui/button';
 import { Input } from '@/ui/input';
 import { Separator } from '@/ui/separator';
