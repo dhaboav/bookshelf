@@ -50,7 +50,7 @@ export function BookCard({ book, genres, authors }: Props) {
         {book.genre?.name ?? 'UNKNOWN'}
       </Badge>
 
-      <div className="col-start-1 row-start-1 z-20 m-3 flex items-center justify-self-end self-start lg:opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-card/80 backdrop-blur-sm rounded-md">
+      <div className="col-start-1 row-start-1 z-10 m-3 flex items-center justify-self-end self-end lg:opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-card/80 backdrop-blur-sm rounded-md">
         <ItemUpdate
           id={book.id}
           label={book.title}

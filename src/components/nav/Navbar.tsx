@@ -3,10 +3,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Suspense } from 'react';
 
 import { AppSidebarTrigger } from '@/components/nav/AppSidebar';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 import { ItemAdd } from '../item/ItemAdd';
+import { MobileSearchBar, SearchBar } from './SearchBar';
 
 interface NavbarProps {
   addBookAction: any;
@@ -34,9 +37,10 @@ export function Navbar({ addBookAction, addAuthorAction, addGenreAction, genres,
   };
 
   const ActionComponent = routeConfig[pathname];
+  const isMobile = useIsMobile();
 
   return (
-    <nav className="bg-background sticky top-0 flex h-15 w-full items-center justify-between z-999 border-b-2 px-3 lg:px-48">
+    <nav className="bg-background sticky top-0 flex h-15 w-full items-center justify-between z-11 border-b-2 px-3 lg:px-48">
       <div className="flex items-center gap-x-2">
         <AppSidebarTrigger />
         <Link href="/" className="flex cursor-pointer items-center gap-x-2">
@@ -51,7 +55,10 @@ export function Navbar({ addBookAction, addAuthorAction, addGenreAction, genres,
         </Link>
       </div>
 
-      <div className="flex items-center gap-x-2">{ActionComponent}</div>
+      <div className="flex gap-4">
+        <Suspense>{isMobile ? <MobileSearchBar /> : <SearchBar />}</Suspense>
+        <div className="flex items-center gap-x-2">{ActionComponent}</div>
+      </div>
     </nav>
   );
 }

@@ -1,30 +1,99 @@
-import { ButtonGroup } from '@/ui/button-group';
-import { Input } from '@/ui/input';
+'use client';
 
-interface Props {
-  placeholder: string;
-}
+import { Form, Field as FormischField, SubmitHandler, reset, useForm } from '@formisch/react';
+import { SearchIcon, XIcon } from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import * as v from 'valibot';
 
-function SearchBar({ placeholder }: Props) {
-  const handleSearch = (term: string) => {
-    console.log(term);
+import { Button } from '@/ui/button';
+import { Field } from '@/ui/field';
+import { InputGroup, InputGroupButton, InputGroupInput } from '@/ui/input-group';
+import { Popover, PopoverContent, PopoverTrigger } from '@/ui/popover';
+
+const SearchSchema = v.object({
+  search: v.pipe(v.string(), v.minLength(3, 'Please enter minimum 3 characters')),
+});
+
+function SearchBar() {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const form = useForm({
+    schema: SearchSchema,
+    initialInput: {
+      search: '',
+    },
+  });
+
+  const handleParams = (term: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', '1');
+    if (term) {
+      params.set('search', term);
+    } else {
+      params.delete('search');
+    }
+    replace(`${pathname}?${params.toString()}`);
   };
+
+  const handleSubmit: SubmitHandler<typeof SearchSchema> = (value) => {
+    handleParams(value.search);
+  };
+
   return (
-    <ButtonGroup>
-      <div className="relative flex items-center">
-        <Input
-          className="w-24 lg:w-full"
-          placeholder={`search ${placeholder}...`}
-          onChange={(e) => {
-            handleSearch(e.target.value);
-          }}
-        />
-        <kbd className="bg-muted pointer-events-none absolute right-2 hidden h-5 items-center gap-1 rounded border px-1.5 font-mono text-tiny font-medium opacity-100 select-none lg:flex">
-          <span className="text-xs">⌘</span>K
-        </kbd>
-      </div>
-    </ButtonGroup>
+    <Form of={form} id="search-form" onSubmit={handleSubmit}>
+      <FormischField of={form} path={['search']}>
+        {(field) => (
+          <Field data-invalid={field.errors !== null}>
+            <InputGroup>
+              <InputGroupInput
+                {...field.props}
+                placeholder="Search (min. 3 chars)"
+                className="w-full"
+                aria-invalid={field.errors !== null}
+                value={field.input ?? ''}
+              />
+
+              {field.input && field.input.length >= 3 && (
+                <InputGroupButton
+                  size="icon-xs"
+                  className="text-red-600"
+                  onClick={() => {
+                    handleParams('');
+                    reset(form);
+                  }}
+                >
+                  <XIcon />
+                </InputGroupButton>
+              )}
+
+              <InputGroupButton variant="outline" aria-label="Search" type="submit" form="search-form">
+                <SearchIcon />
+              </InputGroupButton>
+            </InputGroup>
+          </Field>
+        )}
+      </FormischField>
+    </Form>
   );
 }
 
-export { SearchBar };
+function MobileSearchBar() {
+  return (
+    <Popover>
+      <PopoverTrigger
+        render={
+          <Button size="icon" variant="outline">
+            <SearchIcon />
+          </Button>
+        }
+      />
+      <PopoverContent sideOffset={10}>
+        <SearchBar />
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+export { MobileSearchBar, SearchBar };

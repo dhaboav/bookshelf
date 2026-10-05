@@ -1,32 +1,46 @@
 'use server';
 
-import { count, eq } from 'drizzle-orm';
+import { count, eq, ilike } from 'drizzle-orm';
 import { cacheTag, updateTag } from 'next/cache';
 import { InferInput, safeParse } from 'valibot';
 
 import { db } from '@/db/drizzle';
 import { bookInsertSchema, bookUpdateSchema, books } from '@/schemas/books';
 
-async function getBooks(page: number = 1, size: number = 12) {
+async function getBooks(page: number = 1, size: number = 12, query?: string) {
   'use cache';
   cacheTag('books');
 
   const offset = (page - 1) * size;
+  const trimmedQuery = query?.trim();
+  const hasQuery = Boolean(trimmedQuery && trimmedQuery.length > 0);
+
   const [items, totalResult] = await Promise.all([
     db.query.books.findMany({
       offset: offset,
       limit: size,
+      ...(hasQuery && {
+        where: {
+          title: {
+            ilike: `%${trimmedQuery}%`,
+          },
+        },
+      }),
       orderBy: { created_at: 'desc' },
       with: {
         author: true,
         genre: true,
       },
     }),
-    db.select({ count: count(books.id) }).from(books),
+
+    db
+      .select({ count: count(books.id) })
+      .from(books)
+      .where(hasQuery ? ilike(books.title, `%${trimmedQuery}%`) : undefined),
   ]);
 
-  const total = totalResult[0]?.count || 0;
-  const totalPages = Math.ceil(total / size);
+  const totalItems = totalResult[0]?.count || 0;
+  const totalPages = Math.max(1, Math.ceil(totalItems / size));
 
   return {
     data: items,
