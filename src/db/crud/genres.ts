@@ -1,6 +1,6 @@
 'use server';
 
-import { count, eq } from 'drizzle-orm';
+import { count, eq, ilike } from 'drizzle-orm';
 import { cacheTag, updateTag } from 'next/cache';
 import { InferInput, safeParse } from 'valibot';
 
@@ -8,19 +8,48 @@ import { db } from '@/db/drizzle';
 import { books } from '@/schemas/books';
 import { genreInsertSchema, genreUpdateSchema, genres } from '@/schemas/genres';
 
-async function getGenres() {
+async function getGenres(page: number = 1, limit: number = 12, query?: string) {
   'use cache';
   cacheTag('genres');
 
-  return await db
-    .select({
-      id: genres.id,
-      name: genres.name,
-      totalBooks: count(books.id),
-    })
-    .from(genres)
-    .leftJoin(books, eq(books.genre_id, genres.id))
-    .groupBy(genres.id);
+  const offset = (page - 1) * limit;
+  const trimmedQuery = query?.trim();
+  const hasQuery = Boolean(trimmedQuery && trimmedQuery.length > 0);
+
+  const [items, totalItem] = await Promise.all([
+    db
+      .select({
+        id: genres.id,
+        name: genres.name,
+        totalBooks: count(books.id),
+      })
+      .from(genres)
+      .leftJoin(books, eq(books.genre_id, genres.id))
+      .where(hasQuery ? ilike(genres.name, `%${trimmedQuery}%`) : undefined)
+      .groupBy(genres.id)
+      .limit(limit)
+      .offset(offset),
+
+    db.select({ count: count() }).from(genres),
+  ]);
+
+  const totalItems = totalItem[0]?.count || 0;
+  const totalPages = Math.max(1, Math.ceil(totalItems / limit));
+  return {
+    data: items,
+    metadata: {
+      currentPage: page,
+      totalPage: totalPages,
+      limit: limit,
+    },
+  };
+}
+
+async function getAllGenres() {
+  'use cache';
+  cacheTag('genres');
+
+  return await db.select().from(genres);
 }
 
 async function addGenre(data: InferInput<typeof genreInsertSchema>) {
@@ -68,4 +97,4 @@ async function deleteGenre(id: number) {
   }
 }
 
-export { getGenres, addGenre, updateGenre, deleteGenre };
+export { getGenres, getAllGenres, addGenre, updateGenre, deleteGenre };

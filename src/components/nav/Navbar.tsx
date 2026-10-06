@@ -2,42 +2,17 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Suspense } from 'react';
 
 import { AppSidebarTrigger } from '@/components/nav/AppSidebar';
-import { useIsMobile } from '@/shared/hooks/use-mobile';
 
-import { ItemAdd } from '../item/ItemAdd';
 import { MobileSearchBar, SearchBar } from './SearchBar';
 
-interface NavbarProps {
-  addBookAction: any;
-  addAuthorAction: any;
-  addGenreAction: any;
-  genres: any[];
-  authors: any[];
-}
-
-export function Navbar({ addBookAction, addAuthorAction, addGenreAction, genres, authors }: NavbarProps) {
-  const pathname = usePathname();
-
-  const routeConfig: Record<string, React.ReactNode> = {
-    '/': (
-      <ItemAdd
-        key="book"
-        choice="book"
-        onCreateAction={addBookAction}
-        authorData={authors}
-        genreData={genres}
-      />
-    ),
-    '/authors': <ItemAdd key="author" choice="author" onCreateAction={addAuthorAction} />,
-    '/genres': <ItemAdd key="genre" choice="genre" onCreateAction={addGenreAction} />,
-  };
-
-  const ActionComponent = routeConfig[pathname];
-  const isMobile = useIsMobile();
+export function Navbar() {
+  const searchBarVariants = [
+    { Component: SearchBar, className: 'hidden md:block' },
+    { Component: MobileSearchBar, className: 'block md:hidden' },
+  ];
 
   return (
     <nav className="bg-background sticky top-0 flex h-15 w-full items-center justify-between z-11 border-b-2 px-3 lg:px-48">
@@ -55,9 +30,14 @@ export function Navbar({ addBookAction, addAuthorAction, addGenreAction, genres,
         </Link>
       </div>
 
-      <div className="flex gap-4">
-        <Suspense>{isMobile ? <MobileSearchBar /> : <SearchBar />}</Suspense>
-        <div className="flex items-center gap-x-2">{ActionComponent}</div>
+      <div className="flex items-center gap-4">
+        <Suspense>
+          {searchBarVariants.map(({ Component, className }, index) => (
+            <div key={index} className={className}>
+              <Component />
+            </div>
+          ))}
+        </Suspense>
       </div>
     </nav>
   );
