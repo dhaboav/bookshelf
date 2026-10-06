@@ -1,11 +1,11 @@
 'use client';
 
-import { ItemDelete } from '@/components/item/ItemDelete';
+import { ItemDelete } from '@/components/item/item-delete';
 import { EntityType } from '@/schemas/registry';
-import { InputField } from '@/ui/shared-form-fields';
+import { InputField } from '@/shared/components/shared-form-fields';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table';
 
-import { ItemUpdate } from './ItemUpdate';
+import { ItemUpdate } from './item-update';
 
 interface Item {
   id: number;

@@ -1,4 +1,4 @@
-import { ItemTable } from '@/components/item/ItemTable';
+import { ItemTable } from '@/components/item/item-table';
 import { deleteGenre, getGenres, updateGenre } from '@/db/crud/genres';
 import { NoResult } from '@/shared/components/no-result';
 import { DataPagination } from '@/shared/components/pagination/data-pagination';

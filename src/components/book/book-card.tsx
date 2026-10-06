@@ -6,10 +6,10 @@ import { deleteBook, updateBook } from '@/db/crud/books';
 import type { Book } from '@/schemas/books';
 import { Badge } from '@/ui/badge';
 import { Card, CardHeader, CardTitle } from '@/ui/card';
-import { ComboboxField, InputField, TextareaField } from '@/ui/shared-form-fields';
+import { ComboboxField, InputField, TextareaField } from '@/shared/components/shared-form-fields';
 
-import { ItemDelete } from '../item/ItemDelete';
-import { ItemUpdate } from '../item/ItemUpdate';
+import { ItemDelete } from '../item/item-delete';
+import { ItemUpdate } from '../item/item-update';
 
 interface MasterItem {
   id: number;

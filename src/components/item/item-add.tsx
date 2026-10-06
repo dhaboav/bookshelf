@@ -7,10 +7,10 @@ import { useState } from 'react';
 import { schemas } from '@/schemas/registry';
 import { Button } from '@/ui/button';
 import { DialogTrigger } from '@/ui/dialog';
-import { ComboboxField, InputField, TextareaField } from '@/ui/shared-form-fields';
+import { ComboboxField, InputField, TextareaField } from '@/shared/components/shared-form-fields';
 import { toast } from '@/ui/toast';
 
-import { ItemDialog } from './ItemDialog';
+import { ItemDialog } from './item-dialog';
 
 interface ItemProps {
   form: any;

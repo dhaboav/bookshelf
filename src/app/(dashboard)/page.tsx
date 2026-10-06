@@ -1,4 +1,4 @@
-import { BookCard } from '@/components/book/BookCard';
+import { BookCard } from '@/components/book/book-card';
 import { getAllAuthors } from '@/db/crud/authors';
 import { getBooks } from '@/db/crud/books';
 import { getAllGenres } from '@/db/crud/genres';
