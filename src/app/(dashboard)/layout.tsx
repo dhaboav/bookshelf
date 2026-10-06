@@ -1,15 +1,15 @@
-import { AppSidebar } from '@/components/nav/AppSidebar';
-import { Navbar } from '@/components/nav/Navbar';
+import { AppSidebar } from '@/components/nav/app-sidebar';
+import { Navbar } from '@/components/nav/navbar';
 import { SidebarInset, SidebarProvider } from '@/ui/sidebar';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={false}>
         <AppSidebar />
         <SidebarInset>
           <Navbar />
-          <main className="px-3 lg:px-48">{children}</main>
+          <main className="px-4">{children}</main>
         </SidebarInset>
       </SidebarProvider>
     </>
