@@ -4,9 +4,9 @@ import Image from 'next/image';
 
 import { deleteBook, updateBook } from '@/db/crud/books';
 import type { Book } from '@/schemas/books';
+import { ComboboxField, InputField, TextareaField } from '@/shared/components/shared-form-fields';
 import { Badge } from '@/ui/badge';
 import { Card, CardHeader, CardTitle } from '@/ui/card';
-import { ComboboxField, InputField, TextareaField } from '@/shared/components/shared-form-fields';
 
 import { ItemDelete } from '../item/item-delete';
 import { ItemUpdate } from '../item/item-update';
@@ -34,7 +34,7 @@ export function BookCard({ book, genres, authors }: Props) {
   }));
 
   return (
-    <Card className="grid group relative overflow-hidden border transition-colors duration-200 hover:border-foreground/30">
+    <Card className="grid group overflow-hidden border transition-colors duration-200 hover:border-foreground/30">
       <Image
         src={book.cover_img || '/cover.jpg'}
         width={1000}
@@ -45,12 +45,12 @@ export function BookCard({ book, genres, authors }: Props) {
 
       <Badge
         variant="secondary"
-        className="uppercase text-tiny col-start-1 row-start-1 z-10 m-3 justify-self-start self-start"
+        className="uppercase text-tiny col-start-1 row-start-1 m-3 justify-self-start self-start"
       >
         {book.genre?.name ?? 'UNKNOWN'}
       </Badge>
 
-      <div className="col-start-1 row-start-1 z-10 m-3 flex items-center justify-self-end self-end lg:opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-card/80 backdrop-blur-sm rounded-md">
+      <div className="col-start-1 row-start-1 m-3 flex items-center justify-self-end self-end lg:opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-card/80 backdrop-blur-sm rounded-md">
         <ItemUpdate
           id={book.id}
           label={book.title}

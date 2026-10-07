@@ -22,18 +22,18 @@ const MENU_ITEMS = [
 function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader className="px-2 pt-4 pb-6">
+      <SidebarHeader className="md:pt-4">
         <SidebarBrand />
       </SidebarHeader>
-      <SidebarContent className="px-2">
-        <SidebarMenu className="gap-3">
+      <SidebarContent className="px-1">
+        <SidebarMenu className="md:gap-6 text-secondary-text pt-12">
           {MENU_ITEMS.map(({ label, icon: Icon, to }) => (
             <SidebarMenuItem key={label}>
               <SidebarMenuButton
                 tooltip={label}
                 render={
                   <Link href={to}>
-                    <Icon />
+                    <Icon className="size-5!" />
                     <span className="group-data-[collapsible=icon]:hidden">{label}</span>
                   </Link>
                 }

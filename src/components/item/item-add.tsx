@@ -5,9 +5,9 @@ import { PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import { schemas } from '@/schemas/registry';
+import { ComboboxField, InputField, TextareaField } from '@/shared/components/shared-form-fields';
 import { Button } from '@/ui/button';
 import { DialogTrigger } from '@/ui/dialog';
-import { ComboboxField, InputField, TextareaField } from '@/shared/components/shared-form-fields';
 import { toast } from '@/ui/toast';
 
 import { ItemDialog } from './item-dialog';

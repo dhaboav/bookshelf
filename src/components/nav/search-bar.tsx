@@ -46,7 +46,7 @@ function SearchBar() {
       <FormischField of={form} path={['search']}>
         {(field) => (
           <Field data-invalid={field.errors !== null}>
-            <InputGroup>
+            <InputGroup className="bg-white! text-black px-2 max-w-3xs">
               <InputGroupInput
                 {...field.props}
                 placeholder="Search (min. 3 chars)"
@@ -55,20 +55,18 @@ function SearchBar() {
                 value={field.input ?? ''}
               />
 
-              {field.input && field.input.length >= 3 && (
-                <InputGroupButton
-                  size="icon-xs"
-                  className="text-red-600"
-                  onClick={() => {
-                    handleParams('');
-                    reset(form);
-                  }}
-                >
-                  <XIcon />
-                </InputGroupButton>
-              )}
+              <InputGroupButton
+                size="icon-xs"
+                className={`text-red-600 ${field.input && field.input.length > 0 ? 'visible' : 'invisible'}`}
+                onClick={() => {
+                  handleParams('');
+                  reset(form);
+                }}
+              >
+                <XIcon />
+              </InputGroupButton>
 
-              <InputGroupButton variant="outline" aria-label="Search" type="submit" form="search-form">
+              <InputGroupButton variant="secondary" aria-label="Search" type="submit" form="search-form">
                 <SearchIcon />
               </InputGroupButton>
             </InputGroup>

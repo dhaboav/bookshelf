@@ -31,7 +31,7 @@ export default async function Homepage({ searchParams }: Props) {
   }
 
   return (
-    <div className="py-12">
+    <div className="py-12 ">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 pb-6">
         {books.data.map((book) => (
           <BookCard key={book.id} book={book} genres={genres} authors={authors} />

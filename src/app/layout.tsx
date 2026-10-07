@@ -1,8 +1,12 @@
+import { cn } from 'cn';
 import type { Metadata } from 'next';
+import { Geist } from 'next/font/google';
 
 import { Toaster } from '@/ui/toast';
 
 import './globals.css';
+
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
   title: 'Bookshelf',
@@ -11,8 +15,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="en">
-      <body className="dark flex min-h-full flex-col">
+    <html lang="en" className={cn('font-sans', geist.variable)}>
+      <body className="dark">
         {children}
         <Toaster />
       </body>
