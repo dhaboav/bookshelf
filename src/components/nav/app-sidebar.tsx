@@ -1,23 +1,42 @@
-import { BookOpenIcon, TagIcon, UsersIcon } from 'lucide-react';
-import Link from 'next/link';
+import { BookIcon, LayoutDashboardIcon, TagIcon, UsersIcon } from 'lucide-react';
 
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
 } from '@/ui/sidebar';
 
+import { NavAdmin } from './nav-admin';
+import { NavUser } from './nav-user';
 import { SidebarBrand } from './sidebar-brand';
 
-const MENU_ITEMS = [
-  { label: 'Books', icon: BookOpenIcon, to: '/' },
-  { label: 'Authors', icon: UsersIcon, to: '/authors' },
-  { label: 'Genres', icon: TagIcon, to: '/genres' },
-] as const;
+const data = {
+  adminSide: [
+    {
+      name: 'Data Library',
+      url: '#',
+      icon: BookIcon,
+    },
+    {
+      name: 'Author',
+      url: '/authors',
+      icon: UsersIcon,
+    },
+    {
+      name: 'Genres',
+      url: '/genres',
+      icon: TagIcon,
+    },
+  ],
+  userSide: [
+    {
+      name: 'Dashboard',
+      url: '/',
+      icon: LayoutDashboardIcon,
+    },
+  ],
+};
 
 function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -26,21 +45,8 @@ function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarBrand />
       </SidebarHeader>
       <SidebarContent className="px-1">
-        <SidebarMenu className="md:gap-6 text-secondary-text pt-12">
-          {MENU_ITEMS.map(({ label, icon: Icon, to }) => (
-            <SidebarMenuItem key={label}>
-              <SidebarMenuButton
-                tooltip={label}
-                render={
-                  <Link href={to}>
-                    <Icon className="size-5!" />
-                    <span className="group-data-[collapsible=icon]:hidden">{label}</span>
-                  </Link>
-                }
-              />
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+        <NavUser items={data.userSide} />
+        <NavAdmin items={data.adminSide} />
       </SidebarContent>
 
       <SidebarFooter className="text-muted-foreground flex w-full flex-col gap-y-2 px-6 py-4 text-center text-xs group-data-[collapsible=icon]:hidden">

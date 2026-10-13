@@ -35,7 +35,7 @@ type PaginationLinkProps = {
 function PaginationLink({ className, isActive, size = 'icon', ...props }: PaginationLinkProps) {
   return (
     <Button
-      variant={isActive ? 'outline' : 'ghost'}
+      variant={isActive ? 'default' : 'ghost'}
       size={size}
       className={cn(className)}
       nativeButton={false}

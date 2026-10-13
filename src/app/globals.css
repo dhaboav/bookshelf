@@ -39,16 +39,17 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /*  */
-  --color-gold: oklch(0.7656 0.151 87.27);
   --font-display: 'Cormorant Garamond', serif;
   --font-mono: 'JetBrains Mono', monospace;
   --text-tiny: 0.625rem;
 
-  /* Fixed */
   --color-background: var(--background);
   --color-content: var(--content);
   --color-primary-button: var(--primary-button);
   --color-secondary-text: var(--secondary-text);
+
+  /* Just work */
+  --color-primary: oklch(0.7656 0.151 87.27);
 }
 
 :root {
@@ -59,7 +60,6 @@
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
   --primary-foreground: oklch(0.984 0.003 247.858);
   --secondary: oklch(0.968 0.007 247.896);
   --secondary-foreground: oklch(0.208 0.042 265.755);
@@ -90,7 +90,6 @@
   --card-foreground: oklch(0.984 0.003 247.858);
   --popover: oklch(0.208 0.042 265.755);
   --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
   --primary-foreground: oklch(0.208 0.042 265.755);
   --secondary: oklch(0.279 0.041 260.031);
   --secondary-foreground: oklch(0.984 0.003 247.858);
@@ -114,7 +113,6 @@
   /* Fixed */
   --background: oklch(30.726% 0.00286 16.641);
   --content: oklch(17.467% 0.00261 325.333);
-  --primary-button: oklch(0.6756 0.1917 18.74);
   --secondary-text: oklch(0.5542 0.0029 345.28);
 }
 

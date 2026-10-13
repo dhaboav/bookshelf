@@ -12,7 +12,11 @@ import {
 import { PaginationProps } from './types';
 import { usePagination } from './use-pagination';
 
-function DataPagination({ currentPage, pageCount }: PaginationProps) {
+interface Option extends PaginationProps {
+  isText?: boolean;
+}
+
+function DataPagination({ currentPage, pageCount, isText = true }: Option) {
   const { visiblePages, buildUrl, previousPage, nextPage } = usePagination({ currentPage, pageCount });
 
   return (
@@ -21,6 +25,7 @@ function DataPagination({ currentPage, pageCount }: PaginationProps) {
         <PaginationItem>
           <PaginationPrevious
             href={previousPage.href}
+            text={isText ? 'Previous' : ''}
             aria-disabled={previousPage.isDisabled}
             className={previousPage.isDisabled ? 'pointer-events-none opacity-50' : ''}
           />
@@ -41,6 +46,7 @@ function DataPagination({ currentPage, pageCount }: PaginationProps) {
         <PaginationItem>
           <PaginationNext
             href={nextPage.href}
+            text={isText ? 'Next' : ''}
             aria-disabled={nextPage.isDisabled}
             className={nextPage.isDisabled ? 'pointer-events-none opacity-50' : ''}
           />

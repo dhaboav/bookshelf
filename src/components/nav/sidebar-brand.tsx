@@ -42,7 +42,7 @@ export function SidebarBrand() {
             onClick={toggleSidebar}
             size="icon"
             variant="outline"
-            className="group/side-button relative flex items-center justify-center bg-primary-button!"
+            className="group/side-button relative flex items-center justify-center bg-primary!"
             aria-label="Toggle Sidebar"
           >
             {LogoContent}

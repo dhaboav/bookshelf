@@ -14,10 +14,10 @@ interface Props {
 }
 
 export default async function Homepage({ searchParams }: Props) {
-  const { page = '1', limit = '12', q = '' } = await searchParams;
+  const { page = '1', q = '' } = await searchParams;
 
   const [books, genres, authors] = await Promise.all([
-    getBooks(Number(page), Number(limit), q),
+    getBooks(Number(page), q),
     getAllGenres(),
     getAllAuthors(),
   ]);
