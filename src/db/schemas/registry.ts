@@ -15,7 +15,8 @@ export const schemas = {
     create: bookInsertSchema,
     update: bookUpdateSchema,
   },
-};
+} as const;
 
 export type EntityType = keyof typeof schemas;
+
 export type ActionType<T extends EntityType> = keyof (typeof schemas)[T];

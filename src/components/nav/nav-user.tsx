@@ -19,7 +19,7 @@ interface NavUserProps {
 
 function NavUser({ items }: NavUserProps) {
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+    <SidebarGroup>
       <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (

@@ -19,7 +19,7 @@ interface NavAdminProps {
 
 function NavAdmin({ items }: NavAdminProps) {
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+    <SidebarGroup>
       <SidebarGroupLabel>Admin</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (

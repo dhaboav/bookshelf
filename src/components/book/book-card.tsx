@@ -9,7 +9,7 @@ import { Badge } from '@/ui/badge';
 import { Card, CardHeader, CardTitle } from '@/ui/card';
 
 import { ItemDelete } from '../item/item-delete';
-import { ItemUpdate } from '../item/item-update';
+import { ItemForm } from '../item/item-form';
 
 interface MasterItem {
   id: number;
@@ -51,9 +51,7 @@ export function BookCard({ book, genres, authors }: Props) {
       </Badge>
 
       <div className="col-start-1 row-start-1 m-3 flex items-center justify-self-end self-end lg:opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-card/80 backdrop-blur-sm rounded-md">
-        <ItemUpdate
-          id={book.id}
-          label={book.title}
+        <ItemForm
           entity="book"
           action="update"
           initialData={{
@@ -66,7 +64,7 @@ export function BookCard({ book, genres, authors }: Props) {
             author_id: book.author_id,
             genre_id: book.genre_id,
           }}
-          onUpdate={updateBook}
+          onSubmit={(values) => updateBook(book.id, values)}
         >
           {(form) => (
             <div className="w-full space-y-4">
@@ -102,8 +100,8 @@ export function BookCard({ book, genres, authors }: Props) {
               />
             </div>
           )}
-        </ItemUpdate>
-        <ItemDelete id={book.id} label={book.title} onDelete={deleteBook} />
+        </ItemForm>
+        <ItemDelete id={book.id} label="book" onDelete={deleteBook} />
       </div>
 
       <CardHeader>

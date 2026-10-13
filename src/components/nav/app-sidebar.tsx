@@ -1,11 +1,6 @@
-import { BookIcon, LayoutDashboardIcon, TagIcon, UsersIcon } from 'lucide-react';
+import { LayoutDashboardIcon, UsersIcon } from 'lucide-react';
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-} from '@/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/ui/sidebar';
 
 import { NavAdmin } from './nav-admin';
 import { NavUser } from './nav-user';
@@ -14,19 +9,9 @@ import { SidebarBrand } from './sidebar-brand';
 const data = {
   adminSide: [
     {
-      name: 'Data Library',
-      url: '#',
-      icon: BookIcon,
-    },
-    {
       name: 'Author',
       url: '/authors',
       icon: UsersIcon,
-    },
-    {
-      name: 'Genres',
-      url: '/genres',
-      icon: TagIcon,
     },
   ],
   userSide: [
@@ -44,7 +29,7 @@ function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader className="md:pt-4">
         <SidebarBrand />
       </SidebarHeader>
-      <SidebarContent className="px-1">
+      <SidebarContent>
         <NavUser items={data.userSide} />
         <NavAdmin items={data.adminSide} />
       </SidebarContent>

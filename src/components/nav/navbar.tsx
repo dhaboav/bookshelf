@@ -1,7 +1,6 @@
 'use client';
 
 import { MenuIcon } from 'lucide-react';
-import { usePathname } from 'next/navigation';
 import { Suspense } from 'react';
 
 import { Button } from '@/ui/button';
@@ -10,14 +9,6 @@ import { useSidebar } from '@/ui/sidebar';
 import { MobileSearchBar, SearchBar } from './search-bar';
 
 export function Navbar() {
-  const pathname = usePathname();
-  const config = [
-    { path: '/', label: 'Dashboard' },
-    { path: '/authors', label: 'Author' },
-    { path: '/genres', label: 'Genre' },
-  ];
-
-  const currentItem = config.find((item) => item.path === pathname);
   const { toggleSidebar } = useSidebar();
   const searchBarVariants = [
     { Component: SearchBar, className: 'hidden md:block' },
@@ -30,8 +21,6 @@ export function Navbar() {
         <Button onClick={toggleSidebar} variant="ghost" size="icon" className="md:hidden">
           <MenuIcon />
         </Button>
-
-        <h1 className="text-base font-medium">{currentItem?.label.toUpperCase() ?? 'UNKNOWN'}</h1>
 
         <Suspense>
           {searchBarVariants.map(({ Component, className }, index) => (

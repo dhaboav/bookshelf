@@ -58,8 +58,7 @@ function ItemDelete({ id, label, onDelete }: Props) {
       isPending={isPending}
       title={`Delete ${label}`}
       description="This item will be permanently deleted. Are you sure? You will not be able to undo this action."
-      submitButtonLabel="Delete"
-      variant="destructive"
+      variant="delete"
       actionTrigger={
         <DialogTrigger
           render={
