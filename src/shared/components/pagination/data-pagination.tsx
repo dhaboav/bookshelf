@@ -1,5 +1,7 @@
 'use client';
 
+import { cn } from 'cn';
+
 import {
   Pagination,
   PaginationContent,
@@ -12,15 +14,16 @@ import {
 import { PaginationProps } from './types';
 import { usePagination } from './use-pagination';
 
-interface Option extends PaginationProps {
+interface DataPaginationProps extends PaginationProps {
   isText?: boolean;
+  className?: string;
 }
 
-function DataPagination({ currentPage, pageCount, isText = true }: Option) {
+function DataPagination({ currentPage, pageCount, isText = true, className }: DataPaginationProps) {
   const { visiblePages, buildUrl, previousPage, nextPage } = usePagination({ currentPage, pageCount });
 
   return (
-    <Pagination>
+    <Pagination className={cn(className)}>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious

@@ -1,14 +1,25 @@
 import { addAuthor, getAuthors } from '@/db/crud/authors';
+import { DataPagination } from '@/shared/components/pagination/data-pagination';
+import { PageLimitPagination } from '@/shared/components/pagination/page-limit-pagination';
 
-import { columns } from './columns';
+import { AuthorCreateForm } from './author-create-form';
 import { DataTable } from './data-table';
-import { AuthorCreateForm } from './genre-form';
 
-export default async function AuthorListPage() {
-  const res = await getAuthors();
+interface AuthorListPageProps {
+  searchParams: Promise<{
+    page?: string;
+    limit?: string;
+    q?: string;
+  }>;
+}
+
+export const instant = false;
+export default async function AuthorListPage({ searchParams }: AuthorListPageProps) {
+  const { page = '1', limit = '12', q = '' } = await searchParams;
+  const { metadata, data } = await getAuthors(Number(page), Number(limit), q);
 
   return (
-    <div className="pt-10">
+    <div className="pt-10 gap-6 flex flex-col">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2">
           <span>Author</span>
@@ -16,8 +27,17 @@ export default async function AuthorListPage() {
         </div>
         <AuthorCreateForm actionType={addAuthor} />
       </div>
-      <div className="bg-background rounded-lg px-4 pt-2 mt-6">
-        <DataTable columns={columns} data={res.data as any} />
+
+      <DataTable data={data} className="min-h-118 max-h-118 overflow-auto" />
+
+      <div className="flex gap-2 mx-auto">
+        <PageLimitPagination className="hidden lg:flex" />
+        <DataPagination
+          currentPage={metadata.currentPage}
+          pageCount={metadata.totalPage}
+          isText={false}
+          className="block"
+        />
       </div>
     </div>
   );
