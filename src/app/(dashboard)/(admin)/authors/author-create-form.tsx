@@ -11,7 +11,7 @@ function AuthorCreateForm({ actionType }: { actionType: any }) {
       action="create"
       onSubmit={(values) => actionType(values)}
     >
-      {(form) => <InputField of={form} path="name" label="name" placeholder="Author name" />}
+      {(form) => <InputField of={form} path="name" label="name" placeholder="Author's name" />}
     </ItemForm>
   );
 }

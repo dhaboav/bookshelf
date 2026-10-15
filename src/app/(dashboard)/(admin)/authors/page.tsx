@@ -19,7 +19,7 @@ export default async function AuthorListPage({ searchParams }: AuthorListPagePro
   const { metadata, data } = await getAuthors(Number(page), Number(limit), q);
 
   return (
-    <div className="pt-10 gap-6 flex flex-col">
+    <div className="pt-5 gap-6 flex flex-col">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2">
           <span>Author</span>
@@ -28,7 +28,7 @@ export default async function AuthorListPage({ searchParams }: AuthorListPagePro
         <AuthorCreateForm actionType={addAuthor} />
       </div>
 
-      <DataTable data={data} className="min-h-118 max-h-118 overflow-auto" />
+      <DataTable data={data} className="h-125" />
 
       <div className="flex gap-2 mx-auto">
         <PageLimitPagination className="hidden lg:flex" />

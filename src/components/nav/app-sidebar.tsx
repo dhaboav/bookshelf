@@ -1,4 +1,4 @@
-import { LayoutDashboardIcon, UsersIcon } from 'lucide-react';
+import { LayoutDashboardIcon, TagsIcon, UsersIcon } from 'lucide-react';
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/ui/sidebar';
 
@@ -12,6 +12,11 @@ const data = {
       name: 'Author',
       url: '/authors',
       icon: UsersIcon,
+    },
+    {
+      name: 'Genre',
+      url: '/genres',
+      icon: TagsIcon,
     },
   ],
   userSide: [
