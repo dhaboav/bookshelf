@@ -21,4 +21,5 @@ const genreWithBookSchema = v.object({
 });
 
 // Types
+export type Genre = v.InferOutput<typeof genreSelectSchema>;
 export type GenreWithBook = v.InferOutput<typeof genreWithBookSchema>;

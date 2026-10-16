@@ -7,18 +7,18 @@ import { InferInput, safeParse } from 'valibot';
 import { db } from '@/db/drizzle';
 import { bookInsertSchema, bookUpdateSchema, books } from '@/schemas/books';
 
-async function getBooks(page: number = 1, query?: string) {
+async function getBooks(page: number = 1, limit: number = 12, query?: string) {
   'use cache';
   cacheTag('books');
 
-  const offset = (page - 1) * 12;
+  const offset = (page - 1) * limit;
   const trimmedQuery = query?.trim();
   const hasQuery = Boolean(trimmedQuery && trimmedQuery.length > 0);
 
   const [items, totalResult] = await Promise.all([
     db.query.books.findMany({
       offset: offset,
-      limit: 12,
+      limit: limit,
       ...(hasQuery && {
         where: {
           title: {
@@ -40,13 +40,14 @@ async function getBooks(page: number = 1, query?: string) {
   ]);
 
   const totalItems = totalResult[0]?.count || 0;
-  const totalPages = Math.max(1, Math.ceil(totalItems / 12));
+  const totalPages = Math.max(1, Math.ceil(totalItems / limit));
 
   return {
     data: items,
     metadata: {
       currentPage: page,
       totalPage: totalPages,
+      limit: limit,
     },
   };
 }

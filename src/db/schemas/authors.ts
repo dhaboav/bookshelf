@@ -21,4 +21,5 @@ const authorWithBookSchema = v.object({
 });
 
 // Types
+export type Author = v.InferOutput<typeof authorSelectSchema>;
 export type AuthorWithBook = v.InferOutput<typeof authorWithBookSchema>;

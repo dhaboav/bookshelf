@@ -1,6 +1,6 @@
 'use client';
 
-import { ItemForm } from '@/components/item/item-form';
+import { ItemForm } from '@/shared/components/item/item-form';
 import { InputField } from '@/shared/components/shared-form-fields';
 
 function AuthorCreateForm({ actionType }: { actionType: any }) {

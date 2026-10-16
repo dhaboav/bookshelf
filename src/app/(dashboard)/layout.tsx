@@ -1,5 +1,5 @@
-import { AppSidebar } from '@/components/nav/app-sidebar';
-import { Navbar } from '@/components/nav/navbar';
+import { AppSidebar } from '@/shared/components/nav/app-sidebar';
+import { Navbar } from '@/shared/components/nav/navbar';
 import { SidebarInset, SidebarProvider } from '@/ui/sidebar';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {

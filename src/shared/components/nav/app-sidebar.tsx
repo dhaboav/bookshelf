@@ -1,4 +1,4 @@
-import { LayoutDashboardIcon, TagsIcon, UsersIcon } from 'lucide-react';
+import { BookCopyIcon, LayoutDashboardIcon, TagsIcon, UsersIcon } from 'lucide-react';
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/ui/sidebar';
 
@@ -9,14 +9,19 @@ import { SidebarBrand } from './sidebar-brand';
 const data = {
   adminSide: [
     {
-      name: 'Author',
+      name: 'Authors',
       url: '/authors',
       icon: UsersIcon,
     },
     {
-      name: 'Genre',
+      name: 'Genres',
       url: '/genres',
       icon: TagsIcon,
+    },
+    {
+      name: 'Books',
+      url: '/books',
+      icon: BookCopyIcon,
     },
   ],
   userSide: [

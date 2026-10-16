@@ -14,11 +14,11 @@ import { cn } from 'cn';
 import { ArrowUpDownIcon, CheckIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { ItemDelete } from '@/components/item/item-delete';
-import { ItemForm } from '@/components/item/item-form';
-import { SearchBar } from '@/components/nav/search-bar';
 import { deleteGenre, updateGenre } from '@/db/crud/genres';
 import { GenreWithBook } from '@/db/schemas/genres';
+import { ItemDelete } from '@/shared/components/item/item-delete';
+import { ItemForm } from '@/shared/components/item/item-form';
+import { SearchBar } from '@/shared/components/nav/search-bar';
 import { InputField } from '@/shared/components/shared-form-fields';
 import { Button } from '@/shared/ui/button';
 import {

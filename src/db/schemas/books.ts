@@ -1,5 +1,5 @@
 import { integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createUpdateSchema } from 'drizzle-orm/valibot';
+import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-orm/valibot';
 import {
   length,
   maxLength,
@@ -67,11 +67,15 @@ const baseSchema = {
   genre_id: pipe(unknown(), toNumber()),
 };
 
+// Schemas
 export const bookInsertSchema = omit(createInsertSchema(books, baseSchema), ['created_at', 'updated_at']);
 export const bookUpdateSchema = omit(createUpdateSchema(books, baseSchema), ['created_at', 'updated_at']);
 
 // Types
-export type Book = Omit<typeof books.$inferSelect, 'createdAt' | 'updatedAt'> & {
+type BookBase = Omit<typeof books.$inferSelect, 'author_id' | 'genre_id'> & {
   genre: typeof genres.$inferSelect | null;
   author: typeof authors.$inferSelect | null;
 };
+
+export type Book = Omit<BookBase, 'created_at' | 'updated_at'>;
+export type BookWithTimestamps = BookBase;
