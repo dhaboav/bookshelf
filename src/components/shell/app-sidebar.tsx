@@ -1,47 +1,21 @@
-import { BookCopyIcon, LayoutDashboardIcon, TagsIcon, UsersIcon } from 'lucide-react';
-
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar';
 
-import { NavAdmin } from './nav-admin';
-import { NavUser } from './nav-user';
-import { SidebarBrand } from './sidebar-brand';
+import { MenuGroup } from './_components/menu-group-item';
+import { SidebarBrand } from './_components/sidebar-brand';
+import { NAV_ITEMS } from './nav';
 
-const data = {
-  adminSide: [
-    {
-      name: 'Authors',
-      url: '/authors',
-      icon: UsersIcon,
-    },
-    {
-      name: 'Genres',
-      url: '/genres',
-      icon: TagsIcon,
-    },
-    {
-      name: 'Books',
-      url: '/books',
-      icon: BookCopyIcon,
-    },
-  ],
-  userSide: [
-    {
-      name: 'Dashboard',
-      url: '/',
-      icon: LayoutDashboardIcon,
-    },
-  ],
-};
+const userItems = NAV_ITEMS.filter((item) => item.role === 'user');
+const adminItems = NAV_ITEMS.filter((item) => item.role === 'admin');
 
-function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="md:pt-4">
         <SidebarBrand />
       </SidebarHeader>
       <SidebarContent>
-        <NavUser items={data.userSide} />
-        <NavAdmin items={data.adminSide} />
+        <MenuGroup title="Menu" items={userItems} />
+        <MenuGroup title="Admin" items={adminItems} />
       </SidebarContent>
 
       <SidebarFooter className="text-muted-foreground flex w-full flex-col gap-y-2 px-6 py-4 text-center text-xs group-data-[collapsible=icon]:hidden">
@@ -63,5 +37,3 @@ function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   );
 }
-
-export { AppSidebar };

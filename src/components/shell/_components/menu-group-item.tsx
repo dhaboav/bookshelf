@@ -9,27 +9,29 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 
-interface NavUserProps {
-  items: {
-    name: string;
-    url: string;
-    icon: LucideIcon;
-  }[];
+interface MenuGroupItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+}
+interface MenuGroupProps {
+  title: string;
+  items: readonly MenuGroupItem[];
 }
 
-function NavUser({ items }: NavUserProps) {
+export function MenuGroup({ title, items }: MenuGroupProps) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Menu</SidebarGroupLabel>
+      <SidebarGroupLabel>{title}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <SidebarMenuItem key={item.name}>
+          <SidebarMenuItem key={item.label}>
             <SidebarMenuButton
-              tooltip={item.name}
+              tooltip={item.label}
               render={
-                <Link href={item.url}>
+                <Link href={item.href}>
                   <item.icon />
-                  <span>{item.name}</span>
+                  <span>{item.label}</span>
                 </Link>
               }
             />
@@ -39,5 +41,3 @@ function NavUser({ items }: NavUserProps) {
     </SidebarGroup>
   );
 }
-
-export { NavUser };

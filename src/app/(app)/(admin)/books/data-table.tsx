@@ -17,7 +17,7 @@ import { useState } from 'react';
 
 import { ItemDelete } from '@/components/item/item-delete';
 import { ItemForm } from '@/components/item/item-form';
-import { SearchBar } from '@/components/nav/search-bar';
+import { SearchBar } from '@/components/search-bar';
 import { ComboboxField, InputField, TextareaField } from '@/components/shared-form-fields';
 import { Button } from '@/components/ui/button';
 import {

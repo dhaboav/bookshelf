@@ -1,3 +1,4 @@
+import { PageHeader } from '@/components/page-header';
 import { DataPagination } from '@/components/pagination/data-pagination';
 import { PageLimitPagination } from '@/components/pagination/page-limit-pagination';
 import { getAllAuthors } from '@/db/crud/authors';
@@ -27,13 +28,11 @@ export default async function BookListPage({ searchParams }: BookListPageProps) 
 
   return (
     <div className="pt-5 gap-6 flex flex-col">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-2">
-          <span>Book</span>
-          <span>Home / Book List</span>
-        </div>
-        <BookCreateForm actionType={addBook} authors={authorsList} genres={genresList} />
-      </div>
+      <PageHeader
+        title="Books"
+        description="Manage your library inventory."
+        action={<BookCreateForm actionType={addBook} authors={authorsList} genres={genresList} />}
+      />
 
       <DataTable data={book.data} className="h-125" genres={genresList} authors={authorsList} />
 
