@@ -72,6 +72,7 @@ async function addBook(data: InferInput<typeof bookInsertSchema>) {
 
 async function updateBook(id: number, data: InferInput<typeof bookUpdateSchema>) {
   const parsed = safeParse(bookUpdateSchema, data);
+
   if (!parsed.success) {
     return { success: false, message: 'Please enter a valid input.' };
   }

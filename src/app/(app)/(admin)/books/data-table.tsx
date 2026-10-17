@@ -15,10 +15,9 @@ import { ArrowUpDownIcon, CheckIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 
+import { BookFormDialog } from '@/components/books/book-form-dialog';
 import { ItemDelete } from '@/components/item/item-delete';
-import { ItemForm } from '@/components/item/item-form';
 import { SearchBar } from '@/components/search-bar';
-import { ComboboxField, InputField, TextareaField } from '@/components/shared-form-fields';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -93,7 +92,7 @@ export function DataTable({ data, genres, authors, className }: DataTableProps) 
       header: 'ISBN',
     }),
     columnHelper.accessor('author.name', {
-      header: 'Writer',
+      header: 'Author',
     }),
     columnHelper.accessor('genre.name', {
       header: 'Genre',
@@ -102,7 +101,7 @@ export function DataTable({ data, genres, authors, className }: DataTableProps) 
       header: 'Published Year',
     }),
     columnHelper.accessor('created_at', {
-      header: 'Date Added',
+      header: 'Added',
       cell: (info) => {
         const rawDate = info.getValue();
         if (!rawDate) return <span>-</span>;
@@ -126,7 +125,7 @@ export function DataTable({ data, genres, authors, className }: DataTableProps) 
         const bookID = row.original.id;
         return (
           <div className="flex items-center gap-2">
-            <ItemForm
+            <BookFormDialog
               initialData={{
                 isbn: row.original.isbn,
                 title: row.original.title,
@@ -137,45 +136,10 @@ export function DataTable({ data, genres, authors, className }: DataTableProps) 
                 genre_id: row.original.genre?.id,
                 description: row.original.description,
               }}
-              entity="book"
-              action="update"
-              onSubmit={(values) => updateBook(bookID, values)}
-            >
-              {(form) => (
-                <div className="w-full space-y-4">
-                  <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                    <InputField of={form} path="isbn" label="isbn" placeholder="971-390...." />
-                    <InputField of={form} path="title" label="title" placeholder="Book Title" />
-
-                    <ComboboxField
-                      of={form}
-                      path="genre_id"
-                      label="genre"
-                      items={genresList}
-                      placeholder="Select a genre"
-                    />
-
-                    <ComboboxField
-                      of={form}
-                      path="author_id"
-                      label="author"
-                      items={authorsList}
-                      placeholder="Select an author"
-                    />
-
-                    <InputField of={form} path="total_pages" label="total_pages" type="number" />
-                    <InputField of={form} path="published_year" label="year" type="number" />
-                  </div>
-                  <TextareaField
-                    of={form}
-                    path="description"
-                    label="description"
-                    placeholder="A short summary"
-                    className="min-h-30 resize-none"
-                  />
-                </div>
-              )}
-            </ItemForm>
+              authorOptions={authorsList}
+              genreOptions={genresList}
+              onSubmitAction={(values) => updateBook(bookID, values)}
+            />
             <ItemDelete id={bookID} label="Book" onDelete={deleteBook} />
           </div>
         );
