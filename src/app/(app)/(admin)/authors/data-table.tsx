@@ -14,10 +14,9 @@ import { cn } from 'cn';
 import { ArrowUpDownIcon, CheckIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { ItemDelete } from '@/components/item/item-delete';
-import { ItemForm } from '@/components/item/item-form';
+import { ItemDeleteDialog } from '@/components/item/item-delete-dialog';
+import { ItemFormDialog } from '@/components/item/item-form-dialog';
 import { SearchBar } from '@/components/search-bar';
-import { InputField } from '@/components/shared-form-fields';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -53,15 +52,12 @@ const columns = columnHelper.columns([
       const authorID = row.original.id;
       return (
         <>
-          <ItemForm
+          <ItemFormDialog
             initialData={{ name: row.original.name }}
-            entity="author"
-            action="update"
-            onSubmit={(values) => updateAuthor(authorID, values)}
-          >
-            {(form) => <InputField of={form} path="name" label="name" placeholder="Author name" />}
-          </ItemForm>
-          <ItemDelete id={authorID} label="Author" onDelete={deleteAuthor} />
+            entityType="author"
+            onSubmitAction={(values) => updateAuthor(authorID, values)}
+          />
+          <ItemDeleteDialog entityType="Author" onDeleteAction={() => deleteAuthor(authorID)} />
         </>
       );
     },

@@ -1,9 +1,10 @@
+import { ItemFormDialog } from '@/components/item/item-form-dialog';
+import { PageHeader } from '@/components/page-header';
 import { DataPagination } from '@/components/pagination/data-pagination';
 import { PageLimitPagination } from '@/components/pagination/page-limit-pagination';
 import { addGenre, getGenres } from '@/db/crud/genres';
 
 import { DataTable } from './data-table';
-import { GenreCreateForm } from './genre-create-form';
 
 interface AuthorListPageProps {
   searchParams: Promise<{
@@ -14,19 +15,17 @@ interface AuthorListPageProps {
 }
 
 export const instant = false;
-export default async function AuthorListPage({ searchParams }: AuthorListPageProps) {
+export default async function GenreListPage({ searchParams }: AuthorListPageProps) {
   const { page = '1', limit = '12', q = '' } = await searchParams;
   const { metadata, data } = await getGenres(Number(page), Number(limit), q);
 
   return (
     <div className="pt-5 gap-6 flex flex-col">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-2">
-          <span>Genre</span>
-          <span>Home / Genre List</span>
-        </div>
-        <GenreCreateForm actionType={addGenre} />
-      </div>
+      <PageHeader
+        title="Genres"
+        description="Manage your genre list."
+        action={<ItemFormDialog entityType="genre" onSubmitAction={addGenre} />}
+      />
 
       <DataTable data={data} className="h-125" />
 

@@ -14,10 +14,9 @@ import { cn } from 'cn';
 import { ArrowUpDownIcon, CheckIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { ItemDelete } from '@/components/item/item-delete';
-import { ItemForm } from '@/components/item/item-form';
+import { ItemDeleteDialog } from '@/components/item/item-delete-dialog';
+import { ItemFormDialog } from '@/components/item/item-form-dialog';
 import { SearchBar } from '@/components/search-bar';
-import { InputField } from '@/components/shared-form-fields';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -53,15 +52,13 @@ const columns = columnHelper.columns([
       const genreID = row.original.id;
       return (
         <>
-          <ItemForm
+          <ItemFormDialog
             initialData={{ name: row.original.name }}
-            entity="genre"
-            action="update"
-            onSubmit={(values) => updateGenre(genreID, values)}
-          >
-            {(form) => <InputField of={form} path="name" label="name" placeholder="Genre's name" />}
-          </ItemForm>
-          <ItemDelete id={genreID} label="Genre" onDelete={deleteGenre} />
+            entityType="genre"
+            onSubmitAction={(values) => updateGenre(genreID, values)}
+          />
+
+          <ItemDeleteDialog entityType="Genre" onDeleteAction={() => deleteGenre(genreID)} />
         </>
       );
     },

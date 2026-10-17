@@ -16,7 +16,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 import { BookFormDialog } from '@/components/books/book-form-dialog';
-import { ItemDelete } from '@/components/item/item-delete';
+import { ItemDeleteDialog } from '@/components/item/item-delete-dialog';
 import { SearchBar } from '@/components/search-bar';
 import { Button } from '@/components/ui/button';
 import {
@@ -140,7 +140,7 @@ export function DataTable({ data, genres, authors, className }: DataTableProps) 
               genreOptions={genresList}
               onSubmitAction={(values) => updateBook(bookID, values)}
             />
-            <ItemDelete id={bookID} label="Book" onDelete={deleteBook} />
+            <ItemDeleteDialog entityType="Book" onDeleteAction={() => deleteBook(bookID)} />
           </div>
         );
       },

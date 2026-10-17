@@ -28,7 +28,7 @@ import { BookCover } from './book-cover';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
-export const BookFormSchema = v.object({
+const BookFormSchema = v.object({
   title: v.pipe(
     v.string(),
     v.minLength(4, 'Title must be at least 4 characters.'),
@@ -66,33 +66,28 @@ export const BookFormSchema = v.object({
   ),
 });
 
-export type BookFormInput = v.InferInput<typeof BookFormSchema>;
-export type BookFormOutput = v.InferOutput<typeof BookFormSchema>;
+type BookFormInput = v.InferInput<typeof BookFormSchema>;
+type BookFormOutput = v.InferOutput<typeof BookFormSchema>;
 
-export interface OptionItem {
+interface OptionItem {
   value: any;
   label: string;
 }
 
-export interface BookFormProps {
-  /** Data awal untuk mode Edit. Jika kosong, form otomatis masuk mode Create. */
+interface BookFormProps {
   initialData?: BookFormInput;
-  /** Daftar opsi pilihan untuk Combobox Author */
   authorOptions: OptionItem[];
-  /** Daftar opsi pilihan untuk Combobox Genre */
   genreOptions: OptionItem[];
-  /** Handler asinkron untuk menyimpan data ke database/server action */
   onSubmitAction: (values: BookFormOutput) => Promise<{ success?: boolean; message?: string }>;
 }
 
 // ==========================================
-// 2. COMPONENT
+// COMPONENT
 // ==========================================
 
 export function BookFormDialog({ initialData, authorOptions, genreOptions, onSubmitAction }: BookFormProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Menentukan mode form secara semantik
   const isEditing = Boolean(initialData);
   const formActionTitle = isEditing ? 'Update' : 'Add';
   const formHtmlId = `${formActionTitle.toLowerCase()}-book-form`;
@@ -149,7 +144,6 @@ export function BookFormDialog({ initialData, authorOptions, genreOptions, onSub
           </DialogDescription>
         </DialogHeader>
 
-        {/* Form Container */}
         <Form id={formHtmlId} of={form} onSubmit={handleFormSubmit} className="space-y-4 my-4">
           <div className="grid lg:grid-cols-4 gap-4">
             {/* Cover Preview Section */}

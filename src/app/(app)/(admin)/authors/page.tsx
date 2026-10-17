@@ -1,8 +1,9 @@
+import { ItemFormDialog } from '@/components/item/item-form-dialog';
+import { PageHeader } from '@/components/page-header';
 import { DataPagination } from '@/components/pagination/data-pagination';
 import { PageLimitPagination } from '@/components/pagination/page-limit-pagination';
 import { addAuthor, getAuthors } from '@/db/crud/authors';
 
-import { AuthorCreateForm } from './author-create-form';
 import { DataTable } from './data-table';
 
 interface AuthorListPageProps {
@@ -20,13 +21,11 @@ export default async function AuthorListPage({ searchParams }: AuthorListPagePro
 
   return (
     <div className="pt-5 gap-6 flex flex-col">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-2">
-          <span>Author</span>
-          <span>Home / Author List</span>
-        </div>
-        <AuthorCreateForm actionType={addAuthor} />
-      </div>
+      <PageHeader
+        title="Authors"
+        description="Manage your author list."
+        action={<ItemFormDialog entityType="author" onSubmitAction={addAuthor} />}
+      />
 
       <DataTable data={data} className="h-125" />
 
