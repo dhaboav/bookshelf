@@ -1,6 +1,6 @@
 'use client';
 
-import { Form, SubmitHandler, reset, useForm } from '@formisch/react';
+import { Form, Field as FormischField, SubmitHandler, reset, useForm } from '@formisch/react';
 import { BookPlusIcon, PencilIcon } from 'lucide-react';
 import { useState } from 'react';
 import * as v from 'valibot';
@@ -17,25 +17,32 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from '@/components/ui/toast';
+import { IMAGE_CONFIG } from '@/utils/image-config';
 
 import { BookCover } from './book-cover';
 
 // ==========================================
-// 1. SCHEMAS & TYPES (Self-Documenting)
-// ==========================================
-
+// SCHEMAS & TYPES
 const CURRENT_YEAR = new Date().getFullYear();
 
-const BookFormSchema = v.object({
+const ImageSchema = v.pipe(
+  v.file('Please select an image file.'),
+  v.mimeType(['image/jpeg', 'image/png', 'image/avif'], 'Must be JPEG, PNG, or AVIF.'),
+  v.maxSize(IMAGE_CONFIG.MAX_FILE_SIZE, 'Max image size is 2 MB.'),
+);
+
+export const BookFormSchema = v.object({
   title: v.pipe(
     v.string(),
     v.minLength(4, 'Title must be at least 4 characters.'),
     v.maxLength(255, 'Title cannot exceed 255 characters.'),
   ),
   isbn: v.pipe(v.string(), v.length(13, 'ISBN must be exactly 13 characters long')),
-  cover_img: v.nullable(v.optional(v.string(), '')),
+  cover_img: v.nullable(v.optional(v.union([v.string(), ImageSchema]))),
   author_id: v.pipe(v.unknown(), v.toNumber()),
   genre_id: v.pipe(v.unknown(), v.toNumber()),
   total_pages: v.pipe(
@@ -80,9 +87,6 @@ interface BookFormProps {
   genreOptions: OptionItem[];
   onSubmitAction: (values: BookFormOutput) => Promise<{ success?: boolean; message?: string }>;
 }
-
-// ==========================================
-// COMPONENT
 // ==========================================
 
 export function BookFormDialog({ initialData, authorOptions, genreOptions, onSubmitAction }: BookFormProps) {
@@ -92,12 +96,14 @@ export function BookFormDialog({ initialData, authorOptions, genreOptions, onSub
   const formActionTitle = isEditing ? 'Update' : 'Add';
   const formHtmlId = `${formActionTitle.toLowerCase()}-book-form`;
 
+  const initialDataImage = initialData?.cover_img ? `/img-data/${initialData?.cover_img}` : '';
+
   const form = useForm({
     schema: BookFormSchema,
     initialInput: {
       title: initialData?.title ?? '',
       isbn: initialData?.isbn ?? '',
-      cover_img: initialData?.cover_img ?? '',
+      cover_img: initialDataImage ?? '',
       author_id: initialData?.author_id ?? '',
       genre_id: initialData?.genre_id ?? '',
       total_pages: initialData?.total_pages ?? '',
@@ -117,7 +123,8 @@ export function BookFormDialog({ initialData, authorOptions, genreOptions, onSub
 
       setIsOpen(false);
       reset(form);
-    } catch {
+    } catch (error) {
+      console.error(error);
       toast.add({
         type: 'error',
         description: 'An unexpected system error occurred.',
@@ -144,16 +151,31 @@ export function BookFormDialog({ initialData, authorOptions, genreOptions, onSub
           </DialogDescription>
         </DialogHeader>
 
-        <Form id={formHtmlId} of={form} onSubmit={handleFormSubmit} className="space-y-4 my-4">
+        <Form id={formHtmlId} of={form} onSubmit={handleFormSubmit} className="space-y-2 my-4">
           <div className="grid lg:grid-cols-4 gap-4">
-            {/* Cover Preview Section */}
-            <div className="hidden flex-col items-center gap-2 lg:flex">
-              <BookCover className="w-28" />
-              <span className="text-xs text-muted-foreground">Preview</span>
-            </div>
+            <FormischField of={form} path={['cover_img']}>
+              {(field) => (
+                <Field data-invalid={field.errors !== null}>
+                  <BookCover image={field.input} />
+                  <div className="space-y-2">
+                    <FieldLabel htmlFor="cover_img">Book Cover</FieldLabel>
+                    <Input
+                      id="cover_img"
+                      type="file"
+                      accept="image/*"
+                      aria-invalid={field.errors !== null}
+                      onChange={(e) => {
+                        const file = e.currentTarget.files?.[0] ?? null;
+                        field.onChange(file);
+                      }}
+                    />
+                    {field.errors && <FieldError errors={field.errors.map((message) => ({ message }))} />}
+                  </div>
+                </Field>
+              )}
+            </FormischField>
 
-            {/* Fields Section */}
-            <div className="col-span-3 grid gap-4">
+            <div className="lg:col-span-3 grid gap-4">
               <InputField of={form} path="title" label="Title" placeholder="Book Title" />
 
               <div className="grid gap-4 lg:grid-cols-2">

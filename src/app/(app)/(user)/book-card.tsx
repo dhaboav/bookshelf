@@ -7,10 +7,11 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Book } from '@/schemas/books';
 
 export function BookCard({ book }: { book: Book }) {
+  const imgPath = book.cover_img ? `/img-data/${book.cover_img}` : '';
   return (
     <Card className="grid group overflow-hidden border transition-colors duration-200 hover:border-foreground/30">
       <Image
-        src={book.cover_img || '/cover.jpg'}
+        src={imgPath || '/cover.jpg'}
         width={1000}
         height={700}
         alt={book.title || 'Book cover'}

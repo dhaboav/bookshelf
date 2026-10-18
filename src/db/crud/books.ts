@@ -4,8 +4,10 @@ import { count, eq, ilike } from 'drizzle-orm';
 import { cacheTag, updateTag } from 'next/cache';
 import { InferInput, safeParse } from 'valibot';
 
+import { BookFormSchema } from '@/components/books/book-form-dialog';
 import { db } from '@/db/drizzle';
 import { bookInsertSchema, bookUpdateSchema, books } from '@/schemas/books';
+import { ImageService } from '@/utils/image-service';
 
 async function getBooks(page: number = 1, limit: number = 12, query?: string) {
   'use cache';
@@ -52,8 +54,15 @@ async function getBooks(page: number = 1, limit: number = 12, query?: string) {
   };
 }
 
-async function addBook(data: InferInput<typeof bookInsertSchema>) {
-  const parsed = safeParse(bookInsertSchema, data);
+async function addBook(bookFormData: InferInput<typeof BookFormSchema>) {
+  let cover_img = bookFormData.cover_img;
+  if (cover_img instanceof File) {
+    const imageResult = await ImageService(cover_img);
+    if (!imageResult.success) return { success: false, message: imageResult.message };
+    cover_img = imageResult.message; // In case of success, the message here means filename path.
+  }
+
+  const parsed = safeParse(bookInsertSchema, { ...bookFormData, cover_img });
   if (!parsed.success) {
     return { success: false, message: 'Please enter a valid input.' };
   }
@@ -70,9 +79,15 @@ async function addBook(data: InferInput<typeof bookInsertSchema>) {
   }
 }
 
-async function updateBook(id: number, data: InferInput<typeof bookUpdateSchema>) {
-  const parsed = safeParse(bookUpdateSchema, data);
+async function updateBook(id: number, bookFormData: InferInput<typeof BookFormSchema>) {
+  let cover_img = bookFormData.cover_img;
+  if (cover_img instanceof File) {
+    const imageResult = await ImageService(cover_img);
+    if (!imageResult.success) return { success: false, message: imageResult.message };
+    cover_img = imageResult.message; // In case of success, the message here means filename path.
+  }
 
+  const parsed = safeParse(bookUpdateSchema, { ...bookFormData, cover_img });
   if (!parsed.success) {
     return { success: false, message: 'Please enter a valid input.' };
   }
