@@ -26,10 +26,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { deleteBook, updateBook } from '@/db/crud/books';
-import { Author } from '@/db/schemas/authors';
-import { BookWithTimestamps } from '@/db/schemas/books';
-import { Genre } from '@/db/schemas/genres';
+import { deleteBook, updateBook } from '@/db/crud/book';
+import { Author } from '@/db/validators/author';
+import { Book } from '@/db/validators/book';
+import { Genre } from '@/db/validators/genre';
 
 const features = tableFeatures({
   rowSortingFeature,
@@ -37,7 +37,7 @@ const features = tableFeatures({
   sortFns: { alphanumeric: sortFn_alphanumeric, text: sortFn_text },
 });
 
-const columnHelper = createColumnHelper<typeof features, BookWithTimestamps>();
+const columnHelper = createColumnHelper<typeof features, Book>();
 
 const SortOptions = [
   { label: 'Name A-Z', columnId: 'title', isDesc: false },
@@ -49,7 +49,7 @@ const SortOptions = [
 ] as const;
 
 interface DataTableProps {
-  data: BookWithTimestamps[];
+  data: Book[];
   genres: Genre[];
   authors: Author[];
   className?: string;

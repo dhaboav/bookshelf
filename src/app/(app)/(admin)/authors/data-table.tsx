@@ -25,8 +25,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { deleteAuthor, updateAuthor } from '@/db/crud/authors';
-import { AuthorWithBook } from '@/db/schemas/authors';
+import { deleteAuthor, updateAuthor } from '@/db/crud/author';
+import { AuthorWithBook } from '@/db/validators/author';
 
 const features = tableFeatures({
   rowSortingFeature,

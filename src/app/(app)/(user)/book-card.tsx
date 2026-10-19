@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Book } from '@/schemas/books';
+import { type Book } from '@/db/validators/book';
 
 export function BookCard({ book }: { book: Book }) {
   const imgPath = book.cover_img ? `/img-data/${book.cover_img}` : '';

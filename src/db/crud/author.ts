@@ -5,10 +5,10 @@ import { cacheTag, updateTag } from 'next/cache';
 import { InferInput, safeParse } from 'valibot';
 
 import { db } from '@/db/drizzle';
-import { authorInsertSchema, authorUpdateSchema, authors } from '@/schemas/authors';
-import { books } from '@/schemas/books';
+import { author, book } from '@/db/schema';
+import { AuthorInsert, AuthorUpdate, authorInsertSchema, authorUpdateSchema } from '@/db/validators/author';
 
-async function getAuthors(page: number = 1, limit: number = 12, query?: string) {
+export async function getAuthors(page: number = 1, limit: number = 12, query?: string) {
   'use cache';
   cacheTag('authors');
 
@@ -19,18 +19,18 @@ async function getAuthors(page: number = 1, limit: number = 12, query?: string) 
   const [items, totalItem] = await Promise.all([
     db
       .select({
-        id: authors.id,
-        name: authors.name,
-        totalBooks: count(books.id),
+        id: author.id,
+        name: author.name,
+        totalBooks: count(book.id),
       })
-      .from(authors)
-      .leftJoin(books, eq(books.genre_id, authors.id))
-      .where(hasQuery ? ilike(authors.name, `%${trimmedQuery}%`) : undefined)
-      .groupBy(authors.id)
+      .from(author)
+      .leftJoin(book, eq(book.genre_id, author.id))
+      .where(hasQuery ? ilike(author.name, `%${trimmedQuery}%`) : undefined)
+      .groupBy(author.id)
       .limit(limit)
       .offset(offset),
 
-    db.select({ count: count() }).from(authors),
+    db.select({ count: count() }).from(author),
   ]);
 
   const totalItems = totalItem[0]?.count || 0;
@@ -45,29 +45,29 @@ async function getAuthors(page: number = 1, limit: number = 12, query?: string) 
   };
 }
 
-async function getAllAuthors() {
+export async function getAllAuthors() {
   'use cache';
   cacheTag('authors');
 
   return await db
     .select({
-      id: authors.id,
-      name: authors.name,
-      totalBooks: count(books.id),
+      id: author.id,
+      name: author.name,
+      totalBooks: count(book.id),
     })
-    .from(authors)
-    .leftJoin(books, eq(books.author_id, authors.id))
-    .groupBy(authors.id);
+    .from(author)
+    .leftJoin(book, eq(book.author_id, author.id))
+    .groupBy(author.id);
 }
 
-async function addAuthor(data: InferInput<typeof authorInsertSchema>) {
-  const parsed = safeParse(authorInsertSchema, data);
+export async function addAuthor(authorFormData: AuthorInsert) {
+  const parsed = safeParse(authorInsertSchema, authorFormData);
   if (!parsed.success) {
     return { success: false, message: 'Please enter a valid input.' };
   }
 
   try {
-    await db.insert(authors).values(parsed.output);
+    await db.insert(author).values(parsed.output);
     updateTag('authors');
     updateTag('books');
     return { success: true, message: 'Author added successfully.' };
@@ -77,14 +77,14 @@ async function addAuthor(data: InferInput<typeof authorInsertSchema>) {
   }
 }
 
-async function updateAuthor(id: number, data: InferInput<typeof authorUpdateSchema>) {
-  const parsed = safeParse(authorUpdateSchema, data);
+export async function updateAuthor(id: number, authorFormData: AuthorUpdate) {
+  const parsed = safeParse(authorUpdateSchema, authorFormData);
   if (!parsed.success) {
     return { success: false, message: 'Please enter a valid input.' };
   }
 
   try {
-    await db.update(authors).set(parsed.output).where(eq(authors.id, id));
+    await db.update(author).set(parsed.output).where(eq(author.id, id));
     updateTag('authors');
     updateTag('books');
     return { success: true, message: 'Author updated successfully.' };
@@ -94,9 +94,9 @@ async function updateAuthor(id: number, data: InferInput<typeof authorUpdateSche
   }
 }
 
-async function deleteAuthor(id: number) {
+export async function deleteAuthor(id: number) {
   try {
-    await db.delete(authors).where(eq(authors.id, id));
+    await db.delete(author).where(eq(author.id, id));
     updateTag('authors');
     updateTag('books');
     return { success: true, message: 'Author deleted successfully.' };
@@ -104,5 +104,3 @@ async function deleteAuthor(id: number) {
     return { success: false, message: 'Failed to delete author.' };
   }
 }
-
-export { getAuthors, getAllAuthors, addAuthor, updateAuthor, deleteAuthor };

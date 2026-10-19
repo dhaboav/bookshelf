@@ -1,7 +1,7 @@
 import { BookCard } from '@/app/(app)/(user)/book-card';
 import { NoResult } from '@/components/no-result';
 import { DataPagination } from '@/components/pagination/data-pagination';
-import { getBooks } from '@/db/crud/books';
+import { getBooks } from '@/db/crud/book';
 
 interface Props {
   searchParams: Promise<{

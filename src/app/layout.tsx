@@ -2,7 +2,6 @@ import { cn } from 'cn';
 import type { Metadata, Viewport } from 'next';
 import { Geist } from 'next/font/google';
 
-import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toast';
 
 import './globals.css';

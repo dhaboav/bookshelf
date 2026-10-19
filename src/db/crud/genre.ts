@@ -5,10 +5,10 @@ import { cacheTag, updateTag } from 'next/cache';
 import { InferInput, safeParse } from 'valibot';
 
 import { db } from '@/db/drizzle';
-import { books } from '@/schemas/books';
-import { genreInsertSchema, genreUpdateSchema, genres } from '@/schemas/genres';
+import { book, genre } from '@/db/schema';
+import { genreInsertSchema, genreUpdateSchema } from '@/db/validators/genre';
 
-async function getGenres(page: number = 1, limit: number = 12, query?: string) {
+export async function getGenres(page: number = 1, limit: number = 12, query?: string) {
   'use cache';
   cacheTag('genres');
 
@@ -19,18 +19,18 @@ async function getGenres(page: number = 1, limit: number = 12, query?: string) {
   const [items, totalItem] = await Promise.all([
     db
       .select({
-        id: genres.id,
-        name: genres.name,
-        totalBooks: count(books.id),
+        id: genre.id,
+        name: genre.name,
+        totalBooks: count(book.id),
       })
-      .from(genres)
-      .leftJoin(books, eq(books.genre_id, genres.id))
-      .where(hasQuery ? ilike(genres.name, `%${trimmedQuery}%`) : undefined)
-      .groupBy(genres.id)
+      .from(genre)
+      .leftJoin(book, eq(book.genre_id, genre.id))
+      .where(hasQuery ? ilike(genre.name, `%${trimmedQuery}%`) : undefined)
+      .groupBy(genre.id)
       .limit(limit)
       .offset(offset),
 
-    db.select({ count: count() }).from(genres),
+    db.select({ count: count() }).from(genre),
   ]);
 
   const totalItems = totalItem[0]?.count || 0;
@@ -45,21 +45,21 @@ async function getGenres(page: number = 1, limit: number = 12, query?: string) {
   };
 }
 
-async function getAllGenres() {
+export async function getAllGenres() {
   'use cache';
   cacheTag('genres');
 
-  return await db.select().from(genres);
+  return await db.select().from(genre);
 }
 
-async function addGenre(data: InferInput<typeof genreInsertSchema>) {
+export async function addGenre(data: InferInput<typeof genreInsertSchema>) {
   const parsed = safeParse(genreInsertSchema, data);
   if (!parsed.success) {
     return { success: false, message: 'Please enter a valid input.' };
   }
 
   try {
-    await db.insert(genres).values(parsed.output);
+    await db.insert(genre).values(parsed.output);
     updateTag('genres');
     updateTag('books');
     return { success: true, message: 'Genre added successfully.' };
@@ -69,14 +69,14 @@ async function addGenre(data: InferInput<typeof genreInsertSchema>) {
   }
 }
 
-async function updateGenre(id: number, data: InferInput<typeof genreUpdateSchema>) {
+export async function updateGenre(id: number, data: InferInput<typeof genreUpdateSchema>) {
   const parsed = safeParse(genreUpdateSchema, data);
   if (!parsed.success) {
     return { success: false, message: 'Please enter a valid input.' };
   }
 
   try {
-    await db.update(genres).set(parsed.output).where(eq(genres.id, id));
+    await db.update(genre).set(parsed.output).where(eq(genre.id, id));
     updateTag('genres');
     updateTag('books');
     return { success: true, message: 'Genre updated successfully.' };
@@ -86,9 +86,9 @@ async function updateGenre(id: number, data: InferInput<typeof genreUpdateSchema
   }
 }
 
-async function deleteGenre(id: number) {
+export async function deleteGenre(id: number) {
   try {
-    await db.delete(genres).where(eq(genres.id, id));
+    await db.delete(genre).where(eq(genre.id, id));
     updateTag('genres');
     updateTag('books');
     return { success: true, message: 'Genre deleted successfully.' };
@@ -96,5 +96,3 @@ async function deleteGenre(id: number) {
     return { success: false, message: 'Failed to delete genre.' };
   }
 }
-
-export { getGenres, getAllGenres, addGenre, updateGenre, deleteGenre };

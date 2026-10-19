@@ -25,8 +25,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { deleteGenre, updateGenre } from '@/db/crud/genres';
-import { GenreWithBook } from '@/db/schemas/genres';
+import { deleteGenre, updateGenre } from '@/db/crud/genre';
+import { GenreWithBook } from '@/db/validators/genre';
 
 const features = tableFeatures({
   rowSortingFeature,

@@ -2,14 +2,14 @@
 
 import { count, eq, ilike } from 'drizzle-orm';
 import { cacheTag, updateTag } from 'next/cache';
-import { InferInput, safeParse } from 'valibot';
+import { safeParse } from 'valibot';
 
-import { BookFormSchema } from '@/components/books/book-form-dialog';
 import { db } from '@/db/drizzle';
-import { bookInsertSchema, bookUpdateSchema, books } from '@/schemas/books';
+import { book } from '@/db/schema';
+import { BookFormInput, bookInsertSchema, bookUpdateSchema } from '@/db/validators/book';
 import { ImageService } from '@/utils/image-service';
 
-async function getBooks(page: number = 1, limit: number = 12, query?: string) {
+export async function getBooks(page: number = 1, limit: number = 12, query?: string) {
   'use cache';
   cacheTag('books');
 
@@ -18,7 +18,7 @@ async function getBooks(page: number = 1, limit: number = 12, query?: string) {
   const hasQuery = Boolean(trimmedQuery && trimmedQuery.length > 0);
 
   const [items, totalResult] = await Promise.all([
-    db.query.books.findMany({
+    db.query.book.findMany({
       offset: offset,
       limit: limit,
       ...(hasQuery && {
@@ -36,9 +36,9 @@ async function getBooks(page: number = 1, limit: number = 12, query?: string) {
     }),
 
     db
-      .select({ count: count(books.id) })
-      .from(books)
-      .where(hasQuery ? ilike(books.title, `%${trimmedQuery}%`) : undefined),
+      .select({ count: count(book.id) })
+      .from(book)
+      .where(hasQuery ? ilike(book.title, `%${trimmedQuery}%`) : undefined),
   ]);
 
   const totalItems = totalResult[0]?.count || 0;
@@ -54,7 +54,7 @@ async function getBooks(page: number = 1, limit: number = 12, query?: string) {
   };
 }
 
-async function addBook(bookFormData: InferInput<typeof BookFormSchema>) {
+export async function addBook(bookFormData: BookFormInput) {
   let cover_img = bookFormData.cover_img;
   if (cover_img instanceof File) {
     const imageResult = await ImageService(cover_img);
@@ -68,7 +68,7 @@ async function addBook(bookFormData: InferInput<typeof BookFormSchema>) {
   }
 
   try {
-    await db.insert(books).values(parsed.output);
+    await db.insert(book).values(parsed.output);
     updateTag('books');
     updateTag('authors');
     updateTag('genres');
@@ -79,7 +79,7 @@ async function addBook(bookFormData: InferInput<typeof BookFormSchema>) {
   }
 }
 
-async function updateBook(id: number, bookFormData: InferInput<typeof BookFormSchema>) {
+export async function updateBook(id: number, bookFormData: BookFormInput) {
   let cover_img = bookFormData.cover_img;
   if (cover_img instanceof File) {
     const imageResult = await ImageService(cover_img);
@@ -93,7 +93,7 @@ async function updateBook(id: number, bookFormData: InferInput<typeof BookFormSc
   }
 
   try {
-    await db.update(books).set(parsed.output).where(eq(books.id, id));
+    await db.update(book).set(parsed.output).where(eq(book.id, id));
     updateTag('books');
     updateTag('authors');
     updateTag('genres');
@@ -104,9 +104,9 @@ async function updateBook(id: number, bookFormData: InferInput<typeof BookFormSc
   }
 }
 
-async function deleteBook(id: number) {
+export async function deleteBook(id: number) {
   try {
-    await db.delete(books).where(eq(books.id, id));
+    await db.delete(book).where(eq(book.id, id));
     updateTag('books');
     updateTag('authors');
     updateTag('genres');
@@ -115,5 +115,3 @@ async function deleteBook(id: number) {
     return { success: false, message: 'Failed to delete book.' };
   }
 }
-
-export { getBooks, addBook, updateBook, deleteBook };

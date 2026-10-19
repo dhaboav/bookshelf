@@ -3,7 +3,6 @@
 import { Form, Field as FormischField, SubmitHandler, reset, useForm } from '@formisch/react';
 import { BookPlusIcon, PencilIcon } from 'lucide-react';
 import { useState } from 'react';
-import * as v from 'valibot';
 
 import { ComboboxField, InputField, TextareaField } from '@/components/shared-form-fields';
 import { Button } from '@/components/ui/button';
@@ -21,60 +20,13 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from '@/components/ui/toast';
-import { IMAGE_CONFIG } from '@/utils/image-config';
+import { BookFormInput, BookFormOutput, bookFormSchema } from '@/db/validators/book';
 
 import { BookCover } from './book-cover';
 
 // ==========================================
 // SCHEMAS & TYPES
 const CURRENT_YEAR = new Date().getFullYear();
-
-const ImageSchema = v.pipe(
-  v.file('Please select an image file.'),
-  v.mimeType(['image/jpeg', 'image/png', 'image/avif'], 'Must be JPEG, PNG, or AVIF.'),
-  v.maxSize(IMAGE_CONFIG.MAX_FILE_SIZE, 'Max image size is 2 MB.'),
-);
-
-export const BookFormSchema = v.object({
-  title: v.pipe(
-    v.string(),
-    v.minLength(4, 'Title must be at least 4 characters.'),
-    v.maxLength(255, 'Title cannot exceed 255 characters.'),
-  ),
-  isbn: v.pipe(v.string(), v.length(13, 'ISBN must be exactly 13 characters long')),
-  cover_img: v.nullable(v.optional(v.union([v.string(), ImageSchema]))),
-  author_id: v.pipe(v.unknown(), v.toNumber()),
-  genre_id: v.pipe(v.unknown(), v.toNumber()),
-  total_pages: v.pipe(
-    v.unknown(),
-    v.toNumber(),
-    v.minValue(1, 'Must have at least 1 page.'),
-    v.maxValue(10000, 'Page count cannot exceed 10,000.'),
-  ),
-  published_year: v.pipe(
-    v.unknown(),
-    v.toNumber(),
-    v.minValue(2000, 'Year must be 2000 or later.'),
-    v.maxValue(CURRENT_YEAR, "Year can't be more than present year."),
-  ),
-  description: v.nullable(
-    v.optional(
-      v.union([
-        v.literal(''),
-        v.pipe(
-          v.string(),
-
-          v.minLength(20, 'Description must be at least 20 characters.'),
-          v.maxLength(100, 'Description must be at most 100 characters.'),
-        ),
-      ]),
-      '',
-    ),
-  ),
-});
-
-type BookFormInput = v.InferInput<typeof BookFormSchema>;
-type BookFormOutput = v.InferOutput<typeof BookFormSchema>;
 
 interface OptionItem {
   value: any;
@@ -99,7 +51,7 @@ export function BookFormDialog({ initialData, authorOptions, genreOptions, onSub
   const initialDataImage = initialData?.cover_img ? `/img-data/${initialData?.cover_img}` : '';
 
   const form = useForm({
-    schema: BookFormSchema,
+    schema: bookFormSchema,
     initialInput: {
       title: initialData?.title ?? '',
       isbn: initialData?.isbn ?? '',
@@ -112,7 +64,7 @@ export function BookFormDialog({ initialData, authorOptions, genreOptions, onSub
     },
   });
 
-  const handleFormSubmit: SubmitHandler<typeof BookFormSchema> = async (values) => {
+  const handleFormSubmit: SubmitHandler<typeof bookFormSchema> = async (values) => {
     try {
       const response = await onSubmitAction(values);
 

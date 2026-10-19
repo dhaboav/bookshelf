@@ -2,9 +2,9 @@ import { BookFormDialog } from '@/components/books/book-form-dialog';
 import { PageHeader } from '@/components/page-header';
 import { DataPagination } from '@/components/pagination/data-pagination';
 import { PageLimitPagination } from '@/components/pagination/page-limit-pagination';
-import { getAllAuthors } from '@/db/crud/authors';
-import { addBook, getBooks } from '@/db/crud/books';
-import { getAllGenres } from '@/db/crud/genres';
+import { getAllAuthors } from '@/db/crud/author';
+import { addBook, getBooks } from '@/db/crud/book';
+import { getAllGenres } from '@/db/crud/genre';
 
 import { DataTable } from './data-table';
 

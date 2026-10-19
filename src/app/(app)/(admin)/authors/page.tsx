@@ -2,7 +2,7 @@ import { ItemFormDialog } from '@/components/item/item-form-dialog';
 import { PageHeader } from '@/components/page-header';
 import { DataPagination } from '@/components/pagination/data-pagination';
 import { PageLimitPagination } from '@/components/pagination/page-limit-pagination';
-import { addAuthor, getAuthors } from '@/db/crud/authors';
+import { addAuthor, getAuthors } from '@/db/crud/author';
 
 import { DataTable } from './data-table';
 
