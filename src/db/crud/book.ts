@@ -7,7 +7,7 @@ import { safeParse } from 'valibot';
 import { db } from '@/db/drizzle';
 import { book } from '@/db/schema';
 import { BookFormInput, bookInsertSchema, bookUpdateSchema } from '@/db/validators/book';
-import { ImageService } from '@/utils/image-service';
+import { imageDelete, imageRenaming, imageSave } from '@/utils/image-service';
 
 export async function getBooks(page: number = 1, limit: number = 12, query?: string) {
   'use cache';
@@ -55,63 +55,155 @@ export async function getBooks(page: number = 1, limit: number = 12, query?: str
 }
 
 export async function addBook(bookFormData: BookFormInput) {
-  let cover_img = bookFormData.cover_img;
-  if (cover_img instanceof File) {
-    const imageResult = await ImageService(cover_img);
-    if (!imageResult.success) return { success: false, message: imageResult.message };
-    cover_img = imageResult.message; // In case of success, the message here means filename path.
+  const image = bookFormData.cover_img;
+  let filename: string | null = null;
+  let savedFilename: string | null = null;
+
+  // Generate filename
+  if (image instanceof File && image.size > 0) {
+    filename = imageRenaming(image);
+  } else if (typeof image === 'string') {
+    filename = image;
   }
 
-  const parsed = safeParse(bookInsertSchema, { ...bookFormData, cover_img });
-  if (!parsed.success) {
-    return { success: false, message: 'Please enter a valid input.' };
-  }
+  const parsed = safeParse(bookInsertSchema, {
+    ...bookFormData,
+    cover_img: filename,
+  });
+  if (!parsed.success) return { success: false, message: 'Please enter a valid input.' };
 
   try {
+    // Saved file first
+    if (image instanceof File && image.size > 0 && filename) {
+      const result = await imageSave(image, filename);
+      if (!result.success) return { success: false, message: result.message };
+      savedFilename = filename;
+    }
+
     await db.insert(book).values(parsed.output);
     updateTag('books');
     updateTag('authors');
     updateTag('genres');
     return { success: true, message: 'Book added successfully.' };
-  } catch (error: any) {
-    console.error('Database error:', error);
-    return { success: false, message: 'Something went wrong. Please try again.' };
+  } catch (error) {
+    // In case of error deleted saved img
+    if (savedFilename) {
+      const deleted = await imageDelete(savedFilename);
+      if (!deleted) console.error('Image cleanup failed:', savedFilename);
+    }
+
+    console.error('Failed to add book:', error);
+    return {
+      success: false,
+      message: 'Something went wrong. Please try again.',
+    };
   }
 }
 
 export async function updateBook(id: number, bookFormData: BookFormInput) {
-  let cover_img = bookFormData.cover_img;
-  if (cover_img instanceof File) {
-    const imageResult = await ImageService(cover_img);
-    if (!imageResult.success) return { success: false, message: imageResult.message };
-    cover_img = imageResult.message; // In case of success, the message here means filename path.
+  const image = bookFormData.cover_img;
+  let cover_img = image;
+  let newFilename: string | null = null;
+
+  /// Generate filename in case of book cover update
+  if (image instanceof File && image.size > 0) {
+    newFilename = imageRenaming(image);
+
+    if (!newFilename) {
+      return { success: false, message: 'Unsupported image type.' };
+    }
+
+    cover_img = newFilename;
   }
 
-  const parsed = safeParse(bookUpdateSchema, { ...bookFormData, cover_img });
+  const parsed = safeParse(bookUpdateSchema, {
+    ...bookFormData,
+    cover_img,
+  });
+
   if (!parsed.success) {
     return { success: false, message: 'Please enter a valid input.' };
   }
 
+  let savedFilename: string | null = null;
+
   try {
+    const [existingBook] = await db
+      .select({ cover_img: book.cover_img })
+      .from(book)
+      .where(eq(book.id, id))
+      .limit(1);
+
+    if (!existingBook) {
+      return { success: false, message: 'Book not found.' };
+    }
+
+    // Saved newest book cover
+    if (image instanceof File && image.size > 0 && newFilename) {
+      const result = await imageSave(image, newFilename);
+
+      if (!result.success) {
+        return { success: false, message: result.message };
+      }
+
+      savedFilename = newFilename;
+    }
+
     await db.update(book).set(parsed.output).where(eq(book.id, id));
+
+    // Automatic deleted old one when db success
+    if (savedFilename && existingBook.cover_img && existingBook.cover_img !== savedFilename) {
+      const deleted = await imageDelete(existingBook.cover_img);
+
+      if (!deleted) {
+        console.error('Failed to delete old cover:', existingBook.cover_img);
+      }
+    }
+
     updateTag('books');
     updateTag('authors');
     updateTag('genres');
     return { success: true, message: 'Book updated successfully.' };
   } catch (error) {
-    console.error('Database error:', error);
+    // In case of error deleted saved img
+    if (savedFilename) {
+      const deleted = await imageDelete(savedFilename);
+      if (!deleted) console.error('Failed to clean up new cover:', savedFilename);
+    }
+    console.error('Failed to update book:', error);
     return { success: false, message: 'Failed to update book.' };
   }
 }
 
 export async function deleteBook(id: number) {
   try {
+    const [existingBook] = await db
+      .select({ cover_img: book.cover_img })
+      .from(book)
+      .where(eq(book.id, id))
+      .limit(1);
+
+    if (!existingBook) {
+      return { success: false, message: 'Book not found.' };
+    }
     await db.delete(book).where(eq(book.id, id));
+
+    // Delete book cover.
+    if (existingBook.cover_img) {
+      const deleted = await imageDelete(existingBook.cover_img);
+
+      if (!deleted) {
+        console.error('Failed to delete cover image:', existingBook.cover_img);
+      }
+    }
+
     updateTag('books');
     updateTag('authors');
     updateTag('genres');
+
     return { success: true, message: 'Book deleted successfully.' };
   } catch (error) {
+    console.error('Failed to delete book:', error);
     return { success: false, message: 'Failed to delete book.' };
   }
 }

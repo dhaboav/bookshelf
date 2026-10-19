@@ -48,14 +48,12 @@ export function BookFormDialog({ initialData, authorOptions, genreOptions, onSub
   const formActionTitle = isEditing ? 'Update' : 'Add';
   const formHtmlId = `${formActionTitle.toLowerCase()}-book-form`;
 
-  const initialDataImage = initialData?.cover_img ? `/img-data/${initialData?.cover_img}` : '';
-
   const form = useForm({
     schema: bookFormSchema,
     initialInput: {
       title: initialData?.title ?? '',
       isbn: initialData?.isbn ?? '',
-      cover_img: initialDataImage ?? '',
+      cover_img: initialData?.cover_img ?? '',
       author_id: initialData?.author_id ?? '',
       genre_id: initialData?.genre_id ?? '',
       total_pages: initialData?.total_pages ?? '',

@@ -73,11 +73,10 @@ export function DataTable({ data, genres, authors, className }: DataTableProps) 
       header: 'Book',
       cell: (info) => {
         const book = info.row.original;
-        const imgPath = book.cover_img ? `/img-data/${book.cover_img}` : '';
         return (
           <div className="flex items-center gap-3">
             <Image
-              src={imgPath || '/cover.jpg'}
+              src={book.cover_img || '/cover.jpg'}
               width={1000}
               height={700}
               alt={book.title || 'Book cover'}

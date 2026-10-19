@@ -4,105 +4,107 @@ import path from 'node:path';
 
 import { IMAGE_CONFIG } from './image-config';
 
-type ValidationResult = { success: boolean; message?: string };
+type ImageResult = { success: true; filename: string } | { success: false; message: string };
 
-// ==========================================
-// Helpers
-async function isValidImage(buffer: Buffer): Promise<boolean> {
-  // JPEG signature
-  if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
-    return true;
+const directory = path.resolve(process.cwd(), IMAGE_CONFIG.UPLOAD_DIR);
+const publicPath = `/${IMAGE_CONFIG.UPLOAD_DIR.replace(/^public\//, '')}`;
+
+const extensions: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/avif': 'avif',
+};
+
+// Helper func
+function hasValidSignature(buffer: Buffer, type: string): boolean {
+  if (type === 'image/jpeg') {
+    return buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
   }
 
-  // PNG signature
-  if (
-    buffer.length >= 8 &&
-    buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))
-  ) {
-    return true;
+  if (type === 'image/png') {
+    return (
+      buffer.length >= 8 &&
+      buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))
+    );
   }
 
-  // AVIF signature: ftyp box with an avif/avis brand
-  if (buffer.length >= 16 && buffer.toString('ascii', 4, 8) === 'ftyp') {
+  if (type === 'image/avif') {
+    if (buffer.length < 16 || buffer.toString('ascii', 4, 8) !== 'ftyp') {
+      return false;
+    }
+
     const boxSize = buffer.readUInt32BE(0);
+    if (boxSize < 16 || boxSize > buffer.length) return false;
 
-    if (boxSize >= 16 && boxSize <= buffer.length) {
-      for (let i = 8; i + 4 <= Math.min(boxSize, 64); i += 4) {
-        const brand = buffer.toString('ascii', i, i + 4);
+    // Major brand + compatible brands; skip the minor version field.
+    for (let i = 8; i + 4 <= Math.min(boxSize, 128); i += 4) {
+      if (i === 12) continue;
 
-        if (brand === 'avif' || brand === 'avis') {
-          return true;
-        }
-      }
+      const brand = buffer.toString('ascii', i, i + 4);
+      if (brand === 'avif' || brand === 'avis') return true;
     }
   }
 
   return false;
 }
 
-// ==========================================
 // Core logic
-async function imageValidator(image: File): Promise<ValidationResult> {
-  if (!IMAGE_CONFIG.ALLOWED_TYPES.has(image.type)) {
-    return {
-      success: false,
-      message: 'Not allowed type (JPEG, PNG, AVIF only)',
-    };
+export async function imageSave(image: File, filename: string): Promise<ImageResult> {
+  const actualFilename = path.basename(filename);
+
+  if (!Object.hasOwn(extensions, image.type)) {
+    return { success: false, message: 'Unsupported image type.' };
   }
 
   if (image.size === 0 || image.size > IMAGE_CONFIG.MAX_FILE_SIZE) {
-    return {
-      success: false,
-      message: 'Size must be greater than 0 and no more than 2 MB',
-    };
+    return { success: false, message: 'Invalid image size.' };
   }
-
-  return { success: true };
-}
-
-async function ImageProcessing(image: File, buffer: Buffer): Promise<ValidationResult> {
-  const isImg = await isValidImage(buffer);
-
-  if (!isImg) {
-    return {
-      success: false,
-      message: 'File is not a supported image',
-    };
-  }
-
-  const extensions: Record<string, string> = {
-    'image/jpeg': 'jpg',
-    'image/png': 'png',
-    'image/avif': 'avif',
-  };
-
-  const extension = extensions[image.type];
-  const filename = `${randomUUID()}.${extension}`;
-  const directory = path.join(process.cwd(), IMAGE_CONFIG.UPLOAD_DIR);
 
   try {
+    const buffer = Buffer.from(await image.arrayBuffer());
+
+    if (
+      buffer.length !== image.size ||
+      buffer.length > IMAGE_CONFIG.MAX_FILE_SIZE ||
+      !hasValidSignature(buffer, image.type)
+    ) {
+      return { success: false, message: 'Invalid image file.' };
+    }
+
     await fs.mkdir(directory, { recursive: true });
-    await fs.writeFile(path.join(directory, filename), buffer, { flag: 'wx' });
-    return { success: true, message: filename };
+    await fs.writeFile(path.join(directory, actualFilename), buffer, {
+      flag: 'wx',
+    });
+
+    return { success: true, filename };
   } catch {
-    return {
-      success: false,
-      message: 'Failed to save image',
-    };
+    return { success: false, message: 'Could not save image.' };
   }
 }
 
-export async function ImageService(image: File): Promise<ValidationResult> {
-  const validation = await imageValidator(image);
-  if (!validation.success) {
-    return validation;
+export function imageRenaming(image: File): string | null {
+  const extension = extensions[image.type];
+
+  if (!extension) return null;
+
+  return `${publicPath}/${randomUUID()}.${extension}`;
+}
+
+export async function imageDelete(filename: string): Promise<boolean> {
+  const actualFilename = path.basename(filename);
+
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(jpg|png|avif)$/.test(
+      actualFilename,
+    )
+  ) {
+    return false;
   }
 
-  const buffer = Buffer.from(await image.arrayBuffer());
-  const result = await ImageProcessing(image, buffer);
-  if (!result.success) {
-    return result;
+  try {
+    await fs.rm(path.join(directory, actualFilename));
+    return true;
+  } catch {
+    return false;
   }
-
-  return result;
 }
