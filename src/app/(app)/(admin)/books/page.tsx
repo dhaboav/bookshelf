@@ -1,4 +1,4 @@
-import { BookFormDialog } from '@/components/books/book-form-dialog';
+import { BookFormDialog } from '@/components/book/book-form-dialog';
 import { PageHeader } from '@/components/page-header';
 import { DataPagination } from '@/components/pagination/data-pagination';
 import { PageLimitPagination } from '@/components/pagination/page-limit-pagination';

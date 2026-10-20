@@ -1,11 +1,11 @@
 'use server';
 
-import { count, eq, ilike } from 'drizzle-orm';
+import { count, eq, ilike, sql } from 'drizzle-orm';
 import { cacheTag, updateTag } from 'next/cache';
 import { safeParse } from 'valibot';
 
 import { db } from '@/db/drizzle';
-import { book } from '@/db/schema';
+import { author, book, genre } from '@/db/schema';
 import { BookFormInput, bookInsertSchema, bookUpdateSchema } from '@/db/validators/book';
 import { imageDelete, imageRenaming, imageSave } from '@/utils/image-service';
 
@@ -52,6 +52,27 @@ export async function getBooks(page: number = 1, limit: number = 12, query?: str
       limit: limit,
     },
   };
+}
+
+export async function getBookById(bookId: number) {
+  const [result] = await db
+    .select({
+      id: book.id,
+      title: book.title,
+      isbn: book.isbn,
+      description: book.description,
+      coverImg: book.cover_img,
+      totalPages: book.total_pages,
+      publishedYear: book.published_year,
+      authorName: author.name,
+      genreName: genre.name,
+    })
+    .from(book)
+    .leftJoin(author, eq(book.author_id, author.id))
+    .leftJoin(genre, eq(book.genre_id, genre.id))
+    .where(eq(book.id, bookId));
+
+  return { data: result ?? null };
 }
 
 export async function addBook(bookFormData: BookFormInput) {

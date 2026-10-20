@@ -24,7 +24,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" suppressHydrationWarning className={cn('font-sans', geist.variable)}>
-      <body>
+      <body className="dark">
         {children}
         <Toaster />
       </body>

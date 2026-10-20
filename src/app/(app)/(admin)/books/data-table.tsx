@@ -15,7 +15,7 @@ import { ArrowUpDownIcon, CheckIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 
-import { BookFormDialog } from '@/components/books/book-form-dialog';
+import { BookFormDialog } from '@/components/book/book-form-dialog';
 import { ItemDeleteDialog } from '@/components/item/item-delete-dialog';
 import { SearchBar } from '@/components/search-bar';
 import { Button } from '@/components/ui/button';

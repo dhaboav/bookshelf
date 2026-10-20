@@ -1,4 +1,4 @@
-import { BookCard } from '@/app/(app)/(user)/book-card';
+import { BookCard } from '@/components/book/book-card';
 import { NoResult } from '@/components/no-result';
 import { DataPagination } from '@/components/pagination/data-pagination';
 import { getBooks } from '@/db/crud/book';
