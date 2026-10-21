@@ -1,2 +1,7 @@
 allowBuilds:
   esbuild: false
+permissions:
+  '@tanstack/react-table':
+    skills: false
+  drizzle-kit:
+    skills: false

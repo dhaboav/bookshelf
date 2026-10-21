@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, BookmarkPlusIcon, HeartIcon } from 'lucide-react';
+import { ArrowLeftIcon, HeartIcon } from 'lucide-react';
 import Link from 'next/link';
 
 import { BookCover } from '@/components/book/book-cover';
@@ -6,6 +6,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { getBookById } from '@/db/crud/book';
 
 import { DescriptionSection } from './description-section';
+import { StatusMenuButton } from './status-menu-button';
 
 export default async function BookDetailPage({ params }: { params: Promise<{ bookId: number }> }) {
   const { bookId } = await params;
@@ -29,10 +30,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ boo
         <div className="contents md:flex md:flex-col md:gap-6">
           <BookCover image={data.coverImg} className="order-1 md:order-0 mx-auto w-60 md:mx-0 md:w-full" />
           <div className="grid grid-cols-[minmax(0,1fr)_48px] gap-2 order-3 mx-auto w-full max-w-2xs md:order-0">
-            <Button>
-              <BookmarkPlusIcon />
-              Add to Library
-            </Button>
+            <StatusMenuButton totalPages={data.totalPages} />
             <Button variant="outline" size="icon" className="w-12" aria-label="Add to Favorites">
               <HeartIcon />
             </Button>
