@@ -3,34 +3,29 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { type Book } from '@/db/validators/book';
 
 export function BookCard({ book }: { book: Book }) {
   return (
-    <Link href={`detail/${book.id}`}>
-      <Card className="grid group overflow-hidden border transition-colors duration-200 hover:border-foreground/30">
-        <Image
-          src={book.cover_img || '/cover.jpg'}
-          width={1000}
-          height={700}
-          alt={book.title || 'Book cover'}
-          className="col-start-1 row-start-1 h-full w-full object-cover"
-        />
+    <div className="rounded-md overflow-hidden  flex flex-col h-full hover:border-indigo-500/50 transition-all group">
+      <Link href={`detail/${book.id}`} className="block">
+        <div className="relative aspect-3/4 w-full bg-gray-800 overflow-hidden">
+          <img
+            src={book.cover_img || 'https://via.placeholder.com/300x450?text=No+Cover'}
+            alt={book.title}
+            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+          <span className="absolute top-2 left-2 bg-black/70 backdrop-blur-md text-[9px] font-semibold px-1.5 py-0.5 rounded text-indigo-300 border border-indigo-500/30">
+            {book.genre?.name}
+          </span>
+        </div>
+      </Link>
 
-        <Badge
-          variant="secondary"
-          className="uppercase text-tiny col-start-1 row-start-1 m-3 justify-self-start self-start"
-        >
-          {book.genre?.name ?? 'UNKNOWN'}
-        </Badge>
-
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold">{book.title}</CardTitle>
-          <span>{book.author?.name}</span>
-        </CardHeader>
-      </Card>
-    </Link>
+      <h2 className="py-3 px-2 font-semibold text-xs text-gray-100 line-clamp-2 group-hover:text-primary transition-colors">
+        {book.title}
+      </h2>
+    </div>
   );
 }

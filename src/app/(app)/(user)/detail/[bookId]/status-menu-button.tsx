@@ -126,10 +126,14 @@ export function StatusMenuButton({ totalPages = 1 }: { totalPages: number }) {
 
   return (
     <Sheet>
-      <SheetTrigger render={<Button />}>
-        <PlusIcon />
-        Add to Library
-      </SheetTrigger>
+      <SheetTrigger
+        render={
+          <Button>
+            <PlusIcon />
+            Add to Library
+          </Button>
+        }
+      ></SheetTrigger>
 
       <SheetContent
         side={isMobile ? 'bottom' : 'right'}

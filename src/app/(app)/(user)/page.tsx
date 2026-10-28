@@ -1,7 +1,12 @@
-import { BookCard } from '@/components/book/book-card';
+import { ChevronRightIcon } from 'lucide-react';
+import Link from 'next/link';
+
 import { NoResult } from '@/components/no-result';
-import { DataPagination } from '@/components/pagination/data-pagination';
+import { buttonVariants } from '@/components/ui/button';
 import { getBooks } from '@/db/crud/book';
+
+import { LatestUpdateSection } from './latest-update-section';
+import { MyBookSection } from './my-book-section';
 
 interface Props {
   searchParams: Promise<{
@@ -27,14 +32,26 @@ export default async function Homepage({ searchParams }: Props) {
   }
 
   return (
-    <div className="py-12 ">
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 pb-6">
-        {data.map((book) => (
-          <BookCard key={book.id} book={book} />
-        ))}
+    <div className="py-6 ">
+      <div>
+        <SectionHeaderRender label="My Books" href="" />
+        <MyBookSection />
       </div>
+      <div className="mt-4">
+        <SectionHeaderRender label="Recently Added" href="" />
+        <LatestUpdateSection />
+      </div>
+    </div>
+  );
+}
 
-      <DataPagination currentPage={metadata.currentPage} pageCount={metadata.totalPage} />
+function SectionHeaderRender({ label, href }: { label: string; href: string }) {
+  return (
+    <div className="flex items-center justify-between mb-3">
+      <p>{label}</p>
+      <Link href={href} className={buttonVariants({ variant: 'secondary', size: 'icon-sm' })}>
+        <ChevronRightIcon />
+      </Link>
     </div>
   );
 }

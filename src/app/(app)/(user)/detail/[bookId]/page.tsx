@@ -29,10 +29,16 @@ export default async function BookDetailPage({ params }: { params: Promise<{ boo
         {/* cover + actions */}
         <div className="contents md:flex md:flex-col md:gap-6">
           <BookCover image={data.coverImg} className="order-1 md:order-0 mx-auto w-60 md:mx-0 md:w-full" />
-          <div className="grid grid-cols-[minmax(0,1fr)_48px] gap-2 order-3 mx-auto w-full max-w-2xs md:order-0">
+          <div className="grid grid-cols-[minmax(0,1fr)_48px] gap-2 order-3 mx-auto w-full max-w-2xs md:order-0 md:grid-cols-1">
             <StatusMenuButton totalPages={data.totalPages} />
-            <Button variant="outline" size="icon" className="w-12" aria-label="Add to Favorites">
+            <Button
+              variant="outline"
+              size="icon"
+              className="w-12 md:w-full gap-2"
+              aria-label="Add to Favorites"
+            >
               <HeartIcon />
+              <p className="hidden md:block">Favorite</p>
             </Button>
           </div>
         </div>
@@ -46,7 +52,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ boo
 
           <div className="order-4 min-w-0 md:order-0">
             {data.description && (
-              <section className="mt-6">
+              <section>
                 <h2 className="text-xl font-semibold md:text-2xl">Description</h2>
                 <DescriptionSection description={data.description} className="mt-3" />
               </section>
