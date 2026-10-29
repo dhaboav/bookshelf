@@ -1,21 +1,10 @@
 'use client';
 
-import {
-  type SortingState,
-  createColumnHelper,
-  createSortedRowModel,
-  rowSortingFeature,
-  sortFn_alphanumeric,
-  sortFn_text,
-  tableFeatures,
-  useTable,
-} from '@tanstack/react-table';
+import { type ColumnDef, type RowData, type SortingState, useTable } from '@tanstack/react-table';
 import { cn } from 'cn';
 import { ArrowUpDownIcon, CheckIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { ItemDeleteDialog } from '@/components/item/item-delete-dialog';
-import { ItemFormDialog } from '@/components/item/item-form-dialog';
 import { SearchBar } from '@/components/search-bar';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,44 +14,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { deleteAuthor, updateAuthor } from '@/db/crud/author';
-import { AuthorWithBook } from '@/db/validators/author';
 
-const features = tableFeatures({
-  rowSortingFeature,
-  sortedRowModel: createSortedRowModel(),
-  sortFns: { alphanumeric: sortFn_alphanumeric, text: sortFn_text },
-});
-const columnHelper = createColumnHelper<typeof features, AuthorWithBook>();
-
-const columns = columnHelper.columns([
-  columnHelper.accessor('id', {
-    header: 'ID',
-  }),
-  columnHelper.accessor('name', {
-    header: "Author's Name",
-  }),
-  columnHelper.accessor('totalBooks', {
-    header: 'Total Books',
-  }),
-  columnHelper.display({
-    id: 'actions',
-    header: 'Actions',
-    cell: ({ row }) => {
-      const authorID = row.original.id;
-      return (
-        <>
-          <ItemFormDialog
-            initialData={{ name: row.original.name }}
-            entityType="author"
-            onSubmitAction={(values) => updateAuthor(authorID, values)}
-          />
-          <ItemDeleteDialog entityType="Author" onDeleteAction={() => deleteAuthor(authorID)} />
-        </>
-      );
-    },
-  }),
-]);
+import { type DataTableFeatures, features } from './data-table-features';
 
 const SortOptions = [
   { label: 'Name A-Z', columnId: 'name', isDesc: false },
@@ -71,7 +24,12 @@ const SortOptions = [
   { label: 'Fewest Books', columnId: 'totalBooks', isDesc: false },
 ] as const;
 
-export function DataTable({ data, className }: { data: AuthorWithBook[]; className?: string }) {
+interface DataTableProps<TData extends RowData> {
+  columns: ColumnDef<DataTableFeatures, TData>[];
+  data: TData[];
+}
+
+export function DataTable<TData extends RowData>({ columns, data }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'name', desc: false }]);
   const table = useTable({
     features,
@@ -82,9 +40,8 @@ export function DataTable({ data, className }: { data: AuthorWithBook[]; classNa
   });
 
   return (
-    <div className={cn('bg-background p-4 rounded-lg flex flex-col h-full overflow-hidden', className)}>
+    <div className={cn('bg-background p-4 rounded-lg flex flex-col h-full overflow-hidden')}>
       <div className="flex items-center justify-between pb-3 flex-wrap gap-2">
-        <SearchBar />
         <DropdownMenu>
           <DropdownMenuTrigger
             render={

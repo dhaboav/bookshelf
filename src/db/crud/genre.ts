@@ -49,7 +49,15 @@ export async function getAllGenres() {
   'use cache';
   cacheTag('genres');
 
-  return await db.select().from(genre);
+  return await db
+    .select({
+      id: genre.id,
+      name: genre.name,
+      totalBooks: count(book.id),
+    })
+    .from(genre)
+    .leftJoin(book, eq(book.genre_id, genre.id))
+    .groupBy(genre.id);
 }
 
 export async function addGenre(data: InferInput<typeof genreInsertSchema>) {
