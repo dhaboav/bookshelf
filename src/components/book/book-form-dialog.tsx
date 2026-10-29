@@ -23,26 +23,26 @@ import { toast } from '@/components/ui/toast';
 import { BookFormInput, BookFormOutput, bookFormSchema } from '@/db/validators/book';
 
 import { BookCover } from './book-cover';
+import { getBookFormOptions } from './book-form-action';
 
-// ==========================================
-// SCHEMAS & TYPES
 const CURRENT_YEAR = new Date().getFullYear();
 
 interface OptionItem {
-  value: any;
+  value: number;
   label: string;
 }
 
 interface BookFormProps {
   initialData?: BookFormInput;
-  authorOptions: OptionItem[];
-  genreOptions: OptionItem[];
   onSubmitAction: (values: BookFormOutput) => Promise<{ success?: boolean; message?: string }>;
 }
-// ==========================================
 
-export function BookFormDialog({ initialData, authorOptions, genreOptions, onSubmitAction }: BookFormProps) {
+export function BookFormDialog({ initialData, onSubmitAction }: BookFormProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [authorOptions, setAuthorOptions] = useState<OptionItem[]>([]);
+  const [genreOptions, setGenreOptions] = useState<OptionItem[]>([]);
+  const [isLoadingOptions, setIsLoadingOptions] = useState(false);
+  const [optionsLoaded, setOptionsLoaded] = useState(false);
 
   const isEditing = Boolean(initialData);
   const formActionTitle = isEditing ? 'Update' : 'Add';
@@ -62,6 +62,31 @@ export function BookFormDialog({ initialData, authorOptions, genreOptions, onSub
     },
   });
 
+  async function handleOpenChange(open: boolean) {
+    setIsOpen(open);
+
+    if (!open || optionsLoaded || isLoadingOptions) return;
+
+    setIsLoadingOptions(true);
+
+    try {
+      const options = await getBookFormOptions();
+
+      setAuthorOptions(options.authorOptions);
+      setGenreOptions(options.genreOptions);
+      setOptionsLoaded(true);
+    } catch (error) {
+      console.error(error);
+
+      toast.add({
+        type: 'error',
+        description: 'Failed to load authors and genres.',
+      });
+    } finally {
+      setIsLoadingOptions(false);
+    }
+  }
+
   const handleFormSubmit: SubmitHandler<typeof bookFormSchema> = async (values) => {
     try {
       const response = await onSubmitAction(values);
@@ -71,10 +96,13 @@ export function BookFormDialog({ initialData, authorOptions, genreOptions, onSub
         description: response.message || (response.success ? 'Success saving book.' : 'Failed saving book.'),
       });
 
-      setIsOpen(false);
-      reset(form);
+      if (response.success) {
+        setIsOpen(false);
+        reset(form);
+      }
     } catch (error) {
       console.error(error);
+
       toast.add({
         type: 'error',
         description: 'An unexpected system error occurred.',
@@ -83,12 +111,12 @@ export function BookFormDialog({ initialData, authorOptions, genreOptions, onSub
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <Button variant={isEditing ? 'ghost' : 'default'} size={isEditing ? 'icon' : 'default'}>
             {isEditing ? <PencilIcon /> : <BookPlusIcon />}
-            {!isEditing && <span>{formActionTitle} Book</span>}
+            {!isEditing && <span className="hidden lg:flex">{formActionTitle} Book</span>}
           </Button>
         }
       />
@@ -101,66 +129,85 @@ export function BookFormDialog({ initialData, authorOptions, genreOptions, onSub
           </DialogDescription>
         </DialogHeader>
 
-        <Form id={formHtmlId} of={form} onSubmit={handleFormSubmit} className="space-y-2 my-4">
-          <div className="grid lg:grid-cols-4 gap-4">
-            <FormischField of={form} path={['cover_img']}>
-              {(field) => (
-                <Field data-invalid={field.errors !== null}>
-                  <BookCover image={field.input} />
-                  <div className="space-y-2">
-                    <FieldLabel htmlFor="cover_img">Book Cover</FieldLabel>
-                    <Input
-                      id="cover_img"
-                      type="file"
-                      accept="image/*"
-                      aria-invalid={field.errors !== null}
-                      onChange={(e) => {
-                        const file = e.currentTarget.files?.[0] ?? null;
-                        field.onChange(file);
-                      }}
-                    />
-                    {field.errors && <FieldError errors={field.errors.map((message) => ({ message }))} />}
-                  </div>
-                </Field>
-              )}
-            </FormischField>
-
-            <div className="lg:col-span-3 grid gap-4">
-              <InputField of={form} path="title" label="Title" placeholder="Book Title" />
-
-              <div className="grid gap-4 lg:grid-cols-2">
-                <ComboboxField
-                  of={form}
-                  path="author_id"
-                  label="Author"
-                  items={authorOptions}
-                  placeholder="Select an author"
-                />
-                <ComboboxField
-                  of={form}
-                  path="genre_id"
-                  label="Genre"
-                  items={genreOptions}
-                  placeholder="Select a genre"
-                />
-              </div>
-
-              <div className="grid gap-4 lg:grid-cols-3">
-                <InputField of={form} path="isbn" label="ISBN" placeholder="978..." />
-                <InputField of={form} path="published_year" label="Published" type="number" />
-                <InputField of={form} path="total_pages" label="Pages" placeholder="365" type="number" />
-              </div>
-
-              <TextareaField
-                of={form}
-                path="description"
-                label="Description"
-                placeholder="What's it about?"
-                className="min-h-30 resize-none"
-              />
-            </div>
+        {isLoadingOptions ? (
+          <div className="flex items-center justify-center gap-2 py-10">
+            <Spinner />
+            <span className="text-sm text-muted-foreground">Loading authors and genres...</span>
           </div>
-        </Form>
+        ) : (
+          <Form id={formHtmlId} of={form} onSubmit={handleFormSubmit} className="my-4 space-y-2">
+            <div className="grid gap-4 lg:grid-cols-4">
+              <FormischField of={form} path={['cover_img']}>
+                {(field) => (
+                  <Field data-invalid={field.errors !== null}>
+                    <BookCover image={field.input} />
+
+                    <div className="space-y-2">
+                      <FieldLabel htmlFor="cover_img">Book Cover</FieldLabel>
+
+                      <Input
+                        id="cover_img"
+                        type="file"
+                        accept="image/*"
+                        aria-invalid={field.errors !== null}
+                        onChange={(event) => {
+                          const file = event.currentTarget.files?.[0] ?? null;
+                          field.onChange(file);
+                        }}
+                      />
+
+                      {field.errors && (
+                        <FieldError
+                          errors={field.errors.map((message) => ({
+                            message,
+                          }))}
+                        />
+                      )}
+                    </div>
+                  </Field>
+                )}
+              </FormischField>
+
+              <div className="grid gap-4 lg:col-span-3">
+                <InputField of={form} path="title" label="Title" placeholder="Book Title" />
+
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <ComboboxField
+                    of={form}
+                    path="author_id"
+                    label="Author"
+                    items={authorOptions}
+                    placeholder="Select an author"
+                  />
+
+                  <ComboboxField
+                    of={form}
+                    path="genre_id"
+                    label="Genre"
+                    items={genreOptions}
+                    placeholder="Select a genre"
+                  />
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-3">
+                  <InputField of={form} path="isbn" label="ISBN" placeholder="978..." />
+
+                  <InputField of={form} path="published_year" label="Published" type="number" />
+
+                  <InputField of={form} path="total_pages" label="Pages" placeholder="365" type="number" />
+                </div>
+
+                <TextareaField
+                  of={form}
+                  path="description"
+                  label="Description"
+                  placeholder="What's it about?"
+                  className="min-h-30 resize-none"
+                />
+              </div>
+            </div>
+          </Form>
+        )}
 
         <DialogFooter>
           <DialogClose
@@ -169,7 +216,7 @@ export function BookFormDialog({ initialData, authorOptions, genreOptions, onSub
                 disabled={form.isSubmitting}
                 variant="outline"
                 onClick={() => reset(form)}
-                className="text-foreground/60 hover:text-foreground h-11 cursor-pointer rounded-xl border border-white/10 px-6 text-sm font-medium transition-colors hover:bg-white/5"
+                className="text-foreground/60 hover:text-foreground cursor-pointer rounded-md border border-white/10 px-6 text-sm font-medium transition-colors hover:bg-white/5"
               >
                 Cancel
               </Button>
@@ -179,8 +226,8 @@ export function BookFormDialog({ initialData, authorOptions, genreOptions, onSub
           <Button
             type="submit"
             form={formHtmlId}
-            disabled={form.isSubmitting}
-            className="h-11 cursor-pointer rounded-xl border px-6 text-sm font-medium transition-colors"
+            disabled={form.isSubmitting || isLoadingOptions}
+            className="cursor-pointer rounded-md border px-6 text-sm font-medium transition-colors"
           >
             {form.isSubmitting && <Spinner data-icon="inline-start" />}
             {formActionTitle} Book

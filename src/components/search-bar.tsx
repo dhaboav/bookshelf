@@ -14,7 +14,7 @@ const SearchSchema = v.object({
   search: v.pipe(v.string(), v.minLength(3, 'Please enter minimum 3 characters')),
 });
 
-function SearchBar() {
+function SearchBar({ className }: { className?: string }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -42,11 +42,11 @@ function SearchBar() {
   };
 
   return (
-    <Form of={form} id="search-form" onSubmit={handleSubmit}>
+    <Form of={form} id="search-form" onSubmit={handleSubmit} className={className}>
       <FormischField of={form} path={['search']}>
         {(field) => (
           <Field data-invalid={field.errors !== null}>
-            <InputGroup className="bg-white! text-black px-2 max-w-3xs">
+            <InputGroup className="px-2">
               <InputGroupInput
                 {...field.props}
                 placeholder="Search (min. 3 chars)"
@@ -66,7 +66,7 @@ function SearchBar() {
                 <XIcon />
               </InputGroupButton>
 
-              <InputGroupButton variant="secondary" aria-label="Search" type="submit" form="search-form">
+              <InputGroupButton variant="ghost" aria-label="Search" type="submit" form="search-form">
                 <SearchIcon />
               </InputGroupButton>
             </InputGroup>
@@ -77,7 +77,7 @@ function SearchBar() {
   );
 }
 
-function MobileSearchBar() {
+function MobileSearchBar({ className }: { className?: string }) {
   return (
     <Popover>
       <PopoverTrigger
@@ -86,6 +86,7 @@ function MobileSearchBar() {
             <SearchIcon />
           </Button>
         }
+        className={className}
       />
       <PopoverContent sideOffset={10}>
         <SearchBar />

@@ -23,7 +23,7 @@ export function SidebarBrand() {
         />
         <PanelRightClose className="size-5 col-start-1 row-start-1 opacity-0 group-hover/side-button:opacity-100" />
       </span>
-      <span className="group-data-[state=collapsed]:hidden">Athenaeum</span>
+      <span className="group-data-[state=collapsed]:hidden">ReadQuest</span>
     </>
   );
 

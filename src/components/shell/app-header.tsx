@@ -1,29 +1,27 @@
-'use client';
+import { Suspense } from 'react';
 
-import { MenuIcon } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { addBook } from '@/db/crud/book';
 
-import { Button } from '@/components/ui/button';
-import { useSidebar } from '@/components/ui/sidebar';
-
+import { BookFormDialog } from '../book/book-form-dialog';
+import { MobileSearchBar, SearchBar } from '../search-bar';
+import { MobileMenuButton } from './_components/mobile-menu-button';
 import { ThemeToggle } from './_components/theme-toggle';
-import { NAV_ITEMS } from './nav';
 
 export function AppHeader() {
-  const { toggleSidebar } = useSidebar();
-  const pathname = usePathname();
-  const current = NAV_ITEMS.find((item) => pathname.startsWith(item.href));
-
   return (
     <header className="h-(--header-height) flex px-4 lg:px-6 items-center">
-      <Button onClick={toggleSidebar} variant="ghost" size="icon" className="md:hidden">
-        <MenuIcon />
-      </Button>
-      <div className="flex min-w-0 flex-1 items-center gap-2">
-        <span className="text-sm text-muted-foreground max-sm:hidden">Athenaeum /</span>
-        <h1 className="truncate text-sm font-medium">{current?.label ?? 'Athenaeum'}</h1>
+      <MobileMenuButton />
+      <div className="flex items-center justify-between w-full">
+        <p>ReadQuest</p>
+        <Suspense>
+          <SearchBar className="hidden md:flex" />
+        </Suspense>
+        <div className="flex min-w-0 items-center gap-1 lg:gap-3">
+          <MobileSearchBar className="flex md:hidden" />
+          <ThemeToggle />
+          <BookFormDialog onSubmitAction={addBook} />
+        </div>
       </div>
-      <ThemeToggle />
     </header>
   );
 }

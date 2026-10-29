@@ -9,7 +9,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <AppSidebar />
       <SidebarInset>
         <AppHeader />
-        <div className="px-4 lg:px-48 bg-content md:rounded-tl-4xl min-h-[calc(100svh-var(--header-height)-1rem)]">
+        <div className="px-4 lg:px-48 bg-content min-h-[calc(100svh-var(--header-height)-1rem)]">
           {children}
         </div>
       </SidebarInset>
