@@ -1,4 +1,4 @@
-import { BookCard } from '@/components/book/book-card';
+import { BookCard } from '@/components/library/book/book-card';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { getBooks } from '@/db/crud/book';
 

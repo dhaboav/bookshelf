@@ -24,7 +24,7 @@ import { toast } from '@/components/ui/toast';
 // SCHEMAS & TYPES
 // ==========================================
 
-const ItemFormSchema = v.object({
+const MetadataFormSchema = v.object({
   name: v.pipe(
     v.string(),
     v.minLength(4, 'Title must be at least 4 characters.'),
@@ -32,20 +32,20 @@ const ItemFormSchema = v.object({
   ),
 });
 
-type ItemFormInput = v.InferInput<typeof ItemFormSchema>;
-type ItemFormOutput = v.InferOutput<typeof ItemFormSchema>;
+type MetadataFormInput = v.InferInput<typeof MetadataFormSchema>;
+type MetadataFormOutput = v.InferOutput<typeof MetadataFormSchema>;
 
-interface ItemFormDialogProps {
+interface MetadataFormDialogProps {
   entityType: 'author' | 'genre';
-  initialData?: ItemFormInput;
-  onSubmitAction: (values: ItemFormOutput) => Promise<{ success?: boolean; message?: string }>;
+  initialData?: MetadataFormInput;
+  onSubmitAction: (values: MetadataFormOutput) => Promise<{ success?: boolean; message?: string }>;
 }
 
 // ==========================================
 // COMPONENT
 // ==========================================
 
-export function ItemFormDialog({ entityType, initialData, onSubmitAction }: ItemFormDialogProps) {
+export function MetadataFormDialog({ entityType, initialData, onSubmitAction }: MetadataFormDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const isEditing = Boolean(initialData);
@@ -54,11 +54,11 @@ export function ItemFormDialog({ entityType, initialData, onSubmitAction }: Item
   const createIcon = entityType === 'author' ? <UserPlusIcon /> : <TagPlusIcon />;
 
   const form = useForm({
-    schema: ItemFormSchema,
+    schema: MetadataFormSchema,
     initialInput: { name: initialData?.name ?? '' },
   });
 
-  const handleFormSubmit: SubmitHandler<typeof ItemFormSchema> = async (values) => {
+  const handleFormSubmit: SubmitHandler<typeof MetadataFormSchema> = async (values) => {
     try {
       const response = await onSubmitAction(values);
       toast.add({

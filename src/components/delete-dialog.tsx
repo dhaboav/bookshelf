@@ -18,12 +18,12 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from '@/components/ui/toast';
 
-interface ItemDeleteDialogProps {
+interface DeleteDialogProps {
   entityType: string;
   onDeleteAction: () => Promise<{ success?: boolean; message?: string }>;
 }
 
-export function ItemDeleteDialog({ entityType, onDeleteAction }: ItemDeleteDialogProps) {
+export function DeleteDialog({ entityType, onDeleteAction }: DeleteDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [_, formAction, isPending] = useActionState(async () => {
     try {

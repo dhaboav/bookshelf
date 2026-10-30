@@ -1,21 +1,15 @@
 import { createColumnHelper } from '@tanstack/react-table';
 
-import { ItemDeleteDialog } from '@/components/item/item-delete-dialog';
-import { ItemFormDialog } from '@/components/item/item-form-dialog';
+import { DeleteDialog } from '@/components/delete-dialog';
+import { MetadataFormDialog } from '@/components/library/metadata/metadata-form-dialog';
+import type { EntityType, MetadataItemTotalBook } from '@/components/library/metadata/types';
+import { DataTableFeatures } from '@/components/library/table-features';
 import { deleteAuthor, updateAuthor } from '@/db/crud/author';
 import { deleteGenre, updateGenre } from '@/db/crud/genre';
 
-import { DataTableFeatures } from './data-table-features';
+const columnHelper = createColumnHelper<DataTableFeatures, MetadataItemTotalBook>();
 
-export type ManageItem = {
-  id: number;
-  name: string;
-  totalBooks: number;
-};
-
-const columnHelper = createColumnHelper<DataTableFeatures, ManageItem>();
-
-export function createColumns({ entityType }: { entityType: 'author' | 'genre' }) {
+export function createColumns({ entityType }: { entityType: EntityType }) {
   const updateAction = entityType === 'author' ? updateAuthor : updateGenre;
   const deleteAction = entityType === 'author' ? deleteAuthor : deleteGenre;
   return columnHelper.columns([
@@ -35,13 +29,13 @@ export function createColumns({ entityType }: { entityType: 'author' | 'genre' }
         const { id, name } = row.original;
         return (
           <div className="flex items-center gap-2">
-            <ItemFormDialog
+            <MetadataFormDialog
               initialData={{ name }}
               entityType={entityType}
               onSubmitAction={(values) => updateAction(id, values)}
             />
 
-            <ItemDeleteDialog entityType={entityType} onDeleteAction={() => deleteAction(id)} />
+            <DeleteDialog entityType={entityType} onDeleteAction={() => deleteAction(id)} />
           </div>
         );
       },

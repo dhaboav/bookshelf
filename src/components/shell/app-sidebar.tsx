@@ -4,8 +4,7 @@ import { MenuGroup } from './_components/menu-group-item';
 import { SidebarBrand } from './_components/sidebar-brand';
 import { NAV_ITEMS } from './nav';
 
-const userItems = NAV_ITEMS.filter((item) => item.role === 'user');
-const adminItems = NAV_ITEMS.filter((item) => item.role === 'admin');
+const items = NAV_ITEMS.filter((item) => item.role === 'workspace');
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -14,8 +13,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarBrand />
       </SidebarHeader>
       <SidebarContent>
-        <MenuGroup title="Menu" items={userItems} />
-        <MenuGroup title="Admin" items={adminItems} />
+        <MenuGroup title="Workspace" items={items} />
       </SidebarContent>
 
       <SidebarFooter className="text-muted-foreground flex w-full flex-col gap-y-2 px-6 py-4 text-center text-xs group-data-[collapsible=icon]:hidden">

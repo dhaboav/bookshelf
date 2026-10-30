@@ -4,6 +4,8 @@ import { Form, Field as FormischField, SubmitHandler, reset, useForm } from '@fo
 import { BookPlusIcon, PencilIcon } from 'lucide-react';
 import { useState } from 'react';
 
+import { BookCover } from '@/components/library/book/book-cover';
+import { getBookFormOptions } from '@/components/library/book/book-form-action';
 import { ComboboxField, InputField, TextareaField } from '@/components/shared-form-fields';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,9 +23,6 @@ import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from '@/components/ui/toast';
 import { BookFormInput, BookFormOutput, bookFormSchema } from '@/db/validators/book';
-
-import { BookCover } from './book-cover';
-import { getBookFormOptions } from './book-form-action';
 
 const CURRENT_YEAR = new Date().getFullYear();
 

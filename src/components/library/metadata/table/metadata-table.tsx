@@ -1,11 +1,13 @@
 'use client';
 
-import { type ColumnDef, type RowData, type SortingState, useTable } from '@tanstack/react-table';
+import { type SortingState, useTable } from '@tanstack/react-table';
 import { cn } from 'cn';
 import { ArrowUpDownIcon, CheckIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { SearchBar } from '@/components/search-bar';
+import { createColumns } from '@/components/library/metadata/table/metadata-columns';
+import type { EntityType, MetadataItemTotalBook } from '@/components/library/metadata/types';
+import { features } from '@/components/library/table-features';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -15,8 +17,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-import { type DataTableFeatures, features } from './data-table-features';
-
 const SortOptions = [
   { label: 'Name A-Z', columnId: 'name', isDesc: false },
   { label: 'Name Z-A', columnId: 'name', isDesc: true },
@@ -24,13 +24,14 @@ const SortOptions = [
   { label: 'Fewest Books', columnId: 'totalBooks', isDesc: false },
 ] as const;
 
-interface DataTableProps<TData extends RowData> {
-  columns: ColumnDef<DataTableFeatures, TData>[];
-  data: TData[];
+interface MetadataTableProps {
+  entityType: EntityType;
+  data: MetadataItemTotalBook[];
 }
 
-export function DataTable<TData extends RowData>({ columns, data }: DataTableProps<TData>) {
+export function MetadataTable({ entityType, data }: MetadataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'name', desc: false }]);
+  const columns = createColumns({ entityType: entityType });
   const table = useTable({
     features,
     columns,

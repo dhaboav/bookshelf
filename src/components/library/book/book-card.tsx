@@ -1,9 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { type Book } from '@/db/validators/book';
 
 export function BookCard({ book }: { book: Book }) {

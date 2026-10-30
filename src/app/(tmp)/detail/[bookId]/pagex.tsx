@@ -1,7 +1,7 @@
 import { ArrowLeftIcon, HeartIcon } from 'lucide-react';
 import Link from 'next/link';
 
-import { BookCover } from '@/components/book/book-cover';
+import { BookCover } from '@/components/library/book/book-cover';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { getBookById } from '@/db/crud/book';
 

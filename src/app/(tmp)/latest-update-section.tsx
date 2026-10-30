@@ -1,4 +1,4 @@
-import { BookCard } from '@/components/book/book-card';
+import { BookCard } from '@/components/library/book/book-card';
 import { getBooks } from '@/db/crud/book';
 
 export async function LatestUpdateSection() {

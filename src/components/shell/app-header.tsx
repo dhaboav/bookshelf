@@ -1,8 +1,5 @@
 import { Suspense } from 'react';
 
-import { addBook } from '@/db/crud/book';
-
-import { BookFormDialog } from '../book/book-form-dialog';
 import { MobileSearchBar, SearchBar } from '../search-bar';
 import { MobileMenuButton } from './_components/mobile-menu-button';
 import { ThemeToggle } from './_components/theme-toggle';
@@ -19,7 +16,6 @@ export function AppHeader() {
         <div className="flex min-w-0 items-center gap-1 lg:gap-3">
           <MobileSearchBar className="flex md:hidden" />
           <ThemeToggle />
-          <BookFormDialog onSubmitAction={addBook} />
         </div>
       </div>
     </header>
