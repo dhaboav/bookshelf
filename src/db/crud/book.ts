@@ -1,57 +1,24 @@
 'use server';
 
-import { count, eq, ilike, sql } from 'drizzle-orm';
-import { cacheTag, updateTag } from 'next/cache';
+import { eq } from 'drizzle-orm';
 import { safeParse } from 'valibot';
 
 import { db } from '@/db/drizzle';
 import { author, book, genre } from '@/db/schema';
-import { BookFormInput, bookInsertSchema, bookUpdateSchema } from '@/db/validators/book';
+import { Book, BookFormInput, bookInsertSchema, bookUpdateSchema } from '@/db/validators/book';
 import { imageDelete, imageRenaming, imageSave } from '@/utils/image-service';
 
-export async function getBooks(page: number = 1, limit: number = 12, query?: string) {
-  'use cache';
-  cacheTag('books');
+export async function getBooks(): Promise<Book[]> {
+  const result = await db
+    .select()
+    .from(book)
+    .leftJoin(genre, eq(book.genre_id, genre.id))
+    .leftJoin(author, eq(book.author_id, author.id));
 
-  const offset = (page - 1) * limit;
-  const trimmedQuery = query?.trim();
-  const hasQuery = Boolean(trimmedQuery && trimmedQuery.length > 0);
-
-  const [items, totalResult] = await Promise.all([
-    db.query.book.findMany({
-      offset: offset,
-      limit: limit,
-      ...(hasQuery && {
-        where: {
-          title: {
-            ilike: `%${trimmedQuery}%`,
-          },
-        },
-      }),
-      orderBy: { created_at: 'desc' },
-      with: {
-        author: true,
-        genre: true,
-      },
-    }),
-
-    db
-      .select({ count: count(book.id) })
-      .from(book)
-      .where(hasQuery ? ilike(book.title, `%${trimmedQuery}%`) : undefined),
-  ]);
-
-  const totalItems = totalResult[0]?.count || 0;
-  const totalPages = Math.max(1, Math.ceil(totalItems / limit));
-
-  return {
-    data: items,
-    metadata: {
-      currentPage: page,
-      totalPage: totalPages,
-      limit: limit,
-    },
-  };
+  return result.map(({ book: { author_id, genre_id, ...book }, ...relations }) => ({
+    ...book,
+    ...relations,
+  }));
 }
 
 export async function getBookById(bookId: number) {
@@ -102,9 +69,6 @@ export async function addBook(bookFormData: BookFormInput) {
     }
 
     await db.insert(book).values(parsed.output);
-    updateTag('books');
-    updateTag('authors');
-    updateTag('genres');
     return { success: true, message: 'Book added successfully.' };
   } catch (error) {
     // In case of error deleted saved img
@@ -133,7 +97,6 @@ export async function updateBook(id: number, bookFormData: BookFormInput) {
     if (!newFilename) {
       return { success: false, message: 'Unsupported image type.' };
     }
-
     cover_img = newFilename;
   }
 
@@ -166,7 +129,6 @@ export async function updateBook(id: number, bookFormData: BookFormInput) {
       if (!result.success) {
         return { success: false, message: result.message };
       }
-
       savedFilename = newFilename;
     }
 
@@ -181,9 +143,6 @@ export async function updateBook(id: number, bookFormData: BookFormInput) {
       }
     }
 
-    updateTag('books');
-    updateTag('authors');
-    updateTag('genres');
     return { success: true, message: 'Book updated successfully.' };
   } catch (error) {
     // In case of error deleted saved img
@@ -217,11 +176,6 @@ export async function deleteBook(id: number) {
         console.error('Failed to delete cover image:', existingBook.cover_img);
       }
     }
-
-    updateTag('books');
-    updateTag('authors');
-    updateTag('genres');
-
     return { success: true, message: 'Book deleted successfully.' };
   } catch (error) {
     console.error('Failed to delete book:', error);

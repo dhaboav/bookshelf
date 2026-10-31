@@ -1,6 +1,7 @@
 'use client';
 
 import { Form, Field as FormischField, SubmitHandler, reset, useForm } from '@formisch/react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { BookPlusIcon, PencilIcon } from 'lucide-react';
 import { useState } from 'react';
 
@@ -86,9 +87,20 @@ export function BookFormDialog({ initialData, onSubmitAction }: BookFormProps) {
     }
   }
 
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: onSubmitAction,
+    onSuccess: (response) => {
+      if (response.success) {
+        queryClient.invalidateQueries({ queryKey: ['books'] });
+      }
+    },
+  });
+
   const handleFormSubmit: SubmitHandler<typeof bookFormSchema> = async (values) => {
     try {
-      const response = await onSubmitAction(values);
+      const response = await mutation.mutateAsync(values);
 
       toast.add({
         type: response.success ? 'success' : 'error',
@@ -115,7 +127,7 @@ export function BookFormDialog({ initialData, onSubmitAction }: BookFormProps) {
         render={
           <Button variant={isEditing ? 'ghost' : 'default'} size={isEditing ? 'icon' : 'default'}>
             {isEditing ? <PencilIcon /> : <BookPlusIcon />}
-            {!isEditing && <span className="hidden lg:flex">{formActionTitle} Book</span>}
+            {!isEditing && <span>{formActionTitle} Book</span>}
           </Button>
         }
       />

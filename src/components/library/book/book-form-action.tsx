@@ -1,10 +1,10 @@
 'use server';
 
-import { getAllAuthors } from '@/db/crud/author';
-import { getAllGenres } from '@/db/crud/genre';
+import { getAuthors } from '@/db/crud/author';
+import { getGenres } from '@/db/crud/genre';
 
 export async function getBookFormOptions() {
-  const [genres, authors] = await Promise.all([getAllGenres(), getAllAuthors()]);
+  const [genres, authors] = await Promise.all([getGenres(), getAuthors()]);
 
   return {
     genreOptions: genres.map(({ id, name }) => ({

@@ -1,6 +1,7 @@
 'use client';
 
 import { Form, SubmitHandler, reset, useForm } from '@formisch/react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PencilIcon, TagPlusIcon, UserPlusIcon } from 'lucide-react';
 import { useState } from 'react';
 import * as v from 'valibot';
@@ -20,6 +21,8 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from '@/components/ui/toast';
 
+import { EntityType } from '@/components/library/metadata/types';
+
 // ==========================================
 // SCHEMAS & TYPES
 // ==========================================
@@ -36,7 +39,7 @@ type MetadataFormInput = v.InferInput<typeof MetadataFormSchema>;
 type MetadataFormOutput = v.InferOutput<typeof MetadataFormSchema>;
 
 interface MetadataFormDialogProps {
-  entityType: 'author' | 'genre';
+  entityType: EntityType;
   initialData?: MetadataFormInput;
   onSubmitAction: (values: MetadataFormOutput) => Promise<{ success?: boolean; message?: string }>;
 }
@@ -51,16 +54,27 @@ export function MetadataFormDialog({ entityType, initialData, onSubmitAction }: 
   const isEditing = Boolean(initialData);
   const formActionTitle = isEditing ? 'Update' : 'Add';
   const formHtmlId = `${formActionTitle.toLowerCase()}-${entityType}-form`;
-  const createIcon = entityType === 'author' ? <UserPlusIcon /> : <TagPlusIcon />;
+  const createIcon = entityType === 'authors' ? <UserPlusIcon /> : <TagPlusIcon />;
 
   const form = useForm({
     schema: MetadataFormSchema,
     initialInput: { name: initialData?.name ?? '' },
   });
 
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: onSubmitAction,
+    onSuccess: (response) => {
+      if (response.success) {
+        queryClient.invalidateQueries({ queryKey: [entityType] });
+      }
+    },
+  });
+
   const handleFormSubmit: SubmitHandler<typeof MetadataFormSchema> = async (values) => {
     try {
-      const response = await onSubmitAction(values);
+      const response = await mutation.mutateAsync(values);
       toast.add({
         type: response.success ? 'success' : 'error',
         description:
@@ -68,8 +82,10 @@ export function MetadataFormDialog({ entityType, initialData, onSubmitAction }: 
           (response.success ? `Success saving ${entityType}.` : `Failed saving ${entityType}.`),
       });
 
-      setIsOpen(false);
-      reset(form);
+      if (response.success) {
+        setIsOpen(false);
+        reset(form);
+      }
     } catch {
       toast.add({
         type: 'error',

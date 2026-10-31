@@ -1,5 +1,6 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { type SortingState, useTable } from '@tanstack/react-table';
 import { cn } from 'cn';
 import { ArrowUpDownIcon, CheckIcon } from 'lucide-react';
@@ -16,6 +17,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { getAuthors } from '@/db/crud/author';
+import { getGenres } from '@/db/crud/genre';
 
 const SortOptions = [
   { label: 'Name A-Z', columnId: 'name', isDesc: false },
@@ -26,11 +29,20 @@ const SortOptions = [
 
 interface MetadataTableProps {
   entityType: EntityType;
-  data: MetadataItemTotalBook[];
+  initialData: MetadataItemTotalBook[];
 }
 
-export function MetadataTable({ entityType, data }: MetadataTableProps) {
+export function MetadataTable({ entityType, initialData }: MetadataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'name', desc: false }]);
+
+  const getFunc = entityType === 'authors' ? getAuthors : getGenres;
+
+  const { data } = useQuery({
+    queryKey: [entityType],
+    queryFn: getFunc,
+    initialData,
+  });
+
   const columns = createColumns({ entityType: entityType });
   const table = useTable({
     features,

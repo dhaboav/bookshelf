@@ -1,11 +1,12 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { type SortingState, useTable } from '@tanstack/react-table';
 import { cn } from 'cn';
 import { ArrowUpDownIcon, CheckIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { createColumns } from '@/components/library/book/table/book-columns';
+import { columns } from '@/components/library/book/table/book-columns';
 import { features } from '@/components/library/table-features';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { getBooks } from '@/db/crud/book';
 import { Book } from '@/db/validators/book';
 
 const SortOptions = [
@@ -27,18 +29,23 @@ const SortOptions = [
 ] as const;
 
 interface DataTableProps {
-  data: Book[];
+  initialData: Book[];
   className?: string;
 }
 
-export function BookTable({ data, className }: DataTableProps) {
+export function BookTable({ initialData, className }: DataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'title', desc: false }]);
-  const columns = createColumns();
+
+  const { data } = useQuery({
+    queryKey: ['books'],
+    queryFn: getBooks,
+    initialData,
+  });
 
   const table = useTable({
     features,
     columns,
-    data: data,
+    data,
     onSortingChange: setSorting,
     state: { sorting },
   });

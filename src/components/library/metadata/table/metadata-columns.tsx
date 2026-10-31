@@ -10,8 +10,8 @@ import { deleteGenre, updateGenre } from '@/db/crud/genre';
 const columnHelper = createColumnHelper<DataTableFeatures, MetadataItemTotalBook>();
 
 export function createColumns({ entityType }: { entityType: EntityType }) {
-  const updateAction = entityType === 'author' ? updateAuthor : updateGenre;
-  const deleteAction = entityType === 'author' ? deleteAuthor : deleteGenre;
+  const updateAction = entityType === 'authors' ? updateAuthor : updateGenre;
+  const deleteAction = entityType === 'authors' ? deleteAuthor : deleteGenre;
   return columnHelper.columns([
     columnHelper.accessor('id', {
       header: 'ID',
@@ -35,7 +35,11 @@ export function createColumns({ entityType }: { entityType: EntityType }) {
               onSubmitAction={(values) => updateAction(id, values)}
             />
 
-            <DeleteDialog entityType={entityType} onDeleteAction={() => deleteAction(id)} />
+            <DeleteDialog
+              entityType={entityType}
+              onDeleteAction={() => deleteAction(id)}
+              queryKey={[entityType]}
+            />
           </div>
         );
       },

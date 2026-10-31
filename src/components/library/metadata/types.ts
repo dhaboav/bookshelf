@@ -7,4 +7,4 @@ export type MetadataItemTotalBook = MetadataItem & {
   totalBooks: number;
 };
 
-export type EntityType = 'author' | 'genre';
+export type EntityType = 'authors' | 'genres';

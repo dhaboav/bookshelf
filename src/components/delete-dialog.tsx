@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { TrashIcon } from 'lucide-react';
 import { useActionState, useState } from 'react';
 
@@ -21,9 +22,11 @@ import { toast } from '@/components/ui/toast';
 interface DeleteDialogProps {
   entityType: string;
   onDeleteAction: () => Promise<{ success?: boolean; message?: string }>;
+  queryKey?: unknown[];
 }
 
-export function DeleteDialog({ entityType, onDeleteAction }: DeleteDialogProps) {
+export function DeleteDialog({ entityType, onDeleteAction, queryKey }: DeleteDialogProps) {
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const [_, formAction, isPending] = useActionState(async () => {
     try {
@@ -35,6 +38,10 @@ export function DeleteDialog({ entityType, onDeleteAction }: DeleteDialogProps) 
           response.message ||
           (response.success ? `Success deleting ${entityType}.` : `Failed deleting ${entityType}.`),
       });
+
+      if (response.success && queryKey) {
+        await queryClient.invalidateQueries({ queryKey });
+      }
     } catch {
       toast.add({
         type: 'error',
